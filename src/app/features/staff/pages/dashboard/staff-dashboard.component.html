@@ -1,0 +1,44 @@
+<div class="page-enter" @fadeIn>
+    <div class="page-header">
+        <div class="page-header-left">
+            <h4>Staff Dashboard</h4>
+            <p>Your billing activity today</p>
+        </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px">
+        <div class="card" style="padding:20px">
+            <div style="color:var(--muted);font-size:.8rem;margin-bottom:6px">SALES TODAY</div>
+            <div style="font-size:2rem;font-weight:700">{{ totalToday() }}</div>
+        </div>
+        <div class="card" style="padding:20px">
+            <div style="color:var(--muted);font-size:.8rem;margin-bottom:6px">REVENUE TODAY</div>
+            <div style="font-size:2rem;font-weight:700;color:#10b981">₹{{ revenueToday() | number:'1.0-0' }}</div>
+        </div>
+        <div class="card" style="padding:20px">
+            <div style="color:var(--muted);font-size:.8rem;margin-bottom:6px">TOTAL SALES</div>
+            <div style="font-size:2rem;font-weight:700">{{ totalAllTime() }}</div>
+        </div>
+    </div>
+
+    <div class="card" style="padding:20px">
+        <h6 style="margin-bottom:14px">Recent Sales</h6>
+        @if (recentSales().length === 0) {
+        <p style="color:var(--muted)">No sales yet</p>
+        } @else {
+        @for (s of recentSales(); track s.id) {
+        <div
+            style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+            <div>
+                <div style="font-weight:500">{{ s.customerName }}</div>
+                <div style="font-size:.75rem;color:var(--muted)">{{ s.saleDate | date:'MMM d, h:mm a' }}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px">
+                <span class="badge {{ paymentModeBadge(s.paymentMode) }}">{{ s.paymentMode }}</span>
+                <strong>₹{{ s.totalAmount | number:'1.0-0' }}</strong>
+            </div>
+        </div>
+        }
+        }
+    </div>
+</div>

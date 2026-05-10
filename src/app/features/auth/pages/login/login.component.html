@@ -1,0 +1,86 @@
+<div class="auth-page">
+  <!-- Animated background blobs -->
+  <div class="bg-blobs">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="blob blob-4"></div>
+    <div class="particles">
+      @for (p of [1,2,3,4,5,6,7,8,9,10,11,12]; track p) {
+      <div class="particle" [style.--i]="p"></div>
+      }
+    </div>
+  </div>
+
+  <!-- Card -->
+  <div class="auth-card" @scaleIn>
+    <!-- Logo -->
+    <div class="auth-logo">
+      <div class="auth-logo-icon">
+        <i class="bi bi-boxes"></i>
+      </div>
+      <div>
+        <h4>InvenTrack</h4>
+        <span>Inventory Management System</span>
+      </div>
+    </div>
+
+    <h2 class="auth-title">Welcome back</h2>
+    <p class="auth-subtitle">Sign in to your account to continue</p>
+
+    @if (error()) {
+    <div class="alert alert-danger" @fadeIn>
+      <i class="bi bi-exclamation-circle-fill"></i>
+      <span>{{ error() }}</span>
+    </div>
+    }
+
+    <!-- Username -->
+    <div class="form-group">
+      <label class="form-label">Email / Username</label>
+      <div class="input-icon-wrap">
+        <i class="bi bi-envelope field-icon"></i>
+        <input class="form-control" [class.is-invalid]="errors.username" type="text" [(ngModel)]="form.username"
+          placeholder="Enter your email" autocomplete="username" (keyup.enter)="login()">
+      </div>
+      @if (errors.username) {
+      <span class="invalid-feedback">{{ errors.username }}</span>
+      }
+    </div>
+
+    <!-- Password -->
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <div class="input-icon-wrap">
+        <i class="bi bi-lock field-icon"></i>
+        <input class="form-control" [class.is-invalid]="errors.password" [type]="showPass() ? 'text' : 'password'"
+          [(ngModel)]="form.password" placeholder="Enter your password" autocomplete="current-password"
+          style="padding-right:42px" (keyup.enter)="login()">
+        <i class="bi {{ showPass() ? 'bi-eye-slash' : 'bi-eye' }} field-icon icon-right"
+          (click)="showPass.set(!showPass())"></i>
+      </div>
+      @if (errors.password) {
+      <span class="invalid-feedback">{{ errors.password }}</span>
+      }
+    </div>
+
+    <!-- Submit -->
+    <button class="btn btn-primary w-100 btn-lg submit-btn" (click)="login()" [disabled]="loading()">
+      @if (loading()) {
+      <span class="spinner-border spinner-border-sm"></span>
+      Signing in...
+      } @else {
+      <i class="bi bi-box-arrow-in-right"></i>
+      Sign In
+      }
+    </button>
+
+    <div class="auth-divider"><span>or</span></div>
+
+    <p class="auth-switch">
+      Don't have an account?
+      <a routerLink="/auth/register">Register here</a>
+    </p>
+
+  </div>
+</div>

@@ -1,0 +1,131 @@
+<div class="page-enter" @fadeIn>
+    <div class="page-header">
+        <div class="page-header-left">
+            <h4>Staff</h4>
+            <p>Create staff profiles and assign them to managers</p>
+        </div>
+        <div class="page-header-right">
+            <button class="btn btn-primary" (click)="openCreate()">
+                <i class="bi bi-person-plus-fill"></i> Add Staff
+            </button>
+        </div>
+    </div>
+
+    @if (loading()) { <app-loader /> }
+    @else {
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Manager</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (staffList().length === 0) {
+                <tr>
+                    <td colspan="6">
+                        <div class="empty-state"><i class="bi bi-person-lines-fill"></i>
+                            <p>No staff yet</p>
+                        </div>
+                    </td>
+                </tr>
+                }
+                @for (s of staffList(); track s.id) {
+                <tr>
+                    <td><span class="row-id">#{{ s.id }}</span></td>
+                    <td>{{ s.userName }}</td>
+                    <td>{{ s.userEmail }}</td>
+                    <td>{{ s.managerName || '—' }}</td>
+                    <td>
+                        <span class="badge {{ s.active ? 'badge-success' : 'badge-danger' }}">
+                            {{ s.active ? 'Active' : 'Inactive' }}
+                        </span>
+                    </td>
+                    <td>
+                        <div style="display:flex;gap:4px">
+                            <button class="btn btn-sm btn-outline-secondary" (click)="openAssign(s)"
+                                title="Assign Manager">
+                                <i class="bi bi-person-check-fill"></i> Assign
+                            </button>
+                            <button class="btn btn-icon btn-ghost" (click)="toggleActive(s)"
+                                [title]="s.active ? 'Deactivate' : 'Activate'">
+                                <i
+                                    class="bi {{ s.active ? 'bi-toggle-on text-success' : 'bi-toggle-off text-danger' }}"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    }
+</div>
+
+<!-- Create Modal -->
+@if (showCreate()) {
+<div class="modal-overlay" (click)="showCreate.set(false)">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h5 class="modal-title">Create Staff Profile</h5>
+            <button class="modal-close" (click)="showCreate.set(false)">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">User (ROLE_STAFF)</label>
+                <select class="form-select" [(ngModel)]="createForm.userId">
+                    <option [value]="0">-- Select User --</option>
+                    @for (u of availableUsers(); track u.id) {
+                    <option [value]="u.id">{{ u.name }} ({{ u.email }})</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Assign Manager (optional)</label>
+                <select class="form-select" [(ngModel)]="createForm.managerId">
+                    <option [value]="0">-- Assign Later --</option>
+                    @for (m of managers(); track m.id) {
+                    <option [value]="m.id">{{ m.userName }}</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline-secondary" (click)="showCreate.set(false)">Cancel</button>
+            <button class="btn btn-primary" (click)="create()">Create</button>
+        </div>
+    </div>
+</div>
+}
+
+<!-- Assign Manager Modal -->
+@if (assignTarget()) {
+<div class="modal-overlay" (click)="assignTarget.set(null)">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h5 class="modal-title">Assign Manager — {{ assignTarget()!.userName }}</h5>
+            <button class="modal-close" (click)="assignTarget.set(null)">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">Manager</label>
+                <select class="form-select" [(ngModel)]="selectedManagerId">
+                    <option [value]="0">-- Select Manager --</option>
+                    @for (m of managers(); track m.id) {
+                    <option [value]="m.id">{{ m.userName }} — {{ m.department }}</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline-secondary" (click)="assignTarget.set(null)">Cancel</button>
+            <button class="btn btn-primary" (click)="saveAssign()">Save</button>
+        </div>
+    </div>
+</div>
+}

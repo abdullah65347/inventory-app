@@ -1,0 +1,54 @@
+<div class="sidebar-brand">
+  <div class="brand-icon" [style.background]="accentGradient">
+    <i class="bi bi-boxes"></i>
+  </div>
+  <div>
+    <div class="brand-name">InvenTrack</div>
+    <div class="brand-sub">{{ roleLabel }} Portal</div>
+  </div>
+</div>
+
+<nav class="sidebar-nav">
+  @for (section of sections; track section.title) {
+    <div class="nav-section-label">{{ section.title }}</div>
+    @for (item of section.items; track item.route) {
+      <a class="nav-item"
+        [routerLink]="item.route"
+        routerLinkActive="active">
+        <i class="bi {{ item.icon }}"></i>
+        <span>{{ item.label }}</span>
+        @if (item.badge) {
+          <span class="nav-badge">{{ item.badge }}</span>
+        }
+      </a>
+    }
+  }
+</nav>
+
+<div class="sidebar-footer">
+  <div class="profile-card" (click)="toggleProfile()">
+    <div class="avatar avatar-sm" [style.background]="accentGradient">{{ userInitials }}</div>
+    <div style="min-width:0;flex:1">
+      <div class="profile-name">{{ userName }}</div>
+      <div class="profile-role">{{ roleLabel }}</div>
+    </div>
+    <i class="bi bi-chevron-up" style="color:rgba(255,255,255,.35);font-size:12px;transition:transform .2s"
+      [style.transform]="profileOpen() ? 'rotate(180deg)' : 'rotate(0)'"></i>
+
+    @if (profileOpen()) {
+      <div class="profile-dropdown" (click)="$event.stopPropagation()">
+        <div class="dropdown-header">
+          <div class="dropdown-username">{{ userName }}</div>
+          <div class="dropdown-email">{{ userEmail }}</div>
+        </div>
+        <button class="dropdown-item" (click)="viewProfile()">
+          <i class="bi bi-person-circle"></i> View Profile
+        </button>
+        <div class="dropdown-divider"></div>
+        <button class="dropdown-item danger" (click)="logout()">
+          <i class="bi bi-box-arrow-right"></i> Sign Out
+        </button>
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,311 @@
+<div class="page-enter" @fadeIn>
+
+    <!-- Header -->
+    <div class="page-header">
+        <div class="page-header-left">
+            <h4>New Sale</h4>
+            <p>Fill in customer info, add products, then complete the transaction</p>
+        </div>
+        @if (billItems.length > 0) {
+        <div class="page-header-right">
+            <span style="font-size:13px;color:var(--text-muted)">
+                {{ itemCount }} item{{ itemCount !== 1 ? 's' : '' }} in cart
+            </span>
+            <button class="btn btn-outline-secondary btn-sm" (click)="clearCart()">
+                <i class="bi bi-trash3"></i> Clear cart
+            </button>
+        </div>
+        }
+    </div>
+
+    @if (loading()) { <app-loader /> }
+    @else {
+
+    <div style="display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start">
+
+        <!-- ══ LEFT COLUMN ══ -->
+        <div style="display:flex;flex-direction:column;gap:16px">
+
+            <!-- Step 1: Customer -->
+            <div class="sale-step-card">
+                <div class="step-header">
+                    <div class="step-badge">1</div>
+                    <div>
+                        <div class="step-title">Customer Details</div>
+                        <div class="step-sub">Enter the customer's information</div>
+                    </div>
+                </div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px">
+                    <div class="form-group" style="margin:0">
+                        <label class="form-label">Full Name <span style="color:var(--danger)">*</span></label>
+                        <div class="input-icon-wrap">
+                            <i class="bi bi-person field-icon"></i>
+                            <input class="form-control" [(ngModel)]="customerForm.name" placeholder="e.g. Ravi Kumar"
+                                autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin:0">
+                        <label class="form-label">Phone Number <span style="color:var(--danger)">*</span></label>
+                        <div class="input-icon-wrap">
+                            <i class="bi bi-telephone field-icon"></i>
+                            <input class="form-control" [(ngModel)]="customerForm.phone" placeholder="10-digit mobile"
+                                type="tel" autocomplete="off">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin:12px 0 0">
+                    <label class="form-label">
+                        Email
+                        <span
+                            style="color:var(--text-muted);font-weight:400;font-size:11px;margin-left:4px">optional</span>
+                    </label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-envelope field-icon"></i>
+                        <input class="form-control" [(ngModel)]="customerForm.email" placeholder="customer@example.com"
+                            type="email" autocomplete="off">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Products -->
+            <div class="sale-step-card">
+                <div class="step-header">
+                    <div class="step-badge">2</div>
+                    <div>
+                        <div class="step-title">Add Products</div>
+                        <div class="step-sub">Search by name or SKU, click to add to cart</div>
+                    </div>
+                </div>
+
+                <div style="position:relative;margin-top:16px">
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-search field-icon"></i>
+                        <input class="form-control" [(ngModel)]="productSearch" (focus)="dropdownOpen=true"
+                            (blur)="dropdownOpen=false" placeholder="Search product name or SKU…" autocomplete="off"
+                            style="padding-right:40px">
+                        @if (productSearch) {
+                        <button class="icon-right"
+                            style="border:none;background:none;cursor:pointer;color:var(--text-muted)"
+                            (mousedown)="productSearch='';dropdownOpen=false">
+                            <i class="bi bi-x-circle-fill"></i>
+                        </button>
+                        }
+                    </div>
+
+                    @if (dropdownOpen && productSearch.trim()) {
+                    <div class="product-dropdown">
+                        @if (searchResults.length === 0) {
+                        <div class="product-dropdown-empty">
+                            <i class="bi bi-search" style="font-size:1.4rem;opacity:.3"></i>
+                            <span>No products found for "{{ productSearch }}"</span>
+                        </div>
+                        }
+                        @for (p of searchResults; track p.id) {
+                        <div class="product-dropdown-row" (mousedown)="selectProduct(p)">
+                            <div class="product-thumb">{{ p.name.charAt(0).toUpperCase() }}</div>
+                            <div style="flex:1;min-width:0">
+                                <div
+                                    style="font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                                    {{ p.name }}
+                                </div>
+                                <div style="font-size:11px;color:var(--text-muted)">SKU: {{ p.sku }}</div>
+                            </div>
+                            <div style="text-align:right;flex-shrink:0">
+                                <div style="font-weight:700;color:var(--primary);font-size:13px">
+                                    ₹{{ p.adminToUserPrice | number:'1.2-2' }}
+                                </div>
+                                <div class="stock-pill" [class.stock-low]="p.availableStock <= 5">
+                                    {{ p.availableStock }} in stock
+                                </div>
+                            </div>
+                        </div>
+                        }
+                    </div>
+                    }
+                </div>
+
+                @if (billItems.length > 0) {
+                <div class="cart-table-wrap" style="margin-top:16px">
+                    @for (item of billItems; track item.productId) {
+                    <div class="cart-row">
+                        <div class="cart-product-info">
+                            <div class="cart-thumb">{{ item.productName.charAt(0).toUpperCase() }}</div>
+                            <div>
+                                <div class="cart-product-name">{{ item.productName }}</div>
+                                <div class="cart-sku">{{ item.sku }}</div>
+                            </div>
+                        </div>
+                        <div class="cart-controls">
+                            <div class="qty-stepper">
+                                <button class="qty-btn" (click)="updateQty(item, -1)"><i
+                                        class="bi bi-dash"></i></button>
+                                <span class="qty-val">{{ item.quantity }}</span>
+                                <button class="qty-btn" (click)="updateQty(item, +1)"
+                                    [disabled]="item.quantity >= item.maxStock">
+                                    <i class="bi bi-plus"></i>
+                                </button>
+                            </div>
+                            <div class="cart-price">₹{{ item.price | number:'1.2-2' }}</div>
+                            <div class="cart-subtotal">₹{{ item.subtotal | number:'1.2-2' }}</div>
+                            <button class="cart-remove" (click)="removeItem(item.productId)" title="Remove">
+                                <i class="bi bi-trash3"></i>
+                            </button>
+                        </div>
+                    </div>
+                    }
+                </div>
+                } @else {
+                <div class="cart-empty">
+                    <i class="bi bi-basket2"></i>
+                    <p>Your cart is empty — search and select products above</p>
+                </div>
+                }
+            </div>
+
+        </div>
+
+        <!-- ══ RIGHT COLUMN — Bill Summary ══ -->
+        <div>
+
+            <!-- Step 3: Payment -->
+            <div class="sale-step-card" style="margin-bottom:14px">
+                <div class="step-header">
+                    <div class="step-badge">3</div>
+                    <div>
+                        <div class="step-title">Payment Method</div>
+                        <div class="step-sub">How will the customer pay?</div>
+                    </div>
+                </div>
+                <div class="payment-grid" style="margin-top:14px">
+                    @for (m of paymentModes; track m.value) {
+                    <button class="payment-tile" [class.active]="paymentMode === m.value"
+                        (click)="paymentMode = m.value">
+                        <i class="bi {{ m.icon }}"></i>
+                        <span>{{ m.label }}</span>
+                    </button>
+                    }
+                </div>
+            </div>
+
+            <!-- Bill card -->
+            <div class="sale-step-card bill-card">
+                <div style="font-weight:700;font-size:14px;margin-bottom:14px;display:flex;align-items:center;gap:8px">
+                    <i class="bi bi-receipt-cutoff" style="color:var(--primary)"></i>
+                    Bill Summary
+                </div>
+
+                @if (customerForm.name || customerForm.phone) {
+                <div class="bill-customer-row">
+                    <div class="bill-customer-avatar">
+                        {{ customerForm.name ? customerForm.name.charAt(0).toUpperCase() : '?' }}
+                    </div>
+                    <div style="min-width:0">
+                        <div
+                            style="font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                            {{ customerForm.name || '—' }}
+                        </div>
+                        <div style="font-size:11px;color:var(--text-muted)">{{ customerForm.phone || 'No phone' }}</div>
+                    </div>
+                </div>
+                }
+
+                @if (billItems.length > 0) {
+                <div class="bill-lines">
+                    @for (item of billItems; track item.productId) {
+                    <div class="bill-line">
+                        <span style="flex:1;font-size:12px;color:var(--text-secondary);
+                             white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                            {{ item.productName }} × {{ item.quantity }}
+                        </span>
+                        <span style="font-size:12px;font-weight:600;white-space:nowrap">
+                            ₹{{ item.subtotal | number:'1.2-2' }}
+                        </span>
+                    </div>
+                    }
+                </div>
+                }
+
+                <div class="bill-total-row">
+                    <span>Total</span>
+                    <span class="bill-total-amount">₹{{ billTotal | number:'1.2-2' }}</span>
+                </div>
+
+                <button class="btn btn-primary"
+                    style="width:100%;height:44px;font-size:14px;font-weight:600;margin-top:16px" (click)="submitSale()"
+                    [disabled]="!canSubmit">
+                    @if (submitting()) {
+                    <span style="display:flex;align-items:center;justify-content:center;gap:8px">
+                        <span class="spinner" style="width:16px;height:16px;border-width:2px"></span>
+                        Processing…
+                    </span>
+                    } @else {
+                    <span style="display:flex;align-items:center;justify-content:center;gap:8px">
+                        <i class="bi bi-check2-circle"></i> Complete Sale
+                    </span>
+                    }
+                </button>
+
+                @if (!customerForm.name || !customerForm.phone) {
+                <p style="text-align:center;font-size:11px;color:var(--text-muted);margin-top:8px">
+                    <i class="bi bi-info-circle"></i> Fill customer details to enable
+                </p>
+                }
+            </div>
+
+        </div>
+    </div>
+    }
+
+</div>
+
+<!-- Receipt Modal -->
+@if (completedSale()) {
+<div class="modal-overlay" (click)="dismissReceipt()">
+    <div class="modal-box modal-sm" (click)="$event.stopPropagation()" style="text-align:center">
+
+        <div style="padding:28px 24px 8px">
+            <div class="receipt-success-icon">
+                <i class="bi bi-check-lg"></i>
+            </div>
+            <h5 style="margin:14px 0 4px;font-size:17px">Sale Completed!</h5>
+            <p style="color:var(--text-muted);font-size:13px">
+                Sale #{{ completedSale()!.id }} · {{ completedSale()!.saleDate | date:'MMM d, y, h:mm a' }}
+            </p>
+        </div>
+
+        <div class="modal-body" style="padding-top:4px">
+            <div class="receipt-meta-grid">
+                <div class="receipt-meta-item">
+                    <div class="receipt-meta-label">Customer</div>
+                    <div class="receipt-meta-val">{{ completedSale()!.customerName }}</div>
+                </div>
+                <div class="receipt-meta-item">
+                    <div class="receipt-meta-label">Phone</div>
+                    <div class="receipt-meta-val">{{ completedSale()!.customerPhone }}</div>
+                </div>
+                <div class="receipt-meta-item">
+                    <div class="receipt-meta-label">Payment</div>
+                    <div class="receipt-meta-val">{{ completedSale()!.paymentMode }}</div>
+                </div>
+                <div class="receipt-meta-item">
+                    <div class="receipt-meta-label">Items</div>
+                    <div class="receipt-meta-val">{{ completedSale()!.items.length }}</div>
+                </div>
+            </div>
+
+            <div class="receipt-total">
+                <span style="color:var(--text-muted);font-size:13px">Amount Collected</span>
+                <div style="font-size:26px;font-weight:800;color:var(--primary)">
+                    ₹{{ completedSale()!.totalAmount | number:'1.2-2' }}
+                </div>
+            </div>
+
+            <button class="btn btn-primary" style="width:100%;height:42px;margin-top:4px" (click)="dismissReceipt()">
+                <i class="bi bi-plus-lg"></i> New Sale
+            </button>
+        </div>
+    </div>
+</div>
+}

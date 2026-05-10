@@ -1,0 +1,167 @@
+<div class="page-enter" @fadeIn>
+  <div class="page-header">
+    <div class="page-header-left">
+      <h4>User Management</h4>
+      <p>Manage all system users and roles</p>
+    </div>
+    <div class="page-header-right">
+      <input class="form-control form-control-sm" style="width:220px" placeholder="Search users..." [(ngModel)]="search"
+        (input)="applyFilter()">
+      <button class="btn btn-primary btn-sm" (click)="openRegister()">
+        <i class="bi bi-person-plus-fill"></i> Create User
+      </button>
+    </div>
+  </div>
+
+  @if (loading()) { <app-loader /> }
+  @else {
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th>Joined</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (filtered().length === 0) {
+        <tr>
+          <td colspan="8">
+            <div class="empty-state"><i class="bi bi-people"></i>
+              <p>No users found</p>
+            </div>
+          </td>
+        </tr>
+        }
+        @for (u of paged.items; track u.id) {
+        <tr>
+          <td><span class="row-id">#{{ u.id }}</span></td>
+          <td>
+            <div class="user-cell">
+              <div class="avatar avatar-sm">{{ initials(u.name) }}</div>
+              <span>{{ u.name }}</span>
+            </div>
+          </td>
+          <td>{{ u.email }}</td>
+          <td>{{ u.phone || '—' }}</td>
+          <td><span class="badge {{ roleBadgeClass(u.role) }}">{{ roleLabel(u.role) }}</span></td>
+          <td>
+            <span class="badge {{ u.active ? 'badge-success' : 'badge-danger' }}">
+              {{ u.active ? 'Active' : 'Inactive' }}
+            </span>
+          </td>
+          <td>{{ u.createdAt | date:'MMM d, y' }}</td>
+          <td>
+            <div class="action-btns">
+              <button class="btn btn-icon btn-ghost" (click)="toggleActive(u)"
+                [title]="u.active ? 'Deactivate' : 'Activate'">
+                <i class="bi {{ u.active ? 'bi-toggle-on text-success' : 'bi-toggle-off text-danger' }}"></i>
+              </button>
+              <button class="btn btn-icon btn-ghost" (click)="openEdit(u)" title="Edit">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button class="btn btn-icon btn-ghost text-danger" (click)="deleteUser(u)" title="Delete">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+    <app-paginator [totalItems]="paged.totalItems" [totalPages]="paged.totalPages" [currentPage]="paged.currentPage"
+      [pageSize]="paged.pageSize" (pageChange)="page.set($event)" (pageSizeChange)="onPageSize($event)">
+    </app-paginator>
+  </div>
+  }
+</div>
+
+@if (showModal()) {
+<div class="modal-overlay" (click)="closeModal()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h5 class="modal-title">Edit User</h5>
+      <button class="modal-close" (click)="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input class="form-control" [(ngModel)]="editForm.name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <input class="form-control" [(ngModel)]="editForm.phone">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-control" type="email" [(ngModel)]="editForm.email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Address</label>
+        <input class="form-control" [(ngModel)]="editForm.address">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline-secondary" (click)="closeModal()">Cancel</button>
+      <button class="btn btn-primary" (click)="save()">Save Changes</button>
+    </div>
+  </div>
+</div>
+}
+
+<!-- Register Modal (add at bottom of file) -->
+@if (showRegister()) {
+<div class="modal-overlay" (click)="closeRegister()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h5 class="modal-title">Create New User</h5>
+      <button class="modal-close" (click)="closeRegister()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Role</label>
+        <select class="form-select" [(ngModel)]="registerForm.role">
+          @for (r of availableRoles; track r) {
+          <option [value]="r">{{ roleLabel(r) }}</option>
+          }
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input class="form-control" [(ngModel)]="registerForm.name" placeholder="Enter name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <input class="form-control" [(ngModel)]="registerForm.phone" placeholder="10-digit number">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-control" type="email" [(ngModel)]="registerForm.email" placeholder="email@example.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-control" type="password" [(ngModel)]="registerForm.password"
+          placeholder="Minimum 6 characters">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Address</label>
+        <input class="form-control" [(ngModel)]="registerForm.address" placeholder="City, State">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline-secondary" (click)="closeRegister()">Cancel</button>
+      <button class="btn btn-primary" (click)="submitRegister()">Create Account</button>
+    </div>
+  </div>
+</div>
+}

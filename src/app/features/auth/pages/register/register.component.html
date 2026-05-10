@@ -1,0 +1,137 @@
+<div class="auth-page">
+  <div class="bg-blobs">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <div class="auth-card" @scaleIn>
+    <div class="auth-logo">
+      <div class="auth-logo-icon"><i class="bi bi-boxes"></i></div>
+      <div>
+        <h4>InvenTrack</h4>
+        <span>Create your account</span>
+      </div>
+    </div>
+
+    <h2 class="auth-title">Get started</h2>
+    <p class="auth-subtitle">Fill in your details to create an account</p>
+
+    @if (apiError()) {
+      <div class="alert alert-danger" @fadeIn>
+        <i class="bi bi-exclamation-circle-fill"></i>
+        <span>{{ apiError() }}</span>
+      </div>
+    }
+    @if (success()) {
+      <div class="alert alert-success" @fadeIn>
+        <i class="bi bi-check-circle-fill"></i>
+        <span>{{ success() }}</span>
+      </div>
+    }
+
+    <!-- Row 1: Name + Phone -->
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <div class="input-icon-wrap">
+          <i class="bi bi-person field-icon"></i>
+          <input class="form-control" [class.is-invalid]="errors.name"
+            type="text" [(ngModel)]="form.name" placeholder="John Doe">
+        </div>
+        @if (errors.name) { <span class="invalid-feedback">{{ errors.name }}</span> }
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Phone</label>
+        <div class="input-icon-wrap">
+          <i class="bi bi-telephone field-icon"></i>
+          <input class="form-control" [class.is-invalid]="errors.phone"
+            type="tel" [(ngModel)]="form.phone" placeholder="+1 234 567 8900">
+        </div>
+        @if (errors.phone) { <span class="invalid-feedback">{{ errors.phone }}</span> }
+      </div>
+    </div>
+
+    <!-- Email -->
+    <div class="form-group">
+      <label class="form-label">Email Address</label>
+      <div class="input-icon-wrap">
+        <i class="bi bi-envelope field-icon"></i>
+        <input class="form-control" [class.is-invalid]="errors.email"
+          type="email" [(ngModel)]="form.email" placeholder="you@example.com">
+      </div>
+      @if (errors.email) { <span class="invalid-feedback">{{ errors.email }}</span> }
+    </div>
+
+    <!-- Address -->
+    <div class="form-group">
+      <label class="form-label">Address</label>
+      <div class="input-icon-wrap">
+        <i class="bi bi-geo-alt field-icon"></i>
+        <input class="form-control" [class.is-invalid]="errors.address"
+          type="text" [(ngModel)]="form.address" placeholder="123 Main Street, City">
+      </div>
+      @if (errors.address) { <span class="invalid-feedback">{{ errors.address }}</span> }
+    </div>
+
+    <!-- Row 2: Password + Confirm -->
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="input-icon-wrap">
+          <i class="bi bi-lock field-icon"></i>
+          <input class="form-control" [class.is-invalid]="errors.password"
+            [type]="showPass() ? 'text' : 'password'"
+            [(ngModel)]="form.password"
+            placeholder="Min 6 characters"
+            style="padding-right:42px"
+            (input)="onPasswordChange()">
+          <i class="bi {{ showPass() ? 'bi-eye-slash' : 'bi-eye' }} field-icon icon-right"
+            (click)="showPass.set(!showPass())"></i>
+        </div>
+        @if (errors.password) { <span class="invalid-feedback">{{ errors.password }}</span> }
+        @if (form.password && !errors.password) {
+          <div class="strength-bar">
+            <div class="strength-track">
+              <div class="strength-fill" [style.width]="(passwordStrength() / 4 * 100) + '%'" [style.background]="strengthColor"></div>
+            </div>
+            <span class="strength-label" [style.color]="strengthColor">{{ strengthLabel }}</span>
+          </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Confirm Password</label>
+        <div class="input-icon-wrap">
+          <i class="bi bi-lock-fill field-icon"></i>
+          <input class="form-control" [class.is-invalid]="errors.confirmPassword"
+            [type]="showConfirm() ? 'text' : 'password'"
+            [(ngModel)]="form.confirmPassword"
+            placeholder="Repeat password"
+            style="padding-right:42px">
+          <i class="bi {{ showConfirm() ? 'bi-eye-slash' : 'bi-eye' }} field-icon icon-right"
+            (click)="showConfirm.set(!showConfirm())"></i>
+        </div>
+        @if (errors.confirmPassword) { <span class="invalid-feedback">{{ errors.confirmPassword }}</span> }
+        @if (form.confirmPassword && form.password === form.confirmPassword && !errors.confirmPassword) {
+          <span class="match-ok"><i class="bi bi-check-circle-fill"></i> Passwords match</span>
+        }
+      </div>
+    </div>
+
+    <button class="btn btn-primary submit-btn" (click)="register()" [disabled]="loading()">
+      @if (loading()) {
+        <span class="spinner-border spinner-border-sm"></span> Creating account...
+      } @else {
+        <i class="bi bi-person-plus"></i> Create Account
+      }
+    </button>
+
+    <div class="auth-divider"><span>or</span></div>
+
+    <p class="auth-switch">
+      Already have an account? <a routerLink="/auth/login">Sign in</a>
+    </p>
+  </div>
+</div>

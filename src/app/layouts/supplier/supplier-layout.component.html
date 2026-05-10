@@ -1,0 +1,29 @@
+<div class="layout-wrapper">
+  <aside class="sidebar" [class.sidebar-open]="sidebarOpen()">
+    <app-sidebar [sections]="navSections" roleLabel="Supplier" profileRoute="/supplier/profile"
+      accentGradient="linear-gradient(135deg,#7c3aed,#06b6d4)">
+    </app-sidebar>
+  </aside>
+  @if (sidebarOpen()) {
+  <div class="sidebar-overlay" (click)="sidebarOpen.set(false)"></div>
+  }
+  <main class="main-content">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="topbar-btn d-lg-none" (click)="sidebarOpen.set(!sidebarOpen())">
+          <i class="bi bi-list"></i>
+        </button>
+        <div>
+          <p class="topbar-title">Supplier Portal</p>
+          <p class="topbar-sub">Manage your products & orders</p>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button class="topbar-btn"><i class="bi bi-bell"></i></button>
+        <div class="avatar" style="background:linear-gradient(135deg,#7c3aed,#06b6d4)">{{ userInitials }}</div>
+      </div>
+    </header>
+    <div class="page-content"><router-outlet /></div>
+  </main>
+</div>
+<app-chatbot />

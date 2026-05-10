@@ -1,0 +1,88 @@
+<!-- @if (loading()) {
+<div style="padding:40px;text-align:center"><i class="bi bi-arrow-repeat" style="font-size:2rem;color:var(--muted)"></i>
+</div>
+} @else if (user()) {
+<div style="max-width:560px;margin:0 auto;padding:24px 0">
+
+    <div class="page-header" style="margin-bottom:24px">
+        <div class="page-header-left">
+            <h4>My Profile</h4>
+            <p>Your account details and password</p>
+        </div>
+    </div>
+
+    <div class="card" style="margin-bottom:24px;padding:24px">
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
+            <div class="avatar" style="width:56px;height:56px;font-size:1.4rem;
+          background:linear-gradient(135deg,#4f46e5,#7c3aed)">
+                {{ user()!.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2) }}
+            </div>
+            <div>
+                <div style="font-weight:600;font-size:1.1rem">{{ user()!.name }}</div>
+                <div style="color:var(--muted);font-size:.85rem">{{ roleLabel(user()!.role) }}</div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <div class="form-control" style="background:var(--surface-2);cursor:default">{{ user()!.name }}</div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Role</label>
+                <div class="form-control" style="background:var(--surface-2);cursor:default">{{ roleLabel(user()!.role)
+                    }}</div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Email</label>
+            <div class="form-control" style="background:var(--surface-2);cursor:default">{{ user()!.email }}</div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Phone</label>
+                <div class="form-control" style="background:var(--surface-2);cursor:default">{{ user()!.phone || '—' }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Address</label>
+                <div class="form-control" style="background:var(--surface-2);cursor:default">{{ user()!.address || '—'
+                    }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" style="padding:24px">
+        <h5 style="margin-bottom:18px;font-size:1rem">Change Password</h5>
+
+        @if (pwError) {
+        <div class="alert alert-danger" style="margin-bottom:14px;padding:10px 14px;
+          background:#fef2f2;border:1px solid #fecaca;border-radius:8px;color:#dc2626;font-size:.875rem">
+            {{ pwError }}
+        </div>
+        }
+
+        <div class="form-group">
+            <label class="form-label">Current Password</label>
+            <input class="form-control" type="password" [(ngModel)]="pwForm.oldPassword"
+                placeholder="Enter current password">
+        </div>
+        <div class="form-group">
+            <label class="form-label">New Password</label>
+            <input class="form-control" type="password" [(ngModel)]="pwForm.newPassword"
+                placeholder="Minimum 6 characters">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Confirm New Password</label>
+            <input class="form-control" type="password" [(ngModel)]="pwForm.confirmPassword"
+                placeholder="Repeat new password">
+        </div>
+        <div style="text-align:right;margin-top:8px">
+            <button class="btn btn-primary" (click)="changePassword()">
+                <i class="bi bi-lock-fill"></i> Update Password
+            </button>
+        </div>
+    </div>
+
+</div>
+} -->

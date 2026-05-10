@@ -1,0 +1,137 @@
+<div class="page-enter" @fadeIn>
+  <div class="page-header">
+    <div class="page-header-left"><h4>My Products</h4><p>Manage your product listings</p></div>
+    <div class="page-header-right">
+      <button class="btn btn-primary" (click)="openCreate()"><i class="bi bi-plus-lg"></i> Add Product</button>
+    </div>
+  </div>
+
+  @if (loading()) { <app-loader /> }
+  @else {
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Product</th><th>SKU</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>
+          @if (products().length === 0) {
+            <tr><td colspan="7"><div class="empty-state"><i class="bi bi-box-seam"></i><p>No products yet</p></div></td></tr>
+          }
+          @for (p of products(); track p.id) {
+            <tr>
+              <td><strong>#{{ p.id }}</strong></td>
+              <td>
+                <div>
+                  <div style="font-weight:600">{{ p.name }}</div>
+                  <div style="font-size:11px;color:var(--text-muted)">{{ p.description | slice:0:50 }}</div>
+                </div>
+              </td>
+              <td><code class="sku">{{ p.sku }}</code></td>
+              <td>{{ p.supplierToAdminPrice | number:'1.2-2' }}</td>
+              <td><span class="badge {{ p.availableStock <= 10 ? 'badge-danger' : 'badge-success' }}">{{ p.availableStock }}</span></td>
+              <td><span class="badge {{ p.active ? 'badge-success' : 'badge-danger' }}">{{ p.active ? 'Active' : 'Inactive' }}</span></td>
+              <td>
+                <div style="display:flex;gap:4px">
+                  <button class="btn btn-sm btn-outline-secondary" (click)="openAddStock(p)" title="Add Stock">
+                    <i class="bi bi-plus-circle"></i> Stock
+                  </button>
+                  <button class="btn btn-sm btn-outline-secondary" (click)="openEditPrice(p)" title="Edit Price">
+                    <i class="bi bi-tag"></i> Price
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+
+<!-- Create Modal -->
+@if (showCreate()) {
+  <div class="modal-overlay" (click)="closeCreate()">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h5 class="modal-title">Add New Product</h5>
+        <button class="modal-close" (click)="closeCreate()">×</button>
+      </div>
+      <div class="modal-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="form-group">
+            <label class="form-label">Product Name</label>
+            <input class="form-control" [(ngModel)]="createForm.name" placeholder="USB-C Cable">
+          </div>
+          <div class="form-group">
+            <label class="form-label">SKU</label>
+            <input class="form-control" [(ngModel)]="createForm.sku" placeholder="PROD-001">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea class="form-control" [(ngModel)]="createForm.description" rows="2" placeholder="Product description..."></textarea>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="form-group">
+            <label class="form-label">Price (to Admin)</label>
+            <input class="form-control" type="number" [(ngModel)]="createForm.supplierToAdminPrice" min="0" step="0.01">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Initial Stock</label>
+            <input class="form-control" type="number" [(ngModel)]="createForm.quantity" min="0">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary" (click)="closeCreate()">Cancel</button>
+        <button class="btn btn-primary" (click)="create()">Add Product</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Add Stock Modal -->
+@if (stockTarget()) {
+  <div class="modal-overlay" (click)="stockTarget.set(null)">
+    <div class="modal-box modal-sm" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h5 class="modal-title">Add Stock</h5>
+        <button class="modal-close" (click)="stockTarget.set(null)">×</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:13px;margin-bottom:14px">
+          Add stock for <strong>{{ stockTarget()!.name }}</strong>
+          (Current: <strong>{{ stockTarget()!.availableStock }}</strong>)
+        </p>
+        <div class="form-group">
+          <label class="form-label">Quantity to Add</label>
+          <input class="form-control" type="number" [(ngModel)]="addQty" min="1">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary" (click)="stockTarget.set(null)">Cancel</button>
+        <button class="btn btn-primary" (click)="addStock()">Add Stock</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Edit Price Modal -->
+@if (priceTarget()) {
+  <div class="modal-overlay" (click)="priceTarget.set(null)">
+    <div class="modal-box modal-sm" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h5 class="modal-title">Update Price</h5>
+        <button class="modal-close" (click)="priceTarget.set(null)">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Price to Admin</label>
+          <input class="form-control" type="number" [(ngModel)]="newPrice" min="0" step="0.01">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary" (click)="priceTarget.set(null)">Cancel</button>
+        <button class="btn btn-primary" (click)="updatePrice()">Update</button>
+      </div>
+    </div>
+  </div>
+}

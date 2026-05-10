@@ -1,0 +1,70 @@
+<div class="page-enter" @fadeIn>
+  <div class="page-header">
+    <div class="page-header-left">
+      <h4>My Dashboard</h4>
+      <p>Welcome back, {{ auth.currentUser()?.name }}!</p>
+    </div>
+    <a routerLink="/user/products" class="btn btn-primary btn-sm">
+      <i class="bi bi-shop-window"></i> Browse Products
+    </a>
+  </div>
+
+  @if (loading()) { <app-loader /> }
+  @else {
+    <div class="grid-4" style="margin-bottom:24px">
+      <div class="stat-card c-primary">
+        <div class="stat-icon c-primary"><i class="bi bi-bag-fill"></i></div>
+        <div class="stat-value">{{ stats().total }}</div>
+        <div class="stat-label">Total Orders</div>
+      </div>
+      <div class="stat-card c-warning">
+        <div class="stat-icon c-warning"><i class="bi bi-hourglass-split"></i></div>
+        <div class="stat-value">{{ stats().pending }}</div>
+        <div class="stat-label">Pending</div>
+      </div>
+      <div class="stat-card c-success">
+        <div class="stat-icon c-success"><i class="bi bi-check-circle-fill"></i></div>
+        <div class="stat-value">{{ stats().delivered }}</div>
+        <div class="stat-label">Delivered</div>
+      </div>
+      <div class="stat-card c-secondary">
+        <div class="stat-icon c-secondary"><i class="bi bi-wallet2"></i></div>
+        <div class="stat-value">{{ stats().spent | number:'1.0-0' }}</div>
+        <div class="stat-label">Total Spent</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h6 class="card-title">Recent Orders</h6>
+        <a routerLink="/user/orders" style="font-size:12px;color:var(--primary);text-decoration:none;font-weight:600">View all</a>
+      </div>
+      <div class="card-body" style="padding:0">
+        @if (orders().length === 0) {
+          <div class="empty-state">
+            <i class="bi bi-bag"></i>
+            <p>No orders yet.</p>
+            <a routerLink="/user/products" class="btn btn-primary btn-sm" style="margin-top:12px">
+              Start Shopping
+            </a>
+          </div>
+        } @else {
+          <table>
+            <thead><tr><th>Order #</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th></tr></thead>
+            <tbody>
+              @for (o of orders(); track o.id) {
+                <tr>
+                  <td><strong>#{{ o.id }}</strong></td>
+                  <td>{{ o.items.length }}</td>
+                  <td>{{ o.totalAmount | number:'1.2-2' }}</td>
+                  <td><span class="badge {{ statusBadge(o.status) }}">{{ o.status }}</span></td>
+                  <td>{{ o.saleDate | date:'MMM d, y' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+      </div>
+    </div>
+  }
+</div>

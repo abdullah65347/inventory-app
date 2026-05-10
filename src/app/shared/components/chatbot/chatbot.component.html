@@ -1,0 +1,112 @@
+<!-- FLOATING BUTTON -->
+<button class="chat-fab" (click)="toggle()" @bubblePop [class.open]="isOpen()">
+    @if (isOpen()) {
+    <i class="bi bi-x-lg"></i>
+    } @else {
+    <i class="bi bi-chat-dots-fill"></i>
+    @if (hasNewMsg()) {
+    <span class="fab-badge" @bubblePop></span>
+    }
+    }
+</button>
+
+<!-- CHAT WINDOW -->
+@if (isOpen()) {
+<div class="chat-window" @chatbotSlide>
+
+    <!-- HEADER -->
+    <div class="chat-header">
+        <div class="chat-header-left">
+            <div class="chat-avatar">
+                <i class="bi bi-robot"></i>
+                <span class="online-dot"></span>
+            </div>
+            <div>
+                <div class="chat-title">Inventra Assistant</div>
+                <div class="chat-subtitle">Always here to help</div>
+            </div>
+        </div>
+        <div class="chat-header-actions">
+            <button class="chat-action-btn" (click)="clearChat()" title="Clear chat">
+                <i class="bi bi-trash3"></i>
+            </button>
+            <button class="chat-action-btn" (click)="toggle()" title="Close">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- MESSAGES -->
+    <div class="chat-messages">
+
+        @for (msg of messages(); track msg.id) {
+        <div class="msg-row {{ msg.from }}" @messageSlide>
+
+            @if (msg.from === 'bot') {
+            <div class="msg-bot-avatar">
+                <i class="bi bi-robot"></i>
+            </div>
+            }
+
+            <div class="msg-content {{ msg.from }}">
+                <div class="msg-bubble {{ msg.from }}" [innerHTML]="formatText(msg.text)">
+                </div>
+
+                <!-- DATA CARDS -->
+                @if (msg.cards && msg.cards.length > 0) {
+                <div class="msg-cards">
+                    @for (card of msg.cards; track card.label) {
+                    <div class="data-card {{ cardColorClass(card.color) }}">
+                        @if (card.icon) {
+                        <i class="bi {{ card.icon }} data-card-icon"></i>
+                        }
+                        <div class="data-card-body">
+                            <div class="data-card-value">{{ card.value }}</div>
+                            <div class="data-card-label">{{ card.label }}</div>
+                        </div>
+                    </div>
+                    }
+                </div>
+                }
+
+                <div class="msg-time">{{ formatTime(msg.time) }}</div>
+            </div>
+
+        </div>
+        }
+
+        <!-- TYPING INDICATOR -->
+        @if (isTyping()) {
+        <div class="msg-row bot" @typingDots>
+            <div class="msg-bot-avatar"><i class="bi bi-robot"></i></div>
+            <div class="msg-content bot">
+                <div class="msg-bubble bot typing-bubble">
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+            </div>
+        </div>
+        }
+
+        <div #messagesEnd></div>
+    </div>
+
+    <!-- SUGGESTIONS -->
+    <div class="chat-suggestions">
+        @for (s of suggestions(); track s) {
+        <button class="suggestion-chip" (click)="send(s)">{{ s }}</button>
+        }
+    </div>
+
+    <!-- INPUT -->
+    <div class="chat-input-area">
+        <input #inputRef class="chat-input" [(ngModel)]="inputText" (keydown)="onKeyDown($event)"
+            placeholder="Ask me anything..." autocomplete="off">
+        <button class="chat-send-btn" (click)="send()" [disabled]="!inputText.trim() || isTyping()">
+            <i class="bi bi-send-fill"></i>
+        </button>
+    </div>
+
+</div>
+}

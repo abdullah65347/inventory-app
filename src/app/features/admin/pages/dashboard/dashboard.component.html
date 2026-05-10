@@ -1,0 +1,176 @@
+<div class="page-enter" @fadeIn>
+  <!-- Header -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <h4>Dashboard</h4>
+      <p>Welcome back, {{ auth.currentUser()?.name }}!</p>
+    </div>
+    <div class="page-header-right">
+      <a routerLink="/admin/purchases" class="btn btn-primary btn-sm">
+        <i class="bi bi-cart-plus"></i> New Purchase
+      </a>
+    </div>
+  </div>
+
+  @if (loading()) {
+  <app-loader></app-loader>
+  } @else {
+  <!-- Stat Cards -->
+  <div class="grid-4 mb-24" [@fadeInList]="stats()">
+    <div class="stat-card c-primary">
+      <div class="stat-icon c-primary"><i class="bi bi-people-fill"></i></div>
+      <div class="stat-value">{{ stats().users }}</div>
+      <div class="stat-label">Total Users</div>
+      <div class="stat-trend up"><i class="bi bi-arrow-up-short"></i> +12% this month</div>
+    </div>
+    <div class="stat-card c-secondary">
+      <div class="stat-icon c-secondary"><i class="bi bi-truck"></i></div>
+      <div class="stat-value">{{ stats().suppliers }}</div>
+      <div class="stat-label">Total Suppliers</div>
+      <div class="stat-trend up"><i class="bi bi-arrow-up-short"></i> +3 new</div>
+    </div>
+    <div class="stat-card c-success">
+      <div class="stat-icon c-success"><i class="bi bi-box-seam-fill"></i></div>
+      <div class="stat-value">{{ stats().products }}</div>
+      <div class="stat-label">Products</div>
+      <div class="stat-trend up"><i class="bi bi-arrow-up-short"></i> +8 this week</div>
+    </div>
+    <div class="stat-card c-warning">
+      <div class="stat-icon c-warning"><i class="bi bi-graph-up-arrow"></i></div>
+      <div class="stat-value">{{ stats().revenue | number:'1.0-0' }}</div>
+      <div class="stat-label">Total Revenue</div>
+      <div class="stat-trend up"><i class="bi bi-arrow-up-short"></i> +24%</div>
+    </div>
+    <div class="stat-card c-accent">
+      <div class="stat-icon c-accent"><i class="bi bi-receipt-cutoff"></i></div>
+      <div class="stat-value">{{ stats().sales }}</div>
+      <div class="stat-label">Total Sales</div>
+      <div class="stat-trend up"><i class="bi bi-arrow-up-short"></i> +18 today</div>
+    </div>
+    <div class="stat-card c-danger">
+      <div class="stat-icon c-danger"><i class="bi bi-exclamation-triangle-fill"></i></div>
+      <div class="stat-value">{{ stats().lowStock }}</div>
+      <div class="stat-label">Low Stock Items</div>
+      <div class="stat-trend down"><i class="bi bi-arrow-down-short"></i> Needs attention</div>
+    </div>
+  </div>
+
+  <!-- Charts Row -->
+  <div class="grid-2 mb-24">
+    <div class="card">
+      <div class="card-header">
+        <h6 class="card-title">
+          <i class="bi bi-bar-chart-fill me-2 text-primary"></i>Monthly Revenue & Orders
+        </h6>
+        <span class="badge badge-primary">Last 6 Months</span>
+      </div>
+      <div class="card-body">
+        <div class="chart-wrap"><canvas #barChart></canvas></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <h6 class="card-title"><i class="bi bi-pie-chart-fill me-2 text-secondary"></i>Sales by Payment Mode</h6>
+        <span class="badge badge-secondary">Products</span>
+      </div>
+      <div class="card-body">
+        <div class="chart-wrap"><canvas #pieChart></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Line Chart -->
+  <div class="card mb-24">
+    <div class="card-header">
+      <h6 class="card-title">
+        <i class="bi bi-pie-chart-fill me-2 text-secondary"></i>Inventory Trends (Stock In vs Stock Out)
+      </h6>
+      <span class="badge badge-secondary">All Time</span>
+    </div>
+    <div class="card-body">
+      <div class="chart-wrap"><canvas #lineChart></canvas></div>
+    </div>
+  </div>
+
+  <!-- Bottom Row -->
+  <div class="grid-2">
+    <!-- Recent Sales -->
+    <div class="card">
+      <div class="card-header">
+        <h6 class="card-title">Recent Sales</h6>
+        <a routerLink="/admin/sales" class="view-all">View all</a>
+      </div>
+      <div class="card-body" style="padding:0">
+        @if (recentSales().length === 0) {
+        <div class="empty-state"><i class="bi bi-receipt"></i>
+          <p>No sales yet</p>
+        </div>
+        } @else {
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Sold By</th>
+              <th>Customer</th>
+              <th>Amount</th>
+              <th>Payment</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (s of recentSales(); track s.id) {
+            <tr>
+              <td><strong>#{{ s.id }}</strong></td>
+              <td>{{ s.soldByName ||'—' }}</td>
+              <td>{{ s.customerName ||'—' }}</td>
+              <td><strong>₹{{ s.totalAmount | number:'1.0-0' }}</strong></td>
+              <td>
+                <span class="badge {{ paymentModeBadge(s.paymentMode) }}">
+                  {{ s.paymentMode }}
+                </span>
+              </td>
+              <td>{{ s.saleDate | date:'MMM d' }}</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+        }
+      </div>
+    </div>
+
+    <!-- Low Stock -->
+    <div class="card">
+      <div class="card-header">
+        <h6 class="card-title">Low Stock Alerts</h6>
+        <a routerLink="/admin/inventory" class="view-all">View all</a>
+      </div>
+      <div class="card-body" style="padding:0">
+        @if (lowStock().length === 0) {
+        <div class="empty-state"><i class="bi bi-check-circle"></i>
+          <p>All stock levels healthy</p>
+        </div>
+        } @else {
+        <table>
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Stock</th>
+              <th>Reorder</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of lowStock(); track item.id) {
+            <tr>
+              <td><strong>{{ item.productName }}</strong></td>
+              <td><span class="badge badge-danger">{{ item.availableStock }}</span></td>
+              <td>{{ item.reorderLevel }}</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+        }
+      </div>
+    </div>
+  </div>
+  }
+</div>

@@ -1,0 +1,31 @@
+<div class="layout-wrapper">
+  <aside class="sidebar" [class.sidebar-open]="sidebarOpen()">
+    <app-sidebar [sections]="navSections" roleLabel="Admin" profileRoute="/admin/profile"
+      accentGradient="linear-gradient(135deg,#4f46e5,#7c3aed)">
+    </app-sidebar>
+  </aside>
+
+  @if (sidebarOpen()) {
+  <div class="sidebar-overlay" (click)="sidebarOpen.set(false)"></div>
+  }
+
+  <main class="main-content">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="topbar-btn d-lg-none" (click)="sidebarOpen.set(!sidebarOpen())">
+          <i class="bi bi-list"></i>
+        </button>
+        <div>
+          <p class="topbar-title">Admin Portal</p>
+          <p class="topbar-sub">Inventory Management System</p>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button class="topbar-btn"><i class="bi bi-bell"></i></button>
+        <div class="avatar" style="background:linear-gradient(135deg,#4f46e5,#7c3aed)">{{ userInitials }}</div>
+      </div>
+    </header>
+    <div class="page-content"><router-outlet /></div>
+  </main>
+</div>
+<app-chatbot />

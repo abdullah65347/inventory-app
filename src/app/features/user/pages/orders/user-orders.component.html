@@ -1,0 +1,86 @@
+<div class="page-enter" @fadeIn>
+  <div class="page-header">
+    <div class="page-header-left"><h4>My Orders</h4><p>Track your purchase history</p></div>
+    <div class="page-header-right">
+      <select class="form-select form-select-sm" [(ngModel)]="statusFilter" (change)="applyFilter()" style="width:140px">
+        <option value="all">All Orders</option>
+        <option value="PENDING">Pending</option>
+        <option value="PAID">Paid</option>
+        <option value="DELIVERED">Delivered</option>
+      </select>
+    </div>
+  </div>
+
+  @if (loading()) { <app-loader /> }
+  @else {
+    @if (filtered().length === 0) {
+      <div class="empty-state"><i class="bi bi-bag"></i><p>No orders found</p></div>
+    } @else {
+      <div style="display:flex;flex-direction:column;gap:12px">
+        @for (order of filtered(); track order.id) {
+          <div class="card">
+            <!-- Header Row -->
+            <div class="card-header" style="cursor:pointer" (click)="toggleExpand(order.id)">
+              <div style="display:flex;align-items:center;gap:16px;flex:1">
+                <div>
+                  <div style="font-weight:700">Order #{{ order.id }}</div>
+                  <div style="font-size:12px;color:var(--text-muted)">{{ order.saleDate | date:'MMMM d, y' }}</div>
+                </div>
+                <div style="margin-left:auto;display:flex;align-items:center;gap:12px">
+                  <strong style="font-size:16px;font-family:'JetBrains Mono',monospace">{{ order.totalAmount | number:'1.2-2' }}</strong>
+                  <span class="badge {{ statusBadge(order.status) }}">{{ order.status }}</span>
+                  <i class="bi {{ expanded() === order.id ? 'bi-chevron-up' : 'bi-chevron-down' }}"
+                    style="color:var(--text-muted);font-size:13px"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- Expanded Content -->
+            @if (expanded() === order.id) {
+              <!-- Items Table -->
+              <div style="border-top:1px solid var(--border-light)">
+                <div class="table-wrap" style="border:none;border-radius:0">
+                  <table>
+                    <thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Subtotal</th></tr></thead>
+                    <tbody>
+                      @for (item of order.items; track item.id) {
+                        <tr>
+                          <td>{{ item.productName }}</td>
+                          <td>{{ item.quantity }}</td>
+                          <td>{{ item.price | number:'1.2-2' }}</td>
+                          <td>{{ item.subtotal | number:'1.2-2' }}</td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+
+                <!-- Progress Stepper -->
+                <div style="padding:18px 20px;border-top:1px solid var(--border-light)">
+                  <div style="display:flex;align-items:flex-start;position:relative">
+                    <!-- Track -->
+                    <div style="position:absolute;top:13px;left:14px;right:14px;height:2px;background:var(--border);z-index:0"></div>
+                    <div [style.width]="progressWidth(order.status)"
+                      style="position:absolute;top:13px;left:14px;height:2px;background:var(--success);z-index:1;transition:width .4s ease"></div>
+
+                    @for (step of steps; track step.key) {
+                      <div style="flex:1;text-align:center;position:relative;z-index:2">
+                        <div style="width:28px;height:28px;border-radius:50%;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;font-size:13px;border:2px solid;transition:all .3s"
+                          [style.background]="isStepDone(order.status, step.key) ? 'var(--success)' : 'var(--bg-card)'"
+                          [style.border-color]="isStepDone(order.status, step.key) ? 'var(--success)' : 'var(--border)'"
+                          [style.color]="isStepDone(order.status, step.key) ? '#fff' : 'var(--text-muted)'">
+                          <i class="bi {{ step.icon }}"></i>
+                        </div>
+                        <div style="font-size:11px;color:var(--text-muted);font-weight:500">{{ step.label }}</div>
+                      </div>
+                    }
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+  }
+</div>

@@ -1,0 +1,179 @@
+<div class="page-enter" @fadeIn>
+  <div class="page-header">
+    <div class="page-header-left">
+      <h4>Purchases</h4>
+      <p>Manage orders from suppliers</p>
+    </div>
+    <div class="page-header-right">
+      <button class="btn btn-primary" (click)="openCreate()"><i class="bi bi-cart-plus"></i> New Order</button>
+    </div>
+  </div>
+  @if (loading()) { <app-loader /> }
+  @else {
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Supplier</th>
+          <th>Items</th>
+          <th>Total</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (purchases().length === 0) {
+        <tr>
+          <td colspan="6">
+            <div class="empty-state"><i class="bi bi-cart"></i>
+              <p>No purchases yet</p>
+            </div>
+          </td>
+        </tr>
+        }
+        @for (p of purchases(); track p.id) {
+        <tr>
+          <td><strong>#{{ p.id }}</strong></td>
+          <td>{{ p.supplierName ?? ('Supplier #' + p.supplierId) }}</td>
+          <td>{{ p.items.length }}</td>
+          <td><strong>{{ p.totalAmount | number:'1.2-2' }}</strong></td>
+          <td><span class="badge {{ statusBadge(p.status) }}">{{ p.status }}</span></td>
+          <td>
+            <div style="display:flex;gap:4px">
+              <button class="btn btn-icon btn-ghost" (click)="detailItem.set(p)" title="View">
+                <i class="bi bi-eye"></i>
+              </button>
+              @if (p.status === 'DELIVERED') {
+              <button class="btn btn-sm btn-success" (click)="confirm(p)">
+                <i class="bi bi-check-lg"></i> Confirm
+              </button>
+              <button class="btn btn-sm btn-outline-secondary" (click)="cancel(p)" style="color:var(--danger)">
+                <i class="bi bi-x-lg"></i>Cancel
+              </button>
+              }
+              @if (p.status === 'PENDING') {
+              <button class="btn btn-sm btn-outline-secondary" (click)="cancel(p)" style="color:var(--danger)">
+                <i class="bi bi-x-lg"></i>Cancel
+              </button>
+              }
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  }
+</div>
+
+<!-- Create Modal -->
+@if (showCreate()) {
+<div class="modal-overlay" (click)="closeCreate()">
+  <div class="modal-box modal-lg" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h5 class="modal-title">New Purchase Order</h5>
+      <button class="modal-close" (click)="closeCreate()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Supplier</label>
+        <select class="form-select" [(ngModel)]="selectedSupplierId" (change)="onSupplierChange()">
+          <option [value]="0">-- Select Supplier --</option>
+          @for (s of suppliers(); track s.id) { <option [value]="s.id">{{ s.companyName }}</option> }
+        </select>
+      </div>
+      @if (supProducts().length > 0) {
+      <div class="form-group">
+        <label class="form-label">Add Product</label>
+        <div style="display:flex;gap:8px">
+          <select class="form-select" [(ngModel)]="selectedProductId">
+            <option [value]="0">-- Select Product --</option>
+            @for (p of supProducts(); track p.id) {
+            <option [value]="p.id">{{ p.name }} (Stock: {{ p.availableStock }}) — {{ p.supplierToAdminPrice |
+              number:'1.2-2' }}</option>
+            }
+          </select>
+          <input class="form-control" type="number" [(ngModel)]="selectedQty" min="1" style="width:90px"
+            placeholder="Qty">
+          <button class="btn btn-primary" (click)="addItem()">Add</button>
+        </div>
+      </div>
+      @if (orderItems.length > 0) {
+      <div class="table-wrap" style="margin-bottom:12px">
+        <table>
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Qty</th>
+              <th>Unit Price</th>
+              <th>Subtotal</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of orderItems; track item.productId) {
+            <tr>
+              <td>{{ productName(item.productId) }}</td>
+              <td>{{ item.quantity }}</td>
+              <td>{{ productPrice(item.productId) | number:'1.2-2' }}</td>
+              <td>{{ (item.quantity * productPrice(item.productId)) | number:'1.2-2' }}</td>
+              <td><button class="btn btn-icon btn-ghost" style="color:var(--danger)"
+                  (click)="removeItem(item.productId)"><i class="bi bi-trash"></i></button></td>
+            </tr>
+            }
+            <tr style="background:#f8faff">
+              <td colspan="3"><strong>Total</strong></td>
+              <td colspan="2"><strong>{{ orderTotal | number:'1.2-2' }}</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      }
+      }
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline-secondary" (click)="closeCreate()">Cancel</button>
+      <button class="btn btn-primary" (click)="createOrder()" [disabled]="orderItems.length === 0">Create Order</button>
+    </div>
+  </div>
+</div>
+}
+
+<!-- Detail Modal -->
+@if (detailItem()) {
+<div class="modal-overlay" (click)="detailItem.set(null)">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h5 class="modal-title">Purchase #{{ detailItem()!.id }}</h5>
+      <button class="modal-close" (click)="detailItem.set(null)">×</button>
+    </div>
+    <div class="modal-body">
+      <p>Status: <span class="badge {{ statusBadge(detailItem()!.status) }}">{{ detailItem()!.status }}</span></p>
+      <p style="margin-top:6px">Total: <strong>{{ detailItem()!.totalAmount | number:'1.2-2' }}</strong></p>
+      <div class="table-wrap" style="margin-top:14px">
+        <table>
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Qty</th>
+              <th>Unit</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (i of detailItem()!.items; track i.productId) {
+            <tr>
+              <td>{{ i.productName }}</td>
+              <td>{{ i.quantity }}</td>
+              <td>{{ i.unitPrice | number:'1.2-2' }}</td>
+              <td>{{ i.subTotal | number:'1.2-2' }}</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+}

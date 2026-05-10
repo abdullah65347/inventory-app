@@ -1,0 +1,93 @@
+<div class="page-enter" @fadeIn>
+    <div class="page-header">
+        <div class="page-header-left">
+            <h4>Sale History</h4>
+            <p>All sales you've made</p>
+        </div>
+    </div>
+
+    @if (loading()) { <app-loader /> }
+    @else {
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Customer</th>
+                    <th>Items</th>
+                    <th>Total</th>
+                    <th>Payment</th>
+                    <th>Date</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (sales().length === 0) {
+                <tr>
+                    <td colspan="7">
+                        <div class="empty-state"><i class="bi bi-receipt"></i>
+                            <p>No sales yet</p>
+                        </div>
+                    </td>
+                </tr>
+                }
+                @for (s of sales(); track s.id) {
+                <tr>
+                    <td><strong>#{{ s.id }}</strong></td>
+                    <td>{{ s.customerName }} <span style="font-size:.75rem;color:var(--muted)">{{ s.customerPhone
+                            }}</span></td>
+                    <td>{{ s.items.length }}</td>
+                    <td><strong>₹{{ s.totalAmount | number:'1.2-2' }}</strong></td>
+                    <td><span class="badge {{ paymentModeBadge(s.paymentMode) }}">{{ s.paymentMode }}</span></td>
+                    <td>{{ s.saleDate | date:'MMM d, y, h:mm a' }}</td>
+                    <td>
+                        <button class="btn btn-icon btn-ghost" (click)="detailItem.set(s)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    }
+</div>
+
+@if (detailItem()) {
+<div class="modal-overlay" (click)="detailItem.set(null)">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h5 class="modal-title">Sale #{{ detailItem()!.id }}</h5>
+            <button class="modal-close" (click)="detailItem.set(null)">×</button>
+        </div>
+        <div class="modal-body">
+            <p>Customer: <strong>{{ detailItem()!.customerName }}</strong> ({{ detailItem()!.customerPhone }})</p>
+            <p>Payment: <span class="badge {{ paymentModeBadge(detailItem()!.paymentMode) }}">{{
+                    detailItem()!.paymentMode }}</span></p>
+            <p>Total: <strong>₹{{ detailItem()!.totalAmount | number:'1.2-2' }}</strong></p>
+            <div class="table-wrap" style="margin-top:14px">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Qty</th>
+                            <th>Price</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (i of detailItem()!.items; track i.id) {
+                        <tr>
+                            <td>{{ i.productName }}</td>
+                            <td>{{ i.quantity }}</td>
+                            <td>₹{{ i.price | number:'1.2-2' }}</td>
+                            <td>₹{{ i.subtotal | number:'1.2-2' }}</td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+}

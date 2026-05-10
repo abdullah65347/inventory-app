@@ -1,0 +1,80 @@
+<div class="page-enter" @fadeIn>
+  <div class="page-header">
+    <div class="page-header-left">
+      <h4>Transactions</h4>
+      <p>Complete stock movement log</p>
+    </div>
+    <div class="page-header-right">
+      <select class="form-select form-select-sm" [(ngModel)]="typeFilter" (change)="applyFilter()" style="width:160px">
+        <option value="all">All Types</option>
+        <option value="ADMIN_PURCHASE">Stock In</option>
+        <option value="ADMIN_SALE">Stock Out</option>
+      </select>
+      <input class="form-control form-control-sm" style="width:200px" placeholder="Search..." [(ngModel)]="search"
+        (input)="applyFilter()">
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:24px">
+    <div class="stat-card c-success">
+      <div class="stat-icon c-success"><i class="bi bi-arrow-down-circle-fill"></i></div>
+      <div class="stat-value">{{ inCount }}</div>
+      <div class="stat-label">Stock In (Purchases)</div>
+    </div>
+    <div class="stat-card c-danger">
+      <div class="stat-icon c-danger"><i class="bi bi-arrow-up-circle-fill"></i></div>
+      <div class="stat-value">{{ outCount }}</div>
+      <div class="stat-label">Stock Out (Sales)</div>
+    </div>
+  </div>
+
+  @if (loading()) { <app-loader /> }
+  @else {
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Product</th>
+          <th>SKU</th>
+          <th>Type</th>
+          <th>Quantity</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (filtered().length === 0) {
+        <tr>
+          <td colspan="6">
+            <div class="empty-state"><i class="bi bi-arrow-left-right"></i>
+              <p>No transactions found</p>
+            </div>
+          </td>
+        </tr>
+        }
+        @for (t of filtered(); track t.id) {
+        <tr>
+          <td><strong>#{{ t.id }}</strong></td>
+          <td><strong>{{ t.productName }}</strong></td>
+          <td><code class="sku">{{ t.sku }}</code></td>
+          <td>
+            @if (t.transactionType === 'STOCK_IN') {
+            <span class="badge badge-success"><i class="bi bi-arrow-down-short"></i> STOCK IN</span>
+            } @else {
+            <span class="badge badge-danger"><i class="bi bi-arrow-up-short"></i> STOCK OUT</span>
+            }
+          </td>
+          <td>
+            <span [style.color]="t.transactionType === 'STOCK_IN' ? 'var(--success)' : 'var(--danger)'"
+              style="font-weight:700;font-family:'JetBrains Mono',monospace">
+              {{ t.transactionType === 'STOCK_IN' ? '+' : '-' }}{{ t.quantity }}
+            </span>
+          </td>
+          <td>{{ t.createdAt | date:'MMM d, y HH:mm' }}</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  }
+</div>

@@ -1,0 +1,77 @@
+export const API_ENDPOINTS = {
+  AUTH: {
+    LOGIN: '/auth/login',
+    REGISTER: '/auth/register',
+    REGISTER_ROLE: (role: string) => `/auth/register/${role}`,
+    ME: '/auth/me',
+  },
+  USERS: {
+    BASE: '/api/users',
+    BY_ID: (id: number) => `/api/users/${id}`,
+    PASSWORD: (id: number) => `/api/users/${id}/password`,
+    ACTIVE: (id: number) => `/api/users/${id}/active`,
+  },
+  SUPPLIERS: {
+    BASE: '/api/suppliers',
+    BY_ID: (id: number) => `/api/suppliers/${id}`,
+    ACTIVE: (id: number) => `/api/suppliers/${id}/active`,
+    BY_USER: (userId: number) => `/api/suppliers/by-user/${userId}`,
+  },
+  MANAGERS: {
+    BASE: '/api/managers',
+    BY_ID: (id: number) => `/api/managers/${id}`,
+    BY_USER: (userId: number) => `/api/managers/by-user/${userId}`,
+    ACTIVE: (id: number) => `/api/managers/${id}/active`,
+  },
+  STAFF: {
+    BASE: '/api/staff',
+    BY_ID: (id: number) => `/api/staff/${id}`,
+    BY_USER: (userId: number) => `/api/staff/by-user/${userId}`,
+    BY_MANAGER: (managerId: number) => `/api/staff/by-manager/${managerId}`,
+    ASSIGN_MANAGER: (staffId: number, managerId: number) => `/api/staff/${staffId}/assign-manager/${managerId}`,
+    ACTIVE: (id: number) => `/api/staff/${id}/active`,
+  },
+  CUSTOMERS: {
+    BASE: '/api/customers',
+    BY_ID: (id: number) => `/api/customers/${id}`,
+    BY_PHONE: (phone: string) => `/api/customers/by-phone/${phone}`,
+  },
+  CATEGORIES: {
+    BASE: '/api/categories',
+    BY_ID: (id: number) => `/api/categories/${id}`,
+  },
+  PRODUCTS: {
+    BASE: '/api/products',
+    ADMIN: '/api/products/admin',
+    BY_SUPPLIER: (supplierId: number) => `/api/products/supplier/${supplierId}`,
+    SUPPLIER_PRICE: (id: number) => `/api/products/${id}/supplier-price`,
+    ADMIN_PRICE: (id: number) => `/api/products/${id}/admin-price`,
+    ADD_STOCK: (id: number) => `/api/products/${id}/stock/add`,
+  },
+  PURCHASES: {
+    BASE: '/api/purchases',
+    BY_ID: (id: number) => `/api/purchases/${id}`,
+    BY_SUPPLIER: (supplierId: number) => `/api/purchases/supplier/${supplierId}`,
+    BY_STATUS: (status: string) => `/api/purchases/status/${status}`,
+    DELIVER: (id: number) => `/api/purchases/${id}/deliver`,
+    CONFIRM: (id: number) => `/api/purchases/${id}/confirm`,
+    CANCEL: (id: number) => `/api/purchases/${id}/cancel`,
+  },
+  INVENTORY: {
+    BASE: '/api/inventory',
+    BY_PRODUCT: (productId: number) => `/api/inventory/product/${productId}`,
+    REORDER: (productId: number) => `/api/inventory/product/${productId}/reorder`,
+    LOW_STOCK: '/api/inventory/low-stock',
+  },
+  SALES: {
+    BASE: '/api/sales',
+    BY_ID: (id: number) => `/api/sales/${id}`,
+    BY_SOLD_BY: (userId: number) => `/api/sales/sold-by/${userId}`,
+    PAY: (id: number) => `/api/sales/${id}/pay`,
+    DELIVER: (id: number) => `/api/sales/${id}/deliver`,
+  },
+  TRANSACTIONS: {
+    BASE: '/api/inventory-transactions',
+    BY_PRODUCT: (productId: number) => `/api/inventory-transactions/product/${productId}`,
+  },
+};
