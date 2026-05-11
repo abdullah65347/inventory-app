@@ -21,52 +21,66 @@ import { fadeIn } from '../../../../shared/animations/fade.animation';
   animations: [fadeIn]
 })
 export class SupplierDashboardComponent implements OnInit, AfterViewInit {
-  @ViewChild('pieChart')  pieRef!:  ElementRef<HTMLCanvasElement>;
+  @ViewChild('pieChart') pieRef!: ElementRef<HTMLCanvasElement>;
   @ViewChild('lineChart') lineRef!: ElementRef<HTMLCanvasElement>;
 
-  auth         = inject(AuthService);
-  supplierSvc  = inject(SupplierService);
-  productSvc   = inject(SupplierProductService);
-  orderSvc     = inject(SupplierOrderService);
+  auth = inject(AuthService);
+  supplierSvc = inject(SupplierService);
+  productSvc = inject(SupplierProductService);
+  orderSvc = inject(SupplierOrderService);
 
-  loading  = signal(true);
+  loading = signal(true);
   supplierId = signal(0);
   products = signal<SupplierProductResponse[]>([]);
-  orders   = signal<PurchaseResponse[]>([]);
-  stats    = signal({ products: 0, stock: 0, pending: 0, delivered: 0 });
+  orders = signal<PurchaseResponse[]>([]);
+  stats = signal({ products: 0, stock: 0, pending: 0, delivered: 0 });
 
   chartsReady = false;
-  dataLoaded  = false;
+  dataLoaded = false;
   statusBadge = statusBadge;
 
   ngOnInit(): void {
-    const user = this.auth.currentUser();
-    if (!user) return;
-    this.supplierSvc.getByUser(user.id).subscribe({
-      next: s => {
-        this.supplierId.set(s.id);
-        forkJoin({
-          products: this.productSvc.getBySupplier(s.id),
-          orders:   this.orderSvc.getBySupplier(s.id)
-        }).subscribe({
-          next: ({ products, orders }) => {
-            this.products.set(products);
-            this.orders.set(orders);
-            this.stats.set({
-              products:  products.length,
-              stock:     products.reduce((sum, p) => sum + p.availableStock, 0),
-              pending:   orders.filter(o => o.status === 'PENDING').length,
-              delivered: orders.filter(o => o.status === 'DELIVERED').length
-            });
-            this.loading.set(false);
-            this.dataLoaded = true;
-            if (this.chartsReady) this.renderCharts();
-          },
-          error: () => this.loading.set(false)
-        });
-      },
-      error: () => { this.loading.set(false); }
-    });
+    const loadDashboard = (userId: number) => {
+      this.supplierSvc.getByUser(userId).subscribe({
+        next: s => {
+          this.supplierId.set(s.id);
+          forkJoin({
+            products: this.productSvc.getBySupplier(s.id),
+            orders: this.orderSvc.getBySupplier(s.id)
+          }).subscribe({
+            next: ({ products, orders }) => {
+              this.products.set(products);
+              this.orders.set(orders);
+              this.stats.set({
+                products: products.length,
+                stock: products.reduce((sum, p) => sum + p.availableStock, 0),
+                pending: orders.filter(o => o.status === 'PENDING').length,
+                delivered: orders.filter(o => o.status === 'DELIVERED').length
+              });
+              this.loading.set(false);
+              this.dataLoaded = true;
+              if (this.chartsReady) this.renderCharts();
+            },
+            error: () => this.loading.set(false)
+          });
+        },
+        error: () => { this.loading.set(false); }
+      });
+    };
+
+    const userId = this.auth.userId();
+    if (userId != null) {
+      loadDashboard(userId);
+    } else {
+      // Token present but profile not loaded yet — fetch it then continue.
+      this.auth.fetchMe().subscribe({
+        next: u => {
+          if (u?.id != null) loadDashboard(u.id);
+          else this.loading.set(false);
+        },
+        error: () => this.loading.set(false)
+      });
+    }
   }
 
   ngAfterViewInit(): void {
@@ -99,7 +113,7 @@ export class SupplierDashboardComponent implements OnInit, AfterViewInit {
       type: 'doughnut',
       data: {
         labels: top5.map(p => p.name),
-        datasets: [{ data: top5.map(p => p.availableStock), backgroundColor: ['#7c3aed','#06b6d4','#10b981','#f59e0b','#ef4444'], borderWidth: 0, hoverOffset: 6 }]
+        datasets: [{ data: top5.map(p => p.availableStock), backgroundColor: ['#7c3aed', '#06b6d4', '#10b981', '#f59e0b', '#ef4444'], borderWidth: 0, hoverOffset: 6 }]
       },
       options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { font: { size: 11 }, color: '#64748b', padding: 12 } } } }
     });
@@ -113,8 +127,8 @@ export class SupplierDashboardComponent implements OnInit, AfterViewInit {
     new Chart(ctx, {
       type: 'line',
       data: {
-        labels: ['Wk 1','Wk 2','Wk 3','Wk 4','Wk 5','Wk 6'],
-        datasets: [{ label: 'Stock', data: [120,95,140,80,160,110], borderColor: '#7c3aed', backgroundColor: 'rgba(124,58,237,.1)', fill: true, tension: .4, pointRadius: 4, pointBackgroundColor: '#7c3aed' }]
+        labels: ['Wk 1', 'Wk 2', 'Wk 3', 'Wk 4', 'Wk 5', 'Wk 6'],
+        datasets: [{ label: 'Stock', data: [120, 95, 140, 80, 160, 110], borderColor: '#7c3aed', backgroundColor: 'rgba(124,58,237,.1)', fill: true, tension: .4, pointRadius: 4, pointBackgroundColor: '#7c3aed' }]
       },
       options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#f1f5f9' }, ticks: { color: '#94a3b8', font: { size: 11 } } }, x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 11 } } } } }
     });

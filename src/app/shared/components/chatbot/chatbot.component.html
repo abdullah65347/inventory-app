@@ -1,9 +1,9 @@
 <!-- FLOATING BUTTON -->
 <button class="chat-fab" (click)="toggle()" @bubblePop [class.open]="isOpen()">
     @if (isOpen()) {
-    <i class="bi bi-x-lg"></i>
+    <i class="bi bi-headset"></i>
     } @else {
-    <i class="bi bi-chat-dots-fill"></i>
+    <i class="bi bi-robot"></i>
     @if (hasNewMsg()) {
     <span class="fab-badge" @bubblePop></span>
     }

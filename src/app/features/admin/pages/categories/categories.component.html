@@ -1,51 +1,230 @@
 <div class="page-enter" @fadeIn>
+
   <div class="page-header">
-    <div class="page-header-left"><h4>Categories</h4><p>Organize products by category</p></div>
-    <div class="page-header-right">
-      <button class="btn btn-primary" (click)="openCreate()"><i class="bi bi-plus-lg"></i> Add Category</button>
+
+    <div class="page-header-left">
+      <h4>Categories</h4>
+      <p>Manage product inventory categories</p>
     </div>
+
+    <div class="page-header-right">
+
+      <button class="btn btn-primary" (click)="openCreate()">
+
+        <i class="bi bi-plus-lg"></i>
+        Add Category
+
+      </button>
+
+    </div>
+
   </div>
 
-  @if (loading()) { <app-loader /> }
-  @else {
-    <div class="cat-grid">
-      @if (categories().length === 0) {
-        <div class="empty-state" style="grid-column:1/-1"><i class="bi bi-tags"></i><p>No categories yet</p></div>
-      }
-      @for (c of categories(); track c.id) {
-        <div class="cat-card">
-          <div class="cat-icon"><i class="bi bi-tag-fill"></i></div>
-          <div class="cat-info">
-            <div class="cat-name">{{ c.name }}</div>
-            <div class="cat-id">ID #{{ c.id }}</div>
-          </div>
-          <div class="cat-actions">
-            <button class="btn btn-icon btn-ghost" (click)="openEdit(c)"><i class="bi bi-pencil"></i></button>
-            <button class="btn btn-icon btn-ghost" (click)="delete(c)" style="color:var(--danger)"><i class="bi bi-trash"></i></button>
-          </div>
-        </div>
-      }
-    </div>
+  @if (loading()) {
+
+  <app-loader />
+
+  } @else {
+
+  <div class="table-wrap category-table">
+
+    <table>
+
+      <thead>
+
+        <tr>
+          <th>#</th>
+          <th>Category Name</th>
+          <th>Products</th>
+          <th>Actions</th>
+        </tr>
+
+      </thead>
+
+      <tbody>
+
+        @if (categories().length === 0) {
+
+        <tr>
+
+          <td colspan="5">
+
+            <div class="empty-state">
+
+              <i class="bi bi-tags"></i>
+
+              <p>No categories created yet</p>
+
+            </div>
+
+          </td>
+
+        </tr>
+
+        }
+
+        @for (c of categories(); track c.id) {
+
+        <tr>
+
+          <td>
+            <span class="row-id">
+              #{{ c.id }}
+            </span>
+          </td>
+
+          <td>
+
+            <div class="category-cell">
+
+              <div class="category-icon">
+                <i class="bi bi-tag-fill"></i>
+              </div>
+
+              <div>
+
+                <div class="category-name">
+                  {{ c.name }}
+                </div>
+
+                <div class="category-sub">
+                  Inventory Category
+                </div>
+
+              </div>
+
+            </div>
+
+          </td>
+
+          <td>
+
+            <span class="product-count">
+              0 Products
+            </span>
+
+          </td>
+
+          <td>
+
+            <div class="table-actions">
+
+              <button class="btn btn-icon btn-ghost" title="Edit" (click)="openEdit(c)">
+
+                <i class="bi bi-pencil"></i>
+
+              </button>
+
+              <button class="btn btn-icon btn-ghost delete-btn" title="Delete" (click)="delete(c)">
+
+                <i class="bi bi-trash3"></i>
+
+              </button>
+
+            </div>
+
+          </td>
+
+        </tr>
+
+        }
+
+      </tbody>
+
+    </table>
+
+  </div>
+
   }
+
 </div>
 
+<!-- MODAL -->
+
 @if (showModal()) {
-  <div class="modal-overlay" (click)="closeModal()">
-    <div class="modal-box modal-sm" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h5 class="modal-title">{{ editTarget() ? 'Edit Category' : 'Add Category' }}</h5>
-        <button class="modal-close" (click)="closeModal()">×</button>
+
+<div class="modal-overlay" (click)="closeModal()">
+
+  <div class="modal-box modal-sm" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+
+      <div>
+
+        <h5 class="modal-title">
+
+          {{
+          editTarget()
+          ? 'Edit Category'
+          : 'Create Category'
+          }}
+
+        </h5>
+
+        <p class="modal-subtitle">
+
+          {{
+          editTarget()
+          ? 'Update category information'
+          : 'Add a new inventory category'
+          }}
+
+        </p>
+
       </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label class="form-label">Category Name</label>
-          <input class="form-control" [(ngModel)]="formName" placeholder="e.g. Electronics" (keyup.enter)="save()">
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-outline-secondary" (click)="closeModal()">Cancel</button>
-        <button class="btn btn-primary" (click)="save()">{{ editTarget() ? 'Save Changes' : 'Add' }}</button>
-      </div>
+
+      <button class="modal-close" (click)="closeModal()">
+
+        <i class="bi bi-x-lg"></i>
+
+      </button>
+
     </div>
+
+    <div class="modal-body">
+
+      <div class="form-group">
+
+        <label class="form-label">
+          Category Name
+        </label>
+
+        <div class="category-input-wrap">
+
+          <i class="bi bi-tag field-icon"></i>
+
+          <input class="form-control" [(ngModel)]="formName" placeholder="e.g. Electronics" (keyup.enter)="save()">
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+
+      <button class="btn btn-outline-secondary" (click)="closeModal()">
+
+        Cancel
+
+      </button>
+
+      <button class="btn btn-primary" (click)="save()">
+
+        <i class="bi bi-check2-circle"></i>
+
+        {{
+        editTarget()
+        ? 'Save Changes'
+        : 'Create Category'
+        }}
+
+      </button>
+
+    </div>
+
   </div>
+
+</div>
+
 }

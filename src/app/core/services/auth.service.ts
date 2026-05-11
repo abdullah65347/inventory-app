@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, tap } from 'rxjs';
+import { Observable, switchMap, tap } from 'rxjs';
 import { ApiService } from './api.service';
 import { TokenService } from './token.service';
 import { API_ENDPOINTS } from '../../shared/constants/api-endpoints.constant';
@@ -19,13 +19,22 @@ export class AuthService {
   ) {
     const saved = this.tokenSvc.getUser<User>();
     if (saved && this.tokenSvc.isValid()) {
+      // ensure id is present (older saved payloads may have lacked it)
+      if (saved.id == null) {
+        const fromToken = this.tokenSvc.getUserId();
+        if (fromToken != null) saved.id = fromToken;
+      }
       this.currentUser.set(saved);
     }
   }
 
-  login(credentials: LoginRequest): Observable<JwtResponse> {
-    return this.api.post<JwtResponse>(API_ENDPOINTS.AUTH.LOGIN, credentials).pipe(
-      tap(res => this.tokenSvc.setToken(res.token))
+  login(credentials: LoginRequest): Observable<User> {
+    return this.api.post<JwtResponse>(
+      API_ENDPOINTS.AUTH.LOGIN,
+      credentials
+    ).pipe(
+      tap(res => this.tokenSvc.setToken(res.token)),
+      switchMap(() => this.fetchMe())
     );
   }
 
@@ -40,10 +49,18 @@ export class AuthService {
   fetchMe(): Observable<User> {
     return this.api.get<User>(API_ENDPOINTS.AUTH.ME).pipe(
       tap(user => {
+        if (user.id == null) {
+          const fromToken = this.tokenSvc.getUserId();
+          if (fromToken != null) user.id = fromToken;
+        }
         this.tokenSvc.saveUser(user);
         this.currentUser.set(user);
       })
     );
+  }
+
+  userId(): number | null {
+    return this.currentUser()?.id ?? this.tokenSvc.getUserId();
   }
 
   logout(): void {

@@ -16,14 +16,14 @@ import { fadeIn } from '../../../../shared/animations/fade.animation';
   animations: [fadeIn]
 })
 export class CategoriesComponent implements OnInit {
-  private svc   = inject(CategoryService);
+  private svc = inject(CategoryService);
   private toast = inject(ToastService);
 
   categories = signal<CategoryResponse[]>([]);
-  loading    = signal(true);
-  showModal  = signal(false);
+  loading = signal(true);
+  showModal = signal(false);
   editTarget = signal<CategoryResponse | null>(null);
-  formName   = '';
+  formName = '';
 
   ngOnInit(): void { this.load(); }
 

@@ -26,26 +26,23 @@ export class TokenService {
     localStorage.removeItem(this.USER_KEY);
   }
 
-  isValid(): boolean {
-    const token = this.getToken();
-    if (!token) return false;
-    try {
-      const decoded = jwtDecode<JwtPayload>(token);
-      return decoded.exp * 1000 > Date.now();
-    } catch {
-      return false;
-    }
-  }
-
-  getRole(): string | null {
+  private decode(): JwtPayload | null {
     const token = this.getToken();
     if (!token) return null;
-    try {
-      const decoded = jwtDecode<JwtPayload>(token);
-      return decoded.role ?? null;
-    } catch {
-      return null;
-    }
+    try { return jwtDecode<JwtPayload>(token); } catch { return null; }
+  }
+
+  isValid(): boolean {
+    const d = this.decode();
+    return !!d && d.exp * 1000 > Date.now();
+  }
+
+  getRole(): string | null { return this.decode()?.role ?? null; }
+
+  /** User id from the JWT — reliable even if /auth/me payload is missing it. */
+  getUserId(): number | null {
+    const d = this.decode();
+    return d?.id ?? null;
   }
 
   saveUser(user: unknown): void {
