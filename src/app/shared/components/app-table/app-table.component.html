@@ -1,0 +1,20 @@
+<div class="table-wrap">
+    <table>
+        <thead>
+            <ng-container *ngTemplateOutlet="headerTemplate"></ng-container>
+        </thead>
+        <tbody>
+            @if (!hasData) {
+            <tr>
+                <td colspan="100">
+                    <ng-container *ngTemplateOutlet="emptyTemplate">
+                    </ng-container>
+                </td>
+            </tr>
+            }
+            @else {
+            <ng-container *ngTemplateOutlet="bodyTemplate"></ng-container>
+            }
+        </tbody>
+    </table>
+</div>

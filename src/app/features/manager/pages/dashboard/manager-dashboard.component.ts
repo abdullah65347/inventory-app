@@ -9,6 +9,8 @@ import { SaleResponse } from '../../../common/models/sale.model';
 import { StaffResponse } from '../../../common/models/staff.model';
 import { PurchaseResponse } from '../../../common/models/purchase.model';
 import { fadeIn } from '../../../../shared/animations/fade.animation';
+import { initials } from 'src/app/core/utils/role.util';
+import { getAvatarGradient } from 'src/app/core/utils/avatar.util';
 
 @Component({
     selector: 'app-manager-dashboard',
@@ -29,6 +31,8 @@ export class ManagerDashboardComponent implements OnInit {
     recentSales = signal<SaleResponse[]>([]);
     totalSalesToday = signal(0);
     totalRevenueToday = signal(0);
+    initials = initials;
+    getAvatarGradient = getAvatarGradient;
 
     ngOnInit(): void {
         const user = this.auth.currentUser();

@@ -2,19 +2,22 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../services/user.service';
-import { ToastService } from '../../../../shared/components/navbar/toast.service';
+import { ToastService } from '../../../../shared/components/toast/toast.service';
 import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
 import { AuthService } from '../../../../core/services/auth.service';
 import { User } from '../../../../core/models/user.model';
 import { initials, roleBadgeClass, roleLabel, statusBadge } from '../../../../core/utils/role.util';
 import { fadeIn } from '../../../../shared/animations/fade.animation';
-import { paginate, PageResult } from '../../../../shared/utils/paginate.util';
+import { paginate, PageResult } from '../../../../core/utils/paginate.util';
 import { PaginatorComponent } from '../../../../shared/components/paginator/paginator.component';
+import { ViewDetailModalComponent, ViewField } from 'src/app/shared/components/view-detail-modal/view-detail-modal.component';
+import { AppTableComponent } from 'src/app/shared/components/app-table/app-table.component';
+import { getAvatarGradient } from 'src/app/core/utils/avatar.util';
 
 @Component({
   selector: 'app-admin-users',
   standalone: true,
-  imports: [CommonModule, FormsModule, LoaderComponent, PaginatorComponent],
+  imports: [CommonModule, FormsModule, LoaderComponent, ViewDetailModalComponent, AppTableComponent, PaginatorComponent],
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.css'],
   animations: [fadeIn]
@@ -41,7 +44,56 @@ export class UsersComponent implements OnInit {
   registerForm = { name: '', email: '', phone: '', address: '', password: '', role: 'ROLE_MANAGER' };
   availableRoles = ['ROLE_MANAGER', 'ROLE_STAFF', 'ROLE_SUPPLIER'];
 
-  initials = initials; roleBadgeClass = roleBadgeClass; roleLabel = roleLabel; statusBadge = statusBadge;
+  initials = initials;
+  getAvatarGradient = getAvatarGradient;
+  roleBadgeClass = roleBadgeClass;
+  roleLabel = roleLabel;
+  statusBadge = statusBadge;
+  showViewModal = signal(false);
+
+  selectedUser: User | null = null;
+  viewFields: ViewField[] = [
+    {
+      key: 'name',
+      label: 'Full Name',
+      width: 'half'
+    },
+    {
+      key: 'email',
+      label: 'Email',
+      width: 'half'
+    },
+    {
+      key: 'phone',
+      label: 'Phone',
+      width: 'half'
+    },
+    {
+      key: 'role',
+      label: 'Role',
+      width: 'half'
+    },
+    {
+      key: 'address',
+      label: 'Address',
+      width: 'full'
+    },
+    {
+      key: 'active',
+      label: 'Status',
+      width: 'half'
+    },
+    {
+      key: 'createdAt',
+      label: 'Created At',
+      width: 'half'
+    },
+    {
+      key: 'updatedAt',
+      label: 'Updated At',
+      width: 'half'
+    }
+  ];
 
   ngOnInit(): void { this.load(); }
 
@@ -68,6 +120,15 @@ export class UsersComponent implements OnInit {
       u.name.toLowerCase().includes(s) || u.email.toLowerCase().includes(s)
     ));
     this.page.set(1); // reset on filter change
+  }
+  viewUser(user: User): void {
+    this.selectedUser = user;
+    this.showViewModal.set(true);
+  }
+
+  closeViewDetailModal(): void {
+    this.showViewModal.set(false);
+    this.selectedUser = null;
   }
 
   openEdit(u: User): void {

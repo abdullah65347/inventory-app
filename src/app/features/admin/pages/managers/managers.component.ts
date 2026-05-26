@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ManagerService } from '../../services/manager.service';
 import { StaffService } from '../../services/staff.service';
 import { UserService } from '../../services/user.service';
-import { ToastService } from '../../../../shared/components/navbar/toast.service';
+import { ToastService } from '../../../../shared/components/toast/toast.service';
 import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
 import { ManagerResponse } from '../../../common/models/manager.model';
 import { StaffResponse } from '../../../common/models/staff.model';

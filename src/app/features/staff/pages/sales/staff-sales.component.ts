@@ -6,7 +6,7 @@ import { SaleService } from '../../../user/services/sale.service';
 import { CustomerService } from '../../../admin/services/customer.service';
 import { ProductService } from '../../../admin/services/product.service';
 import { CategoryService } from '../../../admin/services/category.service';
-import { ToastService } from '../../../../shared/components/navbar/toast.service';
+import { ToastService } from '../../../../shared/components/toast/toast.service';
 import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
 import { AdminProductResponse } from '../../../common/models/product.model';
 import { CategoryResponse } from '../../../common/models/category.model';

@@ -2,7 +2,7 @@ import { ROLES, Role } from '../../shared/constants/roles.constant';
 
 export function roleLabel(role: Role | string): string {
   const m: Record<string, string> = {
-    [ROLES.ADMIN]: 'Administrator',
+    [ROLES.ADMIN]: 'Admin',
     [ROLES.SUPPLIER]: 'Supplier',
     [ROLES.MANAGER]: 'Manager',
     [ROLES.STAFF]: 'Staff',
@@ -21,7 +21,7 @@ export function roleBadgeClass(role: Role | string): string {
 }
 
 export function initials(name: string): string {
-  return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  return name?.trim()?.charAt(0)?.toUpperCase() || '';
 }
 
 export function statusBadge(status: string): string {

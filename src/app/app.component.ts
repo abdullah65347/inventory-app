@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { ToastContainerComponent } from './shared/components/navbar/toast-container.component';
+import { ToastContainerComponent } from './shared/components/toast/toast-container.component';
 
 @Component({
   selector: 'app-root',
@@ -11,4 +11,4 @@ import { ToastContainerComponent } from './shared/components/navbar/toast-contai
     <app-toast-container />
   `
 })
-export class AppComponent {}
+export class AppComponent { }

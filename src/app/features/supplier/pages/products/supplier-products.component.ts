@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SupplierService } from '../../../admin/services/supplier.service';
 import { SupplierProductService } from '../../services/supplier-product.service';
-import { ToastService } from '../../../../shared/components/navbar/toast.service';
+import { ToastService } from '../../../../shared/components/toast/toast.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
 import { SupplierProductResponse, ProductRequest } from '../../../common/models/product.model';
@@ -18,22 +18,22 @@ import { fadeIn } from '../../../../shared/animations/fade.animation';
   animations: [fadeIn]
 })
 export class SupplierProductsComponent implements OnInit {
-  auth         = inject(AuthService);
-  supplierSvc  = inject(SupplierService);
-  productSvc   = inject(SupplierProductService);
-  toast        = inject(ToastService);
+  auth = inject(AuthService);
+  supplierSvc = inject(SupplierService);
+  productSvc = inject(SupplierProductService);
+  toast = inject(ToastService);
 
-  products   = signal<SupplierProductResponse[]>([]);
-  loading    = signal(true);
+  products = signal<SupplierProductResponse[]>([]);
+  loading = signal(true);
   supplierId = signal(0);
 
-  showCreate   = signal(false);
-  stockTarget  = signal<SupplierProductResponse | null>(null);
-  priceTarget  = signal<SupplierProductResponse | null>(null);
-  addQty       = 1;
-  newPrice     = 0;
+  showCreate = signal(false);
+  stockTarget = signal<SupplierProductResponse | null>(null);
+  priceTarget = signal<SupplierProductResponse | null>(null);
+  addQty = 1;
+  newPrice = 0;
 
-  createForm: ProductRequest = { name:'', description:'', supplierToAdminPrice:0, quantity:0, supplierId:0, sku:'' };
+  createForm: ProductRequest = { name: '', description: '', supplierToAdminPrice: 0, quantity: 0, supplierId: 0, sku: '' };
 
   ngOnInit(): void {
     const user = this.auth.currentUser();
@@ -53,7 +53,7 @@ export class SupplierProductsComponent implements OnInit {
   }
 
   openCreate(): void {
-    this.createForm = { name:'', description:'', supplierToAdminPrice:0, quantity:0, supplierId: this.supplierId(), sku:'' };
+    this.createForm = { name: '', description: '', supplierToAdminPrice: 0, quantity: 0, supplierId: this.supplierId(), sku: '' };
     this.showCreate.set(true);
   }
   closeCreate(): void { this.showCreate.set(false); }

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
-import { ToastService } from '../../../../shared/components/navbar/toast.service';
+import { ToastService } from '../../../../shared/components/toast/toast.service';
 import { fadeIn } from '../../../../shared/animations/fade.animation';
 import { scaleIn } from '../../../../shared/animations/scale.animation';
 

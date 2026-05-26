@@ -2,7 +2,7 @@ import { Component, inject, signal, ViewChild, ElementRef, AfterViewChecked, OnI
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ChatbotService, ChatMessage } from '../../services/chatbot.service';
-import { chatbotSlide, bubblePop, messageSlide, typingDots } from '../../animations/chatbot.animation';
+import { chatbotSlide, bubblePop, messageSlide, typingDots, fadeSwap } from '../../animations/chatbot.animation';
 
 @Component({
     selector: 'app-chatbot',
@@ -10,7 +10,7 @@ import { chatbotSlide, bubblePop, messageSlide, typingDots } from '../../animati
     imports: [CommonModule, FormsModule],
     templateUrl: './chatbot.component.html',
     styleUrls: ['./chatbot.component.css'],
-    animations: [chatbotSlide, bubblePop, messageSlide, typingDots]
+    animations: [chatbotSlide, bubblePop, messageSlide, typingDots, fadeSwap]
 })
 export class ChatbotComponent implements OnInit, AfterViewChecked {
     @ViewChild('messagesEnd') private messagesEnd!: ElementRef;
@@ -25,6 +25,7 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
     suggestions = signal<string[]>([]);
     hasNewMsg = signal(false);
     private shouldScroll = false;
+
 
     ngOnInit(): void {
         this.suggestions.set(this.svc.getSuggestedQuestions());

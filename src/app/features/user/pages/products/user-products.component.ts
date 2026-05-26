@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { UserProductService } from '../../services/user-product.service';
 import { SaleService } from '../../services/sale.service';
 import { AuthService } from '../../../../core/services/auth.service';
-import { ToastService } from '../../../../shared/components/navbar/toast.service';
+import { ToastService } from '../../../../shared/components/toast/toast.service';
 import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
 import { AdminProductResponse } from '../../../common/models/product.model';
 import { SaleRequest } from '../../../common/models/sale.model';
@@ -21,18 +21,18 @@ export interface CartItem { product: AdminProductResponse; quantity: number; }
   animations: [fadeIn]
 })
 export class UserProductsComponent implements OnInit {
-  auth       = inject(AuthService);
+  auth = inject(AuthService);
   productSvc = inject(UserProductService);
-  saleSvc    = inject(SaleService);
-  toast      = inject(ToastService);
+  saleSvc = inject(SaleService);
+  toast = inject(ToastService);
 
   products = signal<AdminProductResponse[]>([]);
   filtered = signal<AdminProductResponse[]>([]);
-  cart     = signal<CartItem[]>([]);
-  loading  = signal(true);
+  cart = signal<CartItem[]>([]);
+  loading = signal(true);
   showCart = signal(false);
-  placing  = signal(false);
-  search   = '';
+  placing = signal(false);
+  search = '';
 
   ngOnInit(): void {
     this.productSvc.getAll().subscribe({

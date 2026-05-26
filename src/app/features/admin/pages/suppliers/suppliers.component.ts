@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { SupplierService } from '../../services/supplier.service';
 import { CategoryService } from '../../services/category.service';
 import { UserService } from '../../services/user.service';
-import { ToastService } from '../../../../shared/components/navbar/toast.service';
+import { ToastService } from '../../../../shared/components/toast/toast.service';
 import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
 import { SupplierResponse, SupplierRequest } from '../../../common/models/supplier.model';
 import { CategoryResponse } from '../../../common/models/category.model';

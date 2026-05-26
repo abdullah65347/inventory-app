@@ -7,7 +7,7 @@
     <div class="page-header-right">
       <input class="form-control form-control-sm" style="width:220px" placeholder="Search users..." [(ngModel)]="search"
         (input)="applyFilter()">
-      <button class="btn btn-primary btn-sm" (click)="openRegister()">
+      <button class="btn btn-primary btn-md" (click)="openRegister()">
         <i class="bi bi-person-plus-fill"></i> Create User
       </button>
     </div>
@@ -16,8 +16,14 @@
   @if (loading()) { <app-loader /> }
   @else {
   <div class="table-wrap">
-    <table>
-      <thead>
+    <app-table [hasData]="filtered().length > 0">
+      <ng-template #empty>
+        <div class="empty-state">
+          <i class="bi bi-people"></i>
+          <p>No users found</p>
+        </div>
+      </ng-template>
+      <ng-template #header>
         <tr>
           <th>#</th>
           <th>Name</th>
@@ -28,53 +34,56 @@
           <th>Joined</th>
           <th>Actions</th>
         </tr>
-      </thead>
-      <tbody>
-        @if (filtered().length === 0) {
-        <tr>
-          <td colspan="8">
-            <div class="empty-state"><i class="bi bi-people"></i>
-              <p>No users found</p>
-            </div>
-          </td>
-        </tr>
-        }
+      </ng-template>
+      <!-- BODY -->
+      <ng-template #body>
         @for (u of paged.items; track u.id) {
         <tr>
-          <td><span class="row-id">#{{ u.id }}</span></td>
+          <td>
+            #{{ u.id }}
+          </td>
           <td>
             <div class="user-cell">
-              <div class="avatar avatar-sm">{{ initials(u.name) }}</div>
-              <span>{{ u.name }}</span>
+              <div class="avatar avatar-sm" [style.background]="getAvatarGradient(u.name)">
+                {{ initials(u.name) }}
+              </div>
+              <div class="user-name-row">
+                <span>{{ u.name }}</span>
+                <button class="btn btn-icon btn-ghost" (click)="viewUser(u)">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </div>
             </div>
           </td>
           <td>{{ u.email }}</td>
-          <td>{{ u.phone || '—' }}</td>
+          <td>{{ u.phone }}</td>
           <td><span class="badge {{ roleBadgeClass(u.role) }}">{{ roleLabel(u.role) }}</span></td>
           <td>
-            <span class="badge {{ u.active ? 'badge-success' : 'badge-danger' }}">
+            <span class="badge" [class.badge-success]="u.active" [class.badge-danger]="!u.active">
               {{ u.active ? 'Active' : 'Inactive' }}
             </span>
           </td>
-          <td>{{ u.createdAt | date:'MMM d, y' }}</td>
+          <td>
+            {{ u.createdAt | date:'dd MMM yyyy hh:mm a' }}
+          </td>
           <td>
             <div class="action-btns">
               <button class="btn btn-icon btn-ghost" (click)="toggleActive(u)"
                 [title]="u.active ? 'Deactivate' : 'Activate'">
-                <i class="bi {{ u.active ? 'bi-toggle-on text-success' : 'bi-toggle-off text-danger' }}"></i>
+                <i class="bi {{ u.active ? 'bi-toggle-on text-success' : 'bi-toggle-off text-danger' }} fs-4"></i>
               </button>
               <button class="btn btn-icon btn-ghost" (click)="openEdit(u)" title="Edit">
-                <i class="bi bi-pencil"></i>
+                <i class="bi bi-pencil fs-6"></i>
               </button>
               <button class="btn btn-icon btn-ghost text-danger" (click)="deleteUser(u)" title="Delete">
-                <i class="bi bi-trash"></i>
+                <i class="bi bi-trash fs-5"></i>
               </button>
             </div>
           </td>
         </tr>
         }
-      </tbody>
-    </table>
+      </ng-template>
+    </app-table>
     <app-paginator [totalItems]="paged.totalItems" [totalPages]="paged.totalPages" [currentPage]="paged.currentPage"
       [pageSize]="paged.pageSize" (pageChange)="page.set($event)" (pageSizeChange)="onPageSize($event)">
     </app-paginator>
@@ -165,3 +174,7 @@
   </div>
 </div>
 }
+
+<app-view-detail-modal [visible]="showViewModal()" [title]="'User Details'" [data]="selectedUser" [fields]="viewFields"
+  (close)="closeViewDetailModal()">
+</app-view-detail-modal>

@@ -8,7 +8,7 @@ import { LoaderComponent } from '../../../../shared/components/loader/loader.com
 import { PurchaseResponse } from '../../../common/models/purchase.model';
 import { statusBadge } from '../../../../core/utils/role.util';
 import { fadeIn } from '../../../../shared/animations/fade.animation';
-import { ToastService } from 'src/app/shared/components/navbar/toast.service';
+import { ToastService } from 'src/app/shared/components/toast/toast.service';
 
 @Component({
   selector: 'app-supplier-orders',

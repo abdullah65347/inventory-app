@@ -1,9 +1,9 @@
 <!-- FLOATING BUTTON -->
-<button class="chat-fab" (click)="toggle()" @bubblePop [class.open]="isOpen()">
+<button class="chat-fab" (click)="toggle()" [class.open]="isOpen()">
     @if (isOpen()) {
-    <i class="bi bi-headset"></i>
+    <img @fadeSwap src="assets/chatbot-open2.png" alt="Chatbot">
     } @else {
-    <i class="bi bi-robot"></i>
+    <img @fadeSwap src="assets/chatbot-close2.png" alt="Chatbot">
     @if (hasNewMsg()) {
     <span class="fab-badge" @bubblePop></span>
     }
@@ -18,7 +18,8 @@
     <div class="chat-header">
         <div class="chat-header-left">
             <div class="chat-avatar">
-                <i class="bi bi-robot"></i>
+                <img src="assets/chatbot-robo-face.png" alt="Chatbot">
+
                 <span class="online-dot"></span>
             </div>
             <div>
@@ -44,7 +45,7 @@
 
             @if (msg.from === 'bot') {
             <div class="msg-bot-avatar">
-                <i class="bi bi-robot"></i>
+                <img src="assets/chatbot-robo-face.png" alt="Chatbot">
             </div>
             }
 

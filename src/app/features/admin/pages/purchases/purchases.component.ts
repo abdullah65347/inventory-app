@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { PurchaseService } from '../../services/purchase.service';
 import { SupplierService } from '../../services/supplier.service';
 import { ProductService } from '../../services/product.service';
-import { ToastService } from '../../../../shared/components/navbar/toast.service';
+import { ToastService } from '../../../../shared/components/toast/toast.service';
 import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
 import { PurchaseResponse, PurchaseRequest } from '../../../common/models/purchase.model';
 import { SupplierResponse } from '../../../common/models/supplier.model';

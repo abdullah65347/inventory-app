@@ -1,42 +1,19 @@
-import {
-  Component,
-  OnInit,
-  AfterViewInit,
-  ViewChild,
-  ElementRef,
-  inject,
-  signal
-} from '@angular/core';
-
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-
-import {
-  Chart,
-  registerables
-} from 'chart.js';
-
+import { Chart, registerables } from 'chart.js';
 import { UserService } from '../../services/user.service';
 import { SupplierService } from '../../services/supplier.service';
 import { ProductService } from '../../services/product.service';
 import { InventoryService } from '../../services/inventory.service';
 import { TransactionService } from '../../services/transaction.service';
 import { SaleService } from '../../../user/services/sale.service';
-
 import { AuthService } from '../../../../core/services/auth.service';
-
 import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
-
-import {
-  fadeIn,
-  fadeInList
-} from '../../../../shared/animations/fade.animation';
-
+import { fadeIn, fadeInList } from '../../../../shared/animations/fade.animation';
 import { paymentModeBadge } from '../../../../core/utils/role.util';
-
 import { SaleResponse } from '../../../common/models/sale.model';
 import { InventoryResponse } from '../../../common/models/inventory.model';
 import { TransactionResponse } from '../../../common/models/transaction.model';

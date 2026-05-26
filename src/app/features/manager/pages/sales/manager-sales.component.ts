@@ -5,7 +5,7 @@ import { LoaderComponent } from '../../../../shared/components/loader/loader.com
 import { SaleResponse } from '../../../common/models/sale.model';
 import { paymentModeBadge } from '../../../../core/utils/role.util';
 import { fadeIn } from '../../../../shared/animations/fade.animation';
-import { paginate, PageResult } from '../../../../shared/utils/paginate.util';
+import { paginate, PageResult } from '../../../../core/utils/paginate.util';
 import { PaginatorComponent } from '../../../../shared/components/paginator/paginator.component';
 
 @Component({

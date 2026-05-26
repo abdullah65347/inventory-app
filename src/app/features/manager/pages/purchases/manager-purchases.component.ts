@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PurchaseService } from '../../../admin/services/purchase.service';
-import { ToastService } from '../../../../shared/components/navbar/toast.service';
+import { ToastService } from '../../../../shared/components/toast/toast.service';
 import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
 import { PurchaseResponse } from '../../../common/models/purchase.model';
 import { statusBadge } from '../../../../core/utils/role.util';

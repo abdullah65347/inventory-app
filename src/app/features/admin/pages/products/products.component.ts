@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../services/product.service';
-import { ToastService } from '../../../../shared/components/navbar/toast.service';
+import { ToastService } from '../../../../shared/components/toast/toast.service';
 import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
 import { AdminProductResponse } from '../../../common/models/product.model';
 import { fadeIn } from '../../../../shared/animations/fade.animation';
@@ -16,15 +16,15 @@ import { fadeIn } from '../../../../shared/animations/fade.animation';
   animations: [fadeIn]
 })
 export class AdminProductsComponent implements OnInit {
-  private svc   = inject(ProductService);
+  private svc = inject(ProductService);
   private toast = inject(ToastService);
 
-  products  = signal<AdminProductResponse[]>([]);
-  filtered  = signal<AdminProductResponse[]>([]);
-  loading   = signal(true);
-  search    = '';
+  products = signal<AdminProductResponse[]>([]);
+  filtered = signal<AdminProductResponse[]>([]);
+  loading = signal(true);
+  search = '';
   priceTarget = signal<AdminProductResponse | null>(null);
-  newPrice  = 0;
+  newPrice = 0;
 
   ngOnInit(): void { this.load(); }
 

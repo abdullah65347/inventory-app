@@ -1,308 +1,252 @@
+/* ───────────────── PROFILE PAGE ───────────────── */
+
 .profile-page {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 24px;
 }
+
+/* PROFILE HERO */
 
 .profile-summary {
     position: relative;
     overflow: hidden;
-    padding: 28px;
-    border-radius: 24px;
+    border-radius: var(--radius-xl);
     background:
-        linear-gradient(135deg,
-            #0f172a 0%,
-            #1e293b 45%,
-            #334155 100%);
-    box-shadow:
-        0 10px 30px rgba(79, 70, 229, .22);
-    color: white;
+        radial-gradient(circle at top right, rgba(79, 179, 191, .22), transparent 30%),
+        linear-gradient(135deg, #12343b, #19535f 55%, #2d7d8a);
+    padding: 28px;
+    box-shadow: var(--shadow-md);
 }
 
 .profile-summary::before {
     content: '';
     position: absolute;
-    width: 240px;
-    height: 240px;
-    right: -100px;
-    top: -100px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, .12);
+    inset: 0;
+    background:
+        linear-gradient(rgba(255, 255, 255, .03), rgba(255, 255, 255, 0));
+    pointer-events: none;
 }
 
 .profile-summary-content {
     position: relative;
     z-index: 2;
+
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    gap: 20px;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
 }
 
 .profile-left {
     display: flex;
     align-items: center;
     gap: 18px;
+    flex-wrap: wrap;
 }
+
+/* AVATAR */
 
 .profile-avatar {
     width: 78px;
     height: 78px;
     border-radius: 22px;
     background: rgba(255, 255, 255, .14);
-    border: 1px solid rgba(255, 255, 255, .18);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, .12);
+
     display: flex;
     align-items: center;
     justify-content: center;
+
+    color: #fff;
     font-size: 28px;
     font-weight: 800;
-    backdrop-filter: blur(10px);
+    flex-shrink: 0;
 }
 
+/* DETAILS */
+
 .profile-details h2 {
-    margin: 0;
-    font-size: 30px;
+    margin: 0 0 4px;
+    color: #fff;
+    font-size: 28px;
     font-weight: 800;
-    letter-spacing: -.5px;
+    line-height: 1.1;
 }
 
 .profile-email {
-    margin-top: 4px;
-    color: rgba(255, 255, 255, .78);
+    color: rgba(255, 255, 255, .72);
     font-size: 14px;
+    margin-bottom: 14px;
 }
 
 .profile-meta {
     display: flex;
-    align-items: center;
-    gap: 18px;
-    margin-top: 14px;
     flex-wrap: wrap;
-}
-
-.meta-pill {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 14px;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, .12);
-    border: 1px solid rgba(255, 255, 255, .06);
-    font-size: 13px;
-    font-weight: 600;
-}
-
-.btn-light {
-    background: white;
-    color: #0f172a;
-    border: none;
-    font-weight: 700;
-}
-
-.btn-light:hover {
-    background: #f8fafc;
-    transform: translateY(-1px);
-}
-
-.profile-actions {
-    display: flex;
     gap: 10px;
 }
 
-/* =========================
-   CONTENT GRID
-========================= */
+.meta-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    background: rgba(255, 255, 255, .1);
+    border: 1px solid rgba(255, 255, 255, .08);
+    backdrop-filter: blur(10px);
+
+    color: #fff;
+    font-size: 12px;
+    font-weight: 500;
+
+    padding: 8px 14px;
+    border-radius: 999px;
+}
+
+.meta-pill i {
+    font-size: 13px;
+    opacity: .8;
+}
+
+/* ACTIONS */
+
+.profile-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* CONTENT */
 
 .profile-content {
     display: grid;
-    grid-template-columns: 1fr 380px;
+    grid-template-columns: 1fr 1fr;
     gap: 20px;
 }
 
-/* =========================
-   CARDS
-========================= */
-
 .settings-card {
-    background: white;
-    border-radius: 22px;
-    border: 1px solid #e2e8f0;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
     overflow: hidden;
-    box-shadow:
-        0 2px 10px rgba(15, 23, 42, .04);
+    box-shadow: var(--shadow-sm);
 }
 
 .settings-header {
-    padding: 22px 24px;
-    border-bottom: 1px solid #f1f5f9;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--border-light);
 }
 
 .settings-title {
-    font-size: 18px;
-    font-weight: 750;
-    color: #0f172a;
     margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
 }
 
 .settings-subtitle {
     margin-top: 4px;
-    color: #64748b;
     font-size: 13px;
+    color: var(--text-muted);
 }
 
 .settings-body {
-    padding: 24px;
+    padding: 22px;
 }
 
-/* =========================
-   INFO GRID
-========================= */
+/* INFO GRID */
 
 .info-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr 1fr;
     gap: 18px;
 }
 
-.info-item label {
-    display: block;
-    margin-bottom: 8px;
-    color: #64748b;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .7px;
-}
-
-.info-box {
-    min-height: 56px;
-    padding: 16px;
-    border-radius: 16px;
-    background: #f8fafc;
-    border: 1px solid #edf2f7;
+.info-item {
     display: flex;
-    align-items: center;
-    font-size: 15px;
-    font-weight: 500;
-    color: #0f172a;
+    flex-direction: column;
+    gap: 6px;
 }
 
-.full-span {
+.info-item.full-span {
     grid-column: 1 / -1;
 }
 
-/* =========================
-   PASSWORD FORM
-========================= */
+.info-item label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.info-box {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    font-size: 14px;
+    color: var(--text-primary);
+    min-height: 46px;
+
+    display: flex;
+    align-items: center;
+}
+
+/* PASSWORD */
 
 .password-form {
     display: flex;
     flex-direction: column;
-    gap: 18px;
-}
-
-.form-group {
-    margin-bottom: 0 !important;
-}
-
-.form-label {
-    margin-bottom: 8px;
-    display: block;
-    color: #334155;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: .3px;
-}
-
-.form-control {
-    height: 52px;
-    border-radius: 14px !important;
-    border: 1px solid #dbe3ee !important;
-    background: #f8fafc !important;
-    font-size: 14px;
-    transition: .2s ease;
-}
-
-.form-control:focus {
-    background: white !important;
-    border-color: #6366f1 !important;
-    box-shadow:
-        0 0 0 4px rgba(99, 102, 241, .10) !important;
+    gap: 14px;
 }
 
 .password-btn {
-    height: 50px;
-    border-radius: 14px !important;
-    justify-content: center;
-    font-size: 14px;
-    font-weight: 700;
-    margin-top: 8px;
+    margin-top: 6px;
+    width: fit-content;
 }
 
-/* =========================
-   MODAL
-========================= */
+/* SMALL SPINNER */
 
-.modal-box {
-    border-radius: 24px !important;
-    border: none !important;
-    overflow: hidden;
+.spinner-sm {
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255, 255, 255, .4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin .6s linear infinite;
 }
 
-.modal-header {
-    padding: 24px;
-}
+/* RESPONSIVE */
 
-.modal-title {
-    font-size: 20px;
-    font-weight: 750;
-}
-
-.modal-body {
-    padding: 0 24px 24px;
-}
-
-.modal-footer {
-    padding: 20px 24px;
-    background: #f8fafc;
-}
-
-/* =========================
-   MOBILE
-========================= */
-
-@media (max-width: 1024px) {
+@media(max-width: 992px) {
 
     .profile-content {
         grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 768px) {
-
-    .profile-summary-content {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .profile-left {
-        flex-direction: column;
-        align-items: flex-start;
     }
 
     .info-grid {
         grid-template-columns: 1fr;
     }
 
-    .profile-details h2 {
-        font-size: 24px;
-    }
+}
+
+@media(max-width: 640px) {
 
     .profile-summary {
         padding: 22px;
     }
 
-    .settings-body {
-        padding: 20px;
+    .profile-details h2 {
+        font-size: 22px;
     }
+
+    .profile-avatar {
+        width: 64px;
+        height: 64px;
+        font-size: 22px;
+    }
+
 }

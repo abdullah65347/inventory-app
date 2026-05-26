@@ -1,10 +1,8 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
 import { AuthService } from '../../../../core/services/auth.service';
-import { ToastService } from '../../../../shared/components/navbar/toast.service';
-
+import { ToastService } from '../../../../shared/components/toast/toast.service';
 import { roleLabel } from '../../../../core/utils/role.util';
 import { UserService } from '../../../admin/services/user.service';
 

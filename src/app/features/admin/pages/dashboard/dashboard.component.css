@@ -2,6 +2,12 @@
     margin-bottom: 24px;
 }
 
+.cards {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+}
+
 .me-2 {
     margin-right: 6px;
 }

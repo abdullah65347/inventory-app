@@ -5,10 +5,17 @@
       <h4>Dashboard</h4>
       <p>Welcome back, {{ auth.currentUser()?.name }}!</p>
     </div>
-    <div class="page-header-right">
-      <a routerLink="/admin/purchases" class="btn btn-primary btn-sm">
-        <i class="bi bi-cart-plus"></i> New Purchase
-      </a>
+    <div class="page-header">
+      <div class="page-header-right">
+        <a routerLink="/admin/sales" class="btn btn-outline-primary btn-sm">
+          <i class="bi bi-receipt"></i> New Sale
+        </a>
+      </div>
+      <div class="page-header-right">
+        <a routerLink="/admin/purchases" class="btn btn-primary btn-sm">
+          <i class="bi bi-cart-plus"></i> New Purchase
+        </a>
+      </div>
     </div>
   </div>
 
@@ -16,42 +23,42 @@
   <app-loader></app-loader>
   } @else {
   <!-- Stat Cards -->
-  <div class="grid-4 mb-24" [@fadeInList]="stats()">
+  <div class="cards mb-24" [@fadeInList]="stats()">
     <div class="stat-card c-primary">
       <div class="stat-icon c-primary"><i class="bi bi-people-fill"></i></div>
       <div class="stat-value">{{ stats().users }}</div>
       <div class="stat-label">Total Users</div>
-      <div class="stat-trend up"><i class="bi bi-arrow-up-short"></i> +12% this month</div>
+      <!-- <div class="stat-trend up"><i class="bi bi-arrow-up-short"></i> +12% this month</div> -->
     </div>
-    <div class="stat-card c-secondary">
+    <!-- <div class="stat-card c-secondary">
       <div class="stat-icon c-secondary"><i class="bi bi-truck"></i></div>
       <div class="stat-value">{{ stats().suppliers }}</div>
       <div class="stat-label">Total Suppliers</div>
       <div class="stat-trend up"><i class="bi bi-arrow-up-short"></i> +3 new</div>
-    </div>
+    </div> -->
     <div class="stat-card c-success">
       <div class="stat-icon c-success"><i class="bi bi-box-seam-fill"></i></div>
       <div class="stat-value">{{ stats().products }}</div>
       <div class="stat-label">Products</div>
-      <div class="stat-trend up"><i class="bi bi-arrow-up-short"></i> +8 this week</div>
-    </div>
-    <div class="stat-card c-warning">
-      <div class="stat-icon c-warning"><i class="bi bi-graph-up-arrow"></i></div>
-      <div class="stat-value">{{ stats().revenue | number:'1.0-0' }}</div>
-      <div class="stat-label">Total Revenue</div>
-      <div class="stat-trend up"><i class="bi bi-arrow-up-short"></i> +24%</div>
+      <!-- <div class="stat-trend up"><i class="bi bi-arrow-up-short"></i> +8 this week</div> -->
     </div>
     <div class="stat-card c-accent">
       <div class="stat-icon c-accent"><i class="bi bi-receipt-cutoff"></i></div>
       <div class="stat-value">{{ stats().sales }}</div>
       <div class="stat-label">Total Sales</div>
-      <div class="stat-trend up"><i class="bi bi-arrow-up-short"></i> +18 today</div>
+      <!-- <div class="stat-trend up"><i class="bi bi-arrow-up-short"></i> +18 today</div> -->
     </div>
     <div class="stat-card c-danger">
       <div class="stat-icon c-danger"><i class="bi bi-exclamation-triangle-fill"></i></div>
       <div class="stat-value">{{ stats().lowStock }}</div>
       <div class="stat-label">Low Stock Items</div>
-      <div class="stat-trend down"><i class="bi bi-arrow-down-short"></i> Needs attention</div>
+      <!-- <div class="stat-trend down"><i class="bi bi-arrow-down-short"></i> Needs attention</div> -->
+    </div>
+    <div class="stat-card c-warning">
+      <div class="stat-icon c-warning"><i class="bi bi-graph-up-arrow"></i></div>
+      <div class="stat-value">{{ stats().revenue | number:'1.0-0' }}</div>
+      <div class="stat-label">Total Revenue</div>
+      <!-- <div class="stat-trend up"><i class="bi bi-arrow-up-short"></i> +24%</div> -->
     </div>
   </div>
 

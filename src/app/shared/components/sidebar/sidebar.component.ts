@@ -4,6 +4,7 @@ import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { initials } from '../../../core/utils/role.util';
 import { ROLES } from '../../constants/roles.constant';
+import { getAvatarGradient } from 'src/app/core/utils/avatar.util';
 
 export interface NavItem {
   label: string;
@@ -33,6 +34,8 @@ export class SidebarComponent {
   auth = inject(AuthService);
   router = inject(Router);
   profileOpen = signal(false);
+  initials = initials;
+  getAvatarGradient = getAvatarGradient;
 
   get userInitials(): string { return initials(this.auth.currentUser()?.name ?? 'U'); }
   get userName(): string { return this.auth.currentUser()?.name ?? ''; }
