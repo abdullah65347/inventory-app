@@ -38,7 +38,17 @@
                 @for (s of staffList(); track s.id) {
                 <tr>
                     <td><span class="row-id">#{{ s.id }}</span></td>
-                    <td>{{ s.userName }}</td>
+                    <td>
+                        <div class="user-cell">
+                            <div class="avatar avatar-sm" [style.background]="getAvatarGradient(s.userName)">
+                                {{ initials(s.userName) }}
+                            </div>
+                            <div class="user-name-row">
+                                <span>{{ s.userName }}</span>
+
+                            </div>
+                        </div>
+                    </td>
                     <td>{{ s.userEmail }}</td>
                     <td>{{ s.managerName || '—' }}</td>
                     <td>
@@ -55,7 +65,7 @@
                             <button class="btn btn-icon btn-ghost" (click)="toggleActive(s)"
                                 [title]="s.active ? 'Deactivate' : 'Activate'">
                                 <i
-                                    class="bi {{ s.active ? 'bi-toggle-on text-success' : 'bi-toggle-off text-danger' }}"></i>
+                                    class="bi {{ s.active ? 'bi-toggle-on text-success' : 'bi-toggle-off text-danger' }} fs-4"></i>
                             </button>
                         </div>
                     </td>

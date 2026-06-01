@@ -12,6 +12,14 @@
     width: 100%;
 }
 
+.disabled-action:disabled {
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .action-btns {
     display: flex;
     gap: 4px;
@@ -20,6 +28,10 @@
 .row-id {
     font-weight: 700;
     color: var(--text-muted);
+}
+
+.select-head {
+    font-weight: 700;
 }
 
 .form-row {

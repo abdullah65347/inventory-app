@@ -1,0 +1,460 @@
+<!-- ========================================================
+     Inventra — PREMIUM LANDING PAGE TEMPLATE
+     ======================================================== -->
+
+<div class="landing-container">
+
+  <!-- 1. GLASSMORPHIC NAVBAR -->
+  <header class="navbar">
+    <div class="navbar-brand">
+      <div class="navbar-logo">
+        <i class="bi bi-cpu-fill"></i>
+      </div>
+      <div class="navbar-name-wrap">
+        <span class="navbar-name">Inventra</span>
+        <span class="navbar-sub">Inventory Intelligence</span>
+      </div>
+    </div>
+
+    <nav class="navbar-links">
+      <a href="#features" class="nav-link">Features</a>
+      <a href="#interactive-demo" class="nav-link">Live Demo</a>
+      <a href="#persona-portals" class="nav-link">Role Portals</a>
+    </nav>
+
+    <div class="navbar-actions">
+      <app-theme-toggle></app-theme-toggle>
+
+      @if (auth.isLoggedIn()) {
+      <button (click)="goToDashboard()" class="btn btn-primary btn-glow">
+        Go to Dashboard <i class="bi bi-arrow-right-short"></i>
+      </button>
+      } @else {
+      <a routerLink="/auth/login" class="btn btn-ghost nav-btn-signin">Sign In</a>
+      <a routerLink="/auth/register" class="btn btn-primary btn-glow">Get Started</a>
+      }
+    </div>
+  </header>
+
+  <!-- 2. HERO SECTION -->
+  <section class="hero">
+    <div class="glow-sphere-1"></div>
+    <div class="glow-sphere-2"></div>
+
+    <div class="hero-content">
+      <span class="badge badge-primary hero-badge">
+        <i class="bi bi-stars"></i> Release v1.4.0 — Now Live
+      </span>
+      <h1 class="hero-title">
+        Next-Gen <span class="gradient-text">Inventory Intelligence</span> for Modern Enterprises.
+      </h1>
+      <p class="hero-subtitle">
+        Eliminate stockouts, automate procurement, and synchronize suppliers with our beautiful, real-time control
+        system. Designed with precision, engineered for scale.
+      </p>
+
+      <div class="hero-buttons">
+        <button (click)="goToDashboard()" class="btn btn-lg btn-primary btn-glow">
+          @if (auth.isLoggedIn()) { Access Your Workspace } @else { Start Free Trial }
+          <i class="bi bi-arrow-right"></i>
+        </button>
+        <a href="#interactive-demo" class="btn btn-lg btn-outline-secondary">
+          Try Interactive Demo
+        </a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="hero-stat-item">
+          <div class="hero-stat-val">99.9%</div>
+          <div class="hero-stat-lbl">Uptime SLA</div>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat-item">
+          <div class="hero-stat-val"><i class="bi bi-lightning-fill text-warning"></i> 4x</div>
+          <div class="hero-stat-lbl">Faster Audits</div>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat-item">
+          <div class="hero-stat-val">2.4M+</div>
+          <div class="hero-stat-lbl">Items Tracked</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HERO DASHBOARD GLASS PREVIEW -->
+    <div class="hero-preview-container">
+      <div class="glass-frame">
+        <div class="frame-header">
+          <div class="window-controls">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+          </div>
+          <div class="window-address">
+            <i class="bi bi-shield-lock-fill text-success"></i> app.Inventra.io/admin/dashboard
+          </div>
+        </div>
+
+        <div class="mock-dash-body">
+          <div class="mock-dash-top">
+            <div class="mock-card">
+              <span class="mock-lbl">Total Sales</span>
+              <span class="mock-val">$184,242.00</span>
+              <span class="mock-trend green"><i class="bi bi-graph-up"></i> +12.4%</span>
+            </div>
+            <div class="mock-card">
+              <span class="mock-lbl">Critical Alerts</span>
+              <span class="mock-val text-danger">3 Items</span>
+              <span class="mock-trend red"><i class="bi bi-exclamation-triangle-fill"></i> Action Req.</span>
+            </div>
+            <div class="mock-card">
+              <span class="mock-lbl">Procurement Rate</span>
+              <span class="mock-val">87.5%</span>
+              <span class="mock-progress-bar">
+                <span class="mock-progress-fill" style="width: 87.5%"></span>
+              </span>
+            </div>
+          </div>
+
+          <div class="mock-dash-bottom">
+            <div class="mock-card full-w">
+              <div class="mock-card-hdr">
+                <span>Recent Inventory Activities</span>
+                <span class="badge badge-success text-xxs">Live</span>
+              </div>
+              <div class="mock-row">
+                <i class="bi bi-plus-circle-fill text-success"></i>
+                <span class="mock-txt"><strong>Restocked:</strong> 15x Macbook Pro 16" by supplier Apple Inc.</span>
+                <span class="mock-time">Just now</span>
+              </div>
+              <div class="mock-row">
+                <i class="bi bi-cart-check-fill text-primary"></i>
+                <span class="mock-txt"><strong>Completed Sale:</strong> 4x iPhone 15 Pro Max to Invoice #4092</span>
+                <span class="mock-time">5m ago</span>
+              </div>
+              <div class="mock-row">
+                <i class="bi bi-arrow-left-right text-warning"></i>
+                <span class="mock-txt"><strong>Supplier Alert:</strong> Stock replenished for category
+                  'Electronics'</span>
+                <span class="mock-time">12m ago</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. FEATURES SECTION -->
+  <section id="features" class="features">
+    <div class="section-hdr">
+      <span class="sub-hdr">Powerful Core Capabilities</span>
+      <h2>Designed to Perfect Your Supply Chain</h2>
+      <p class="section-desc">
+        Take absolute control over warehouses, logistics, supplier communication, and checkout operations from a unified
+        interface.
+      </p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feat-icon-wrap c-primary">
+          <i class="bi bi-lightning-charge-fill"></i>
+        </div>
+        <h3>Real-time Tracking</h3>
+        <p>Witness item restocks, sales deductions, and stock level changes instantly across your entire network. Zero
+          lag.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feat-icon-wrap c-success">
+          <i class="bi bi-people-fill"></i>
+        </div>
+        <h3>Role-Based Portals</h3>
+        <p>Tailored dashboards for Admins, Managers, Suppliers, and Sales Staff. Keep security tight and focus absolute.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feat-icon-wrap c-warning">
+          <i class="bi bi-bar-chart-fill"></i>
+        </div>
+        <h3>Procurement Automation</h3>
+        <p>Smart minimum-stock triggers automatically order booster stock from registered suppliers to prevent empty
+          shelves.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feat-icon-wrap c-accent">
+          <i class="bi bi-shield-fill-check"></i>
+        </div>
+        <h3>Enterprise Security</h3>
+        <p>Armed with JWT-signed secure sessions, strict route guards, role level API protections, and fully auditable
+          logs.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. LIVE INTERACTIVE STOCK DEMO -->
+  <section id="interactive-demo" class="demo-section">
+    <div class="demo-card-container">
+      <div class="demo-text">
+        <span class="badge badge-success">Interactive Sandbox</span>
+        <h2>Replenishment Demo</h2>
+        <p>
+          Experience Inventra's reactive system! See how local sales drop stock levels, and how a restock action
+          rebalances critical inventory in real-time.
+        </p>
+
+        <div class="demo-actions">
+          <button (click)="simulateRestock()" class="btn btn-success btn-glow">
+            <i class="bi bi-plus-circle"></i> Trigger Restock Boost
+          </button>
+          <button (click)="resetSimulator()" class="btn btn-ghost text-muted">
+            <i class="bi bi-arrow-counterclockwise"></i> Reset Demo
+          </button>
+        </div>
+
+        @if (restockedCount() > 0) {
+        <div class="simulation-log" [class.alert-glow]="showAlert()">
+          <i class="bi bi-check-circle-fill text-success"></i>
+          <span>Boost trigger #{{ restockedCount() }} received. Stock variables updated reactive-style!</span>
+        </div>
+        }
+      </div>
+
+      <div class="demo-visual">
+        <div class="glass-widget">
+          <div class="widget-header">
+            <span>Critical Warehousing Stock Status</span>
+            <span class="badge text-xxs" [class.badge-danger]="iphoneStock() <= 15"
+              [class.badge-success]="iphoneStock() > 15">
+              {{ iphoneStock() <= 15 ? 'Critical Alert' : 'Healthy' }} </span>
+          </div>
+
+          <div class="stock-item-wrap">
+            <div class="stock-info">
+              <span>MacBook Pro M3 Max</span>
+              <span class="stock-val-pill">{{ macbookStock() }}/100 units</span>
+            </div>
+            <div class="stock-progress">
+              <span class="stock-progress-fill" [style.width.%]="macbookStock()"
+                [class.warning]="macbookStock() < 30"></span>
+            </div>
+          </div>
+
+          <div class="stock-item-wrap">
+            <div class="stock-info">
+              <span>iPhone 15 Pro Max</span>
+              <span class="stock-val-pill text-danger">{{ iphoneStock() }}/120 units</span>
+            </div>
+            <div class="stock-progress">
+              <span class="stock-progress-fill danger" [style.width.%]="(iphoneStock() / 120) * 100"
+                [class.danger]="iphoneStock() <= 15"></span>
+            </div>
+          </div>
+
+          <div class="widget-summary">
+            <div class="summary-sub">
+              <span>Simulation Status:</span>
+              <strong>{{ restockedCount() === 0 ? 'Idle (Waiting for restock)' : 'Active Replenishing' }}</strong>
+            </div>
+            <div class="summary-dots">
+              <span class="pulse-dot" [class.active]="restockedCount() > 0"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. TAB-BASED ROLE PORTAL SHOWCASE -->
+  <section id="persona-portals" class="persona-section">
+    <div class="section-hdr">
+      <span class="sub-hdr">Personalized Control Centers</span>
+      <h2>One Platform, Custom Roles</h2>
+      <p class="section-desc">
+        Explore what your teams will see. Every stakeholder gets precisely the statistics, actions, and layouts they
+        need.
+      </p>
+    </div>
+
+    <!-- TABS BAR -->
+    <div class="persona-tabs">
+      <button class="tab-btn" [class.active]="activeTab() === 'admin'" (click)="setTab('admin')">
+        <i class="bi bi-shield-fill"></i> Admin Portal
+      </button>
+      <button class="tab-btn" [class.active]="activeTab() === 'manager'" (click)="setTab('manager')">
+        <i class="bi bi-person-badge-fill"></i> Manager Portal
+      </button>
+      <button class="tab-btn" [class.active]="activeTab() === 'supplier'" (click)="setTab('supplier')">
+        <i class="bi bi-truck"></i> Supplier Portal
+      </button>
+      <button class="tab-btn" [class.active]="activeTab() === 'staff'" (click)="setTab('staff')">
+        <i class="bi bi-cart-plus-fill"></i> Staff Portal
+      </button>
+    </div>
+
+    <!-- TAB PANEL CONTENT -->
+    <div class="persona-content-card">
+      @if (activeTab() === 'admin') {
+      <div class="persona-panel animate-fade">
+        <div class="panel-desc">
+          <h3><i class="bi bi-shield-fill-check text-primary"></i> Administrator Power Center</h3>
+          <p>
+            Complete absolute visibility. Track global sales, create and manage corporate manager credentials, audit
+            supplier logs, register categories, and override stock transactions.
+          </p>
+          <ul class="panel-bullets">
+            <li><i class="bi bi-check-circle-fill text-success"></i> Full User & Staff administration</li>
+            <li><i class="bi bi-check-circle-fill text-success"></i> Dynamic product category management</li>
+            <li><i class="bi bi-check-circle-fill text-success"></i> Global audit reports & sales logs</li>
+          </ul>
+        </div>
+        <div class="panel-preview">
+          <div class="glass-widget shadow-lg">
+            <span class="widget-title">Admin Quick Access Actions</span>
+            <div class="mock-buttons">
+              <span class="btn btn-sm btn-dark"><i class="bi bi-person-plus-fill"></i> Add Manager</span>
+              <span class="btn btn-sm btn-outline-primary"><i class="bi bi-tags-fill"></i> New Category</span>
+              <span class="btn btn-sm btn-outline-secondary"><i class="bi bi-file-earmark-bar-graph"></i> Audit
+                logs</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      }
+
+      @if (activeTab() === 'manager') {
+      <div class="persona-panel animate-fade">
+        <div class="panel-desc">
+          <h3><i class="bi bi-person-badge-fill text-warning"></i> Managerial Operations Hub</h3>
+          <p>
+            Focus on logistics and warehouse efficiency. Confirm deliveries from suppliers, inspect employee sales logs,
+            and verify team health from a responsive control dashboard.
+          </p>
+          <ul class="panel-bullets">
+            <li><i class="bi bi-check-circle-fill text-success"></i> Supplier order confirmation</li>
+            <li><i class="bi bi-check-circle-fill text-success"></i> Staff metrics and overview</li>
+            <li><i class="bi bi-check-circle-fill text-success"></i> Stock audit logs</li>
+          </ul>
+        </div>
+        <div class="panel-preview">
+          <div class="glass-widget shadow-lg">
+            <span class="widget-title">Supplier Deliveries Outstanding</span>
+            <div class="mock-row py-1">
+              <span>Apple Inc. (150x iPhones)</span>
+              <span class="badge badge-warning text-xxs">Pending Delivery</span>
+            </div>
+            <div class="mock-row py-1">
+              <span>Samsung Group (40x SSDs)</span>
+              <span class="badge badge-success text-xxs">Received & Checked</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      }
+
+      @if (activeTab() === 'supplier') {
+      <div class="persona-panel animate-fade">
+        <div class="panel-desc">
+          <h3><i class="bi bi-truck text-accent"></i> Supplier Procurement Terminal</h3>
+          <p>
+            Direct pipeline between supplier inventory and active corporate warehouses. Suppliers can list their stock
+            rates, receive instant alerts for replenishment, and log successful order handovers.
+          </p>
+          <ul class="panel-bullets">
+            <li><i class="bi bi-check-circle-fill text-success"></i> Instant low-stock replenishment notifications</li>
+            <li><i class="bi bi-check-circle-fill text-success"></i> Direct product catalog submission</li>
+            <li><i class="bi bi-check-circle-fill text-success"></i> Secure contract logistics</li>
+          </ul>
+        </div>
+        <div class="panel-preview">
+          <div class="glass-widget shadow-lg">
+            <span class="widget-title">Active Warehouse Requests</span>
+            <div class="mock-row py-1">
+              <span>Central Depot A (MacBooks Low!)</span>
+              <button class="btn btn-sm btn-primary">Replenish Now</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      }
+
+      @if (activeTab() === 'staff') {
+      <div class="persona-panel animate-fade">
+        <div class="panel-desc">
+          <h3><i class="bi bi-cart-plus-fill text-success"></i> Sales Counter & POS Terminal</h3>
+          <p>
+            Fast, high-efficiency sales interfaces for sales representatives and checkout operators. Process customer
+            orders, print digital billing slips, and view sales history instantly.
+          </p>
+          <ul class="panel-bullets">
+            <li><i class="bi bi-check-circle-fill text-success"></i> Ultra-fast POS product selection</li>
+            <li><i class="bi bi-check-circle-fill text-success"></i> Automatic tax and margin calculations</li>
+            <li><i class="bi bi-check-circle-fill text-success"></i> Personal sales quota trackers</li>
+          </ul>
+        </div>
+        <div class="panel-preview">
+          <div class="glass-widget shadow-lg">
+            <span class="widget-title">New Checkout Transaction</span>
+            <div class="mock-checkout">
+              <div class="mock-chk-item"><span>1x MacBook Pro M3</span><span>$2,499.00</span></div>
+              <div class="mock-chk-divider"></div>
+              <div class="mock-chk-total"><span>Total</span><span>$2,499.00</span></div>
+              <button class="btn btn-success btn-sm w-full mt-2"><i class="bi bi-check2-circle"></i> Finalize
+                Bill</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+  </section>
+
+  <!-- 6. FINAL CALL TO ACTION -->
+  <section class="final-cta">
+    <div class="glow-sphere-cta"></div>
+    <div class="cta-inner">
+      <h2>Transform Your Inventory Operations Today</h2>
+      <p>Join modern enterprises using Inventra to secure their supply chain, eliminate human errors, and maximize
+        turnover.</p>
+      <button (click)="goToDashboard()" class="btn btn-lg btn-primary btn-glow">
+        @if (auth.isLoggedIn()) { Go to Dashboard } @else { Create Your Account }
+        <i class="bi bi-arrow-right"></i>
+      </button>
+    </div>
+  </section>
+
+  <!-- 7. MODERN FOOTER -->
+  <footer class="footer">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <span class="logo-text"><i class="bi bi-cpu-fill"></i> Inventra</span>
+        <p>Premium real-time inventory intelligence for smart companies.</p>
+      </div>
+      <div class="footer-links-col">
+        <h4>Product</h4>
+        <a href="#features">Features</a>
+        <a href="#interactive-demo">Interactive Demo</a>
+        <a href="#persona-portals">Persona Portals</a>
+      </div>
+      <div class="footer-links-col">
+        <h4>Security</h4>
+        <span>JWT Encryption</span>
+        <span>Route guards</span>
+        <span>Role protections</span>
+      </div>
+    </div>
+    <div class="footer-divider"></div>
+    <div class="footer-bottom">
+      <span>© 2026 Inventra Inc. Built to wow. All rights reserved.</span>
+      <div class="footer-socials">
+        <i class="bi bi-github"></i>
+        <i class="bi bi-twitter"></i>
+        <i class="bi bi-linkedin"></i>
+      </div>
+    </div>
+  </footer>
+
+</div>

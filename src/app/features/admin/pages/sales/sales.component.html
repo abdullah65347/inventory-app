@@ -6,6 +6,45 @@
       <p>View customer sales and payment details</p>
     </div>
   </div>
+  <div class="grid-4 compact-stats" style="margin-bottom:18px">
+
+    <div class="stat-card c-primary">
+      <div class="stat-icon c-primary">
+        <i class="bi bi-receipt-cutoff"></i>
+      </div>
+      <div class="stat-value">{{ sales().length }}</div>
+      <div class="stat-label">Total Orders</div>
+    </div>
+
+
+    <div class="stat-card c-accent">
+      <div class="stat-icon c-accent">
+        <i class="bi bi-box-seam"></i>
+      </div>
+      <div class="stat-value">{{ totalProductsSold }}</div>
+      <div class="stat-label">Products Sold</div>
+    </div>
+
+    <div class="stat-card c-warning">
+      <div class="stat-icon c-warning">
+        <i class="bi bi-graph-up-arrow"></i>
+      </div>
+      <div class="stat-value">
+        ₹{{ averageOrderValue | number:'1.0-0' }}
+      </div>
+      <div class="stat-label">Avg Order Value</div>
+    </div>
+
+    <div class="stat-card c-success">
+      <div class="stat-icon c-success">
+        <i class="bi bi-currency-rupee"></i>
+      </div>
+      <div class="stat-value">
+        ₹{{ totalRevenue | number:'1.0-0' }}
+      </div>
+      <div class="stat-label">Total Revenue</div>
+    </div>
+  </div>
 
   @if (loading()) {
 
@@ -88,9 +127,8 @@
           </td>
 
           <td>
-
-            <button class="btn btn-icon btn-ghost" (click)="openDetails(s)">
-              <i class="bi bi-eye"></i>
+            <button class="btn btn-sm btn-outline-secondary" (click)="openDetails(s)">
+              <i class="bi bi-eye"></i> View
             </button>
 
           </td>

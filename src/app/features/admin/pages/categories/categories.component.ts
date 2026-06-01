@@ -6,11 +6,12 @@ import { ToastService } from '../../../../shared/components/toast/toast.service'
 import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
 import { CategoryResponse } from '../../../common/models/category.model';
 import { fadeIn } from '../../../../shared/animations/fade.animation';
+import { AppTableComponent } from 'src/app/shared/components/app-table/app-table.component';
 
 @Component({
   selector: 'app-admin-categories',
   standalone: true,
-  imports: [CommonModule, FormsModule, LoaderComponent],
+  imports: [CommonModule, FormsModule, LoaderComponent, AppTableComponent],
   templateUrl: './categories.component.html',
   styleUrls: ['./categories.component.css'],
   animations: [fadeIn]
@@ -29,7 +30,7 @@ export class CategoriesComponent implements OnInit {
 
   load(): void {
     this.loading.set(true);
-    this.svc.getAll().subscribe({ next: c => { this.categories.set(c); this.loading.set(false); }, error: () => this.loading.set(false) });
+    this.svc.getCategoryCount().subscribe({ next: c => { this.categories.set(c); this.loading.set(false); }, error: () => this.loading.set(false) });
   }
 
   openCreate(): void { this.editTarget.set(null); this.formName = ''; this.showModal.set(true); }

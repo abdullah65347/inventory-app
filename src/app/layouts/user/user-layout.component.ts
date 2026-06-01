@@ -4,11 +4,12 @@ import { RouterOutlet } from '@angular/router';
 import { SidebarComponent, NavSection } from '../../shared/components/sidebar/sidebar.component';
 import { AuthService } from '../../core/services/auth.service';
 import { initials } from '../../core/utils/role.util';
+import { ThemeToggleComponent } from '../../shared/components/theme-toggle/theme-toggle.component';
 
 @Component({
   selector: 'app-user-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, SidebarComponent],
+  imports: [CommonModule, RouterOutlet, SidebarComponent, ThemeToggleComponent],
   templateUrl: './user-layout.component.html',
   styleUrls: ['./user-layout.component.css']
 })

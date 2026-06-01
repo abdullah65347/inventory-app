@@ -6,13 +6,18 @@ import { CategoryRequest, CategoryResponse } from '../../common/models/category.
 
 @Injectable({ providedIn: 'root' })
 export class CategoryService {
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService) { }
 
   create(data: CategoryRequest): Observable<CategoryResponse> {
     return this.api.post<CategoryResponse>(API_ENDPOINTS.CATEGORIES.BASE, data);
   }
   getAll(): Observable<CategoryResponse[]> {
     return this.api.get<CategoryResponse[]>(API_ENDPOINTS.CATEGORIES.BASE);
+  }
+  getCategoryCount(): Observable<CategoryResponse[]> {
+    return this.api.get<CategoryResponse[]>(
+      `${API_ENDPOINTS.CATEGORIES.BASE}/category-count`
+    );
   }
   getById(id: number): Observable<CategoryResponse> {
     return this.api.get<CategoryResponse>(API_ENDPOINTS.CATEGORIES.BY_ID(id));

@@ -6,6 +6,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { ToastService } from '../../../../shared/components/toast/toast.service';
 import { fadeIn } from '../../../../shared/animations/fade.animation';
 import { scaleIn } from '../../../../shared/animations/scale.animation';
+import { ROLES } from 'src/app/shared/constants/roles.constant';
 
 @Component({
   selector: 'app-login',
@@ -45,11 +46,18 @@ export class LoginComponent {
     this.loading.set(true);
     this.error.set('');
     this.auth.login(this.form).subscribe({
-      next: () => {
-        this.auth.fetchMe().subscribe({
-          next: () => { this.loading.set(false); this.auth.navigateByRole(); },
-          error: () => { this.loading.set(false); this.error.set('Could not fetch user details.'); }
-        });
+      next: (user) => {
+        this.loading.set(false);
+
+        console.log(user.role);
+
+        if (user.role === ROLES.NEW_USER) {
+          this.toast.error('Account is not activated. Contact Admin to enable it.');
+          this.auth.logout();
+          return;
+        }
+
+        this.auth.navigateByRole();
       },
       error: (err) => {
         this.loading.set(false);

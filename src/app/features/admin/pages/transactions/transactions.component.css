@@ -1,1 +1,22 @@
 /* styles */
+.compact-stats .stat-card {
+    padding: 14px 16px;
+    min-height: 90px;
+}
+
+.compact-stats .stat-icon {
+    width: 42px;
+    height: 42px;
+    font-size: 18px;
+}
+
+.compact-stats .stat-value {
+    font-size: 22px;
+    font-weight: 700;
+    margin-top: 6px;
+}
+
+.compact-stats .stat-label {
+    font-size: 12px;
+    margin-top: 2px;
+}

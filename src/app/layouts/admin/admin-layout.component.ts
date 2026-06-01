@@ -5,11 +5,12 @@ import { SidebarComponent, NavSection } from '../../shared/components/sidebar/si
 import { AuthService } from '../../core/services/auth.service';
 import { initials } from '../../core/utils/role.util';
 import { ChatbotComponent } from 'src/app/shared/components/chatbot/chatbot.component';
+import { ThemeToggleComponent } from '../../shared/components/theme-toggle/theme-toggle.component';
 
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, SidebarComponent, ChatbotComponent],
+  imports: [CommonModule, RouterOutlet, SidebarComponent, ChatbotComponent, ThemeToggleComponent],
   templateUrl: './admin-layout.component.html',
   styleUrls: ['./admin-layout.component.css']
 })

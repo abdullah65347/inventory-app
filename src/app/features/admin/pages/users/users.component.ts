@@ -13,6 +13,7 @@ import { PaginatorComponent } from '../../../../shared/components/paginator/pagi
 import { ViewDetailModalComponent, ViewField } from 'src/app/shared/components/view-detail-modal/view-detail-modal.component';
 import { AppTableComponent } from 'src/app/shared/components/app-table/app-table.component';
 import { getAvatarGradient } from 'src/app/core/utils/avatar.util';
+import { ROLES } from 'src/app/shared/constants/roles.constant';
 
 @Component({
   selector: 'app-admin-users',
@@ -50,8 +51,10 @@ export class UsersComponent implements OnInit {
   roleLabel = roleLabel;
   statusBadge = statusBadge;
   showViewModal = signal(false);
-
+  showAssignRole = signal(false);
   selectedUser: User | null = null;
+  selectedRole = '';
+
   viewFields: ViewField[] = [
     {
       key: 'name',
@@ -133,9 +136,23 @@ export class UsersComponent implements OnInit {
 
   openEdit(u: User): void {
     this.editTarget.set(u);
-    this.editForm = { name: u.name, email: u.email, phone: u.phone, address: u.address };
+
+    this.editForm = {
+      name: u.name,
+      email: u.email,
+      phone: u.phone,
+      address: u.address,
+    };
+
     this.showModal.set(true);
   }
+
+  assignableRoles = [
+    'ROLE_MANAGER',
+    'ROLE_STAFF',
+    'ROLE_SUPPLIER'
+  ];
+
   closeModal(): void { this.showModal.set(false); this.editTarget.set(null); }
 
   save(): void {
@@ -148,17 +165,26 @@ export class UsersComponent implements OnInit {
   }
 
   toggleActive(u: User): void {
+    if (u.role === ROLES.ADMIN) return;
+
     this.svc.toggleActive(u.id, !u.active).subscribe({
-      next: () => { this.toast.success(`User ${u.active ? 'deactivated' : 'activated'}`); this.load(); },
-      error: () => this.toast.error('Failed to update status')
+      next: () => {
+        this.toast.success(`User ${u.active ? 'deactivated' : 'activated'}`);
+        this.load();
+      }
     });
   }
 
   deleteUser(u: User): void {
+    if (u.role === ROLES.ADMIN) return;
+
     if (!confirm(`Delete "${u.name}"? This cannot be undone.`)) return;
+
     this.svc.delete(u.id).subscribe({
-      next: () => { this.toast.success('User deleted'); this.load(); },
-      error: () => this.toast.error('Delete failed')
+      next: () => {
+        this.toast.success('User deleted');
+        this.load();
+      }
     });
   }
 
@@ -175,4 +201,35 @@ export class UsersComponent implements OnInit {
       error: err => this.toast.error(err?.error?.message ?? 'Registration failed')
     });
   }
+
+  openAssign(user: User): void {
+    this.selectedUser = user;
+    this.selectedRole = '';
+    this.showAssignRole.set(true);
+  }
+
+  closeAssign(): void {
+    this.showAssignRole.set(false);
+    this.selectedUser = null;
+    this.selectedRole = '';
+  }
+
+  assignRole(): void {
+    if (!this.selectedUser || !this.selectedRole) return;
+
+    this.svc.assignRole(
+      this.selectedUser.id,
+      this.selectedRole
+    ).subscribe({
+      next: () => {
+        this.toast.success('Role assigned successfully');
+        this.closeAssign();
+        this.load();
+      },
+      error: () => {
+        this.toast.error('Failed to assign role');
+      }
+    });
+  }
+
 }

@@ -42,48 +42,38 @@
     color: var(--text-muted);
 }
 
-.product-count {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-secondary);
-}
-
-.table-actions {
+.product-count-card {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 10px;
 }
 
-.delete-btn:hover {
-    background: #fee2e2 !important;
-    color: var(--danger) !important;
-}
-
-.modal-subtitle {
-    margin-top: 4px;
-    font-size: 13px;
-    color: var(--text-muted);
-}
-
-.category-input-wrap {
-    position: relative;
-}
-
-.category-input-wrap .field-icon {
-    position: absolute;
-    left: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-muted);
+.product-count-number {
+    min-width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary-light);
+    color: var(--primary);
+    font-weight: 800;
     font-size: 15px;
+    box-shadow: var(--shadow-xs);
 }
 
-.category-input-wrap .form-control {
-    padding-left: 42px;
-    height: 48px;
+.product-count-info {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
 }
 
-tbody tr:hover .category-icon {
-    transform: scale(1.05);
-    transition: .2s ease;
+.product-count-title {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.product-count-subtitle {
+    color: var(--text-muted);
+    font-size: 11px;
 }

@@ -8,6 +8,47 @@
       <button class="btn btn-primary" (click)="openCreate()"><i class="bi bi-cart-plus"></i> New Order</button>
     </div>
   </div>
+  <div class="cards compact-stats" style="margin-bottom:18px">
+    <div class="stat-card c-primary">
+      <div class="stat-icon c-primary">
+        <i class="bi bi-cart-fill"></i>
+      </div>
+      <div class="stat-value">{{ purchases().length }}</div>
+      <div class="stat-label">Total Orders</div>
+    </div>
+
+    <div class="stat-card c-warning">
+      <div class="stat-icon c-warning">
+        <i class="bi bi-hourglass-split"></i>
+      </div>
+      <div class="stat-value">{{ pendingCount }}</div>
+      <div class="stat-label">Pending</div>
+    </div>
+
+    <div class="stat-card c-accent">
+      <div class="stat-icon c-accent">
+        <i class="bi bi-truck"></i>
+      </div>
+      <div class="stat-value">{{ deliveredCount }}</div>
+      <div class="stat-label">Delivered</div>
+    </div>
+
+    <div class="stat-card c-success">
+      <div class="stat-icon c-success">
+        <i class="bi bi-check-circle-fill"></i>
+      </div>
+      <div class="stat-value">{{ confirmedCount }}</div>
+      <div class="stat-label">Confirmed</div>
+    </div>
+
+    <div class="stat-card c-danger">
+      <div class="stat-icon c-danger">
+        <i class="bi bi-x-circle-fill"></i>
+      </div>
+      <div class="stat-value">{{ cancelledCount }}</div>
+      <div class="stat-label">Cancelled</div>
+    </div>
+  </div>
   @if (loading()) { <app-loader /> }
   @else {
   <div class="table-wrap">

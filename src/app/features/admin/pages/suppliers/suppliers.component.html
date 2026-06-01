@@ -1,6 +1,9 @@
 <div class="page-enter" @fadeIn>
   <div class="page-header">
-    <div class="page-header-left"><h4>Suppliers</h4><p>Manage your product suppliers</p></div>
+    <div class="page-header-left">
+      <h4>Suppliers</h4>
+      <p>Manage your product suppliers</p>
+    </div>
     <div class="page-header-right">
       <button class="btn btn-primary" (click)="openCreate()"><i class="bi bi-plus-lg"></i> Add Supplier</button>
     </div>
@@ -8,78 +11,67 @@
 
   @if (loading()) { <app-loader /> }
   @else {
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>#</th><th>Company</th><th>Contact</th><th>Category</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead>
-        <tbody>
-          @if (suppliers().length === 0) {
-            <tr><td colspan="7"><div class="empty-state"><i class="bi bi-truck"></i><p>No suppliers yet</p></div></td></tr>
-          }
-          @for (s of suppliers(); track s.id) {
-            <tr>
-              <td><strong>#{{ s.id }}</strong></td>
-              <td>
-                <div style="display:flex;align-items:center;gap:8px">
-                  <div class="avatar avatar-sm" style="background:linear-gradient(135deg,#7c3aed,#06b6d4)">{{ s.companyName[0] }}</div>
-                  <strong>{{ s.companyName }}</strong>
-                </div>
-              </td>
-              <td>{{ s.userName }}</td>
-              <td><span class="badge badge-secondary">{{ s.categoryName }}</span></td>
-              <td><span class="badge {{ s.active ? 'badge-success' : 'badge-danger' }}">{{ s.active ? 'Active' : 'Inactive' }}</span></td>
-              <td>{{ s.createdAt | date:'MMM d, y' }}</td>
-              <td>
-                <div style="display:flex;gap:4px">
-                  <button class="btn btn-icon btn-ghost" (click)="toggleActive(s)">
-                    <i class="bi {{ s.active ? 'bi-toggle-on text-success' : 'bi-toggle-off text-danger' }}"></i>
-                  </button>
-                  <button class="btn btn-icon btn-ghost" (click)="openEdit(s)"><i class="bi bi-pencil"></i></button>
-                  <button class="btn btn-icon btn-ghost" (click)="delete(s)" style="color:var(--danger)"><i class="bi bi-trash"></i></button>
-                </div>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Contact</th>
+          <th>Company</th>
+          <th>Category</th>
+          <th>Status</th>
+          <th>Created</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (suppliers().length === 0) {
+        <tr>
+          <td colspan="7">
+            <div class="empty-state"><i class="bi bi-truck"></i>
+              <p>No suppliers yet</p>
+            </div>
+          </td>
+        </tr>
+        }
+        @for (s of suppliers(); track s.id) {
+        <tr>
+          <td><strong>#{{ s.id }}</strong></td>
+          <td>
+            <div class="user-cell">
+              <div class="avatar avatar-sm" [style.background]="getAvatarGradient(s.userName || 'Local Supplier')">
+                {{ initials(s.userName|| 'Local Supplier') }}
+              </div>
+              <div class="user-name-row">
+                <span>{{ s.userName || 'Local Supplier' }}</span>
+
+              </div>
+            </div>
+          </td>
+          <td>
+            <strong>{{ s.companyName }}</strong>
+          </td>
+          <td><span class="badge badge-secondary">{{ s.categoryName }}</span></td>
+          <td><span class="badge {{ s.active ? 'badge-success' : 'badge-danger' }}">{{ s.active ? 'Active' : 'Inactive'
+              }}</span></td>
+          <td>{{ s.createdAt | date:'MMM d, y' }}</td>
+          <td>
+            <div style="display:flex;gap:4px">
+              <button class="btn btn-icon btn-ghost" (click)="toggleActive(s)">
+                <i class="bi {{ s.active ? 'bi-toggle-on text-success' : 'bi-toggle-off text-danger' }} fs-4"></i>
+              </button>
+              <button class="btn btn-icon btn-ghost" (click)="openEdit(s)"><i class="bi bi-pencil fs-6"></i></button>
+              <button class="btn btn-icon btn-ghost" (click)="delete(s)" style="color:var(--danger)"><i
+                  class="bi bi-trash fs-5"></i></button>
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
   }
 </div>
-
-@if (showModal()) {
-  <div class="modal-overlay" (click)="closeModal()">
-    <div class="modal-box" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h5 class="modal-title">{{ editTarget() ? 'Edit Supplier' : 'Add Supplier' }}</h5>
-        <button class="modal-close" (click)="closeModal()">×</button>
-      </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label class="form-label">Company Name</label>
-          <input class="form-control" [(ngModel)]="form.companyName" placeholder="Acme Corp">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Category</label>
-          <select class="form-select" [(ngModel)]="form.categoryId">
-            <option [value]="0">-- Select Category --</option>
-            @for (c of categories(); track c.id) { <option [value]="c.id">{{ c.name }}</option> }
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">User Account</label>
-          <select class="form-select" [(ngModel)]="form.userId">
-            <option [value]="0">-- Select User --</option>
-            @for (u of supplierUsers(); track u.id) { <option [value]="u.id">{{ u.name }} ({{ u.email }})</option> }
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Address</label>
-          <input class="form-control" [(ngModel)]="form.address" placeholder="Business address">
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-outline-secondary" (click)="closeModal()">Cancel</button>
-        <button class="btn btn-primary" (click)="save()">{{ editTarget() ? 'Save Changes' : 'Add Supplier' }}</button>
-      </div>
-    </div>
-  </div>
-}
+<app-supplier-form [visible]="showModal()" [form]="form" [categories]="categories()" [availableUsers]="availableUsers()"
+  [isEdit]="isEdit()" (close)="closeModal()" (save)="save()">
+</app-supplier-form>

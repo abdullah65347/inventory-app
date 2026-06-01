@@ -15,17 +15,40 @@
     </div>
   </div>
 
-  <div class="grid-2" style="margin-bottom:24px">
+  <div class="grid-4 compact-stats" style="margin-bottom:20px">
+
+    <div class="stat-card c-primary">
+      <div class="stat-icon c-primary">
+        <i class="bi bi-arrow-left-right"></i>
+      </div>
+      <div class="stat-value">{{ transactions().length }}</div>
+      <div class="stat-label">Total Transactions</div>
+    </div>
+
     <div class="stat-card c-success">
-      <div class="stat-icon c-success"><i class="bi bi-arrow-down-circle-fill"></i></div>
+      <div class="stat-icon c-success">
+        <i class="bi bi-arrow-down-circle-fill"></i>
+      </div>
       <div class="stat-value">{{ inCount }}</div>
-      <div class="stat-label">Stock In (Purchases)</div>
+      <div class="stat-label">Stock In</div>
     </div>
+
     <div class="stat-card c-danger">
-      <div class="stat-icon c-danger"><i class="bi bi-arrow-up-circle-fill"></i></div>
+      <div class="stat-icon c-danger">
+        <i class="bi bi-arrow-up-circle-fill"></i>
+      </div>
       <div class="stat-value">{{ outCount }}</div>
-      <div class="stat-label">Stock Out (Sales)</div>
+      <div class="stat-label">Stock Out</div>
     </div>
+
+    <div class="stat-card c-warning">
+      <div class="stat-icon c-warning">
+        <i class="bi bi-box-seam"></i>
+      </div>
+      <div class="stat-value">{{ totalMoved }}</div>
+      <div class="stat-label">Units Moved</div>
+    </div>
+
   </div>
 
   @if (loading()) { <app-loader /> }

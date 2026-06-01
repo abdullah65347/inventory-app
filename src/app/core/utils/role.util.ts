@@ -6,6 +6,8 @@ export function roleLabel(role: Role | string): string {
     [ROLES.SUPPLIER]: 'Supplier',
     [ROLES.MANAGER]: 'Manager',
     [ROLES.STAFF]: 'Staff',
+    [ROLES.NEW_USER]: 'New_User'
+
   };
   return m[role] ?? role;
 }
@@ -16,6 +18,7 @@ export function roleBadgeClass(role: Role | string): string {
     [ROLES.SUPPLIER]: 'badge-secondary',
     [ROLES.MANAGER]: 'badge-warning',
     [ROLES.STAFF]: 'badge-primary',
+    [ROLES.NEW_USER]: 'badge-muted'
   };
   return m[role] ?? 'badge-muted';
 }
@@ -27,7 +30,7 @@ export function initials(name: string): string {
 export function statusBadge(status: string): string {
   const m: Record<string, string> = {
     PENDING: 'badge-warning',
-    DELIVERED: 'badge-success',
+    DELIVERED: 'badge-info',
     CONFIRMED: 'badge-success',
     CANCELLED: 'badge-danger',
     CANCELED: 'badge-danger',

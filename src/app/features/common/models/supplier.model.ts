@@ -1,6 +1,6 @@
 // supplier.model.ts
 export interface SupplierRequest {
-  userId: number;
+  userId: number | null;
   categoryId: number;
   companyName: string;
   address: string;

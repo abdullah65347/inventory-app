@@ -6,11 +6,12 @@ import { ToastService } from '../../../../shared/components/toast/toast.service'
 import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
 import { InventoryResponse } from '../../../common/models/inventory.model';
 import { fadeIn } from '../../../../shared/animations/fade.animation';
+import { AppTableComponent } from 'src/app/shared/components/app-table/app-table.component';
 
 @Component({
   selector: 'app-admin-inventory',
   standalone: true,
-  imports: [CommonModule, FormsModule, LoaderComponent],
+  imports: [CommonModule, FormsModule, LoaderComponent, AppTableComponent],
   templateUrl: './inventory.component.html',
   styleUrls: ['./inventory.component.css'],
   animations: [fadeIn]

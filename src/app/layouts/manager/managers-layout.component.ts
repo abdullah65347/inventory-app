@@ -5,11 +5,12 @@ import { SidebarComponent, NavSection } from '../../shared/components/sidebar/si
 import { AuthService } from '../../core/services/auth.service';
 import { initials } from '../../core/utils/role.util';
 import { ChatbotComponent } from 'src/app/shared/components/chatbot/chatbot.component';
+import { ThemeToggleComponent } from '../../shared/components/theme-toggle/theme-toggle.component';
 
 @Component({
   selector: 'app-manager-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, SidebarComponent, ChatbotComponent],
+  imports: [CommonModule, RouterOutlet, SidebarComponent, ChatbotComponent, ThemeToggleComponent],
   template: `
     <div class="layout-wrapper">
       <aside class="sidebar" [class.sidebar-open]="sidebarOpen()">
@@ -33,8 +34,8 @@ import { ChatbotComponent } from 'src/app/shared/components/chatbot/chatbot.comp
             </div>
           </div>
           <div class="topbar-actions">
+            <app-theme-toggle />
             <button class="topbar-btn"><i class="bi bi-bell"></i></button>
-            <div class="avatar" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">{{ userInitials }}</div>
           </div>
         </header>
         <div class="page-content"><router-outlet /></div>

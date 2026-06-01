@@ -10,6 +10,7 @@ export const API_ENDPOINTS = {
     BY_ID: (id: number) => `/api/users/${id}`,
     PASSWORD: (id: number) => `/api/users/${id}/password`,
     ACTIVE: (id: number) => `/api/users/${id}/active`,
+    ROLE: (id: number) => `/api/users/${id}/role`,
   },
   SUPPLIERS: {
     BASE: '/api/suppliers',

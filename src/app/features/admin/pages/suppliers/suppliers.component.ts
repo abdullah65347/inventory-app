@@ -10,11 +10,15 @@ import { SupplierResponse, SupplierRequest } from '../../../common/models/suppli
 import { CategoryResponse } from '../../../common/models/category.model';
 import { User } from '../../../../core/models/user.model';
 import { fadeIn } from '../../../../shared/animations/fade.animation';
+import { initials } from 'src/app/core/utils/role.util';
+import { getAvatarGradient } from 'src/app/core/utils/avatar.util';
+import { SupplierFormComponent } from '../../components/supplier-form/supplier-form.component';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-admin-suppliers',
   standalone: true,
-  imports: [CommonModule, FormsModule, LoaderComponent],
+  imports: [CommonModule, FormsModule, LoaderComponent, SupplierFormComponent],
   templateUrl: './suppliers.component.html',
   styleUrls: ['./suppliers.component.css'],
   animations: [fadeIn]
@@ -32,6 +36,10 @@ export class SuppliersComponent implements OnInit {
   showModal = signal(false);
   editTarget = signal<SupplierResponse | null>(null);
   form: SupplierRequest = { userId: 0, categoryId: 0, companyName: '', address: '' };
+  initials = initials;
+  getAvatarGradient = getAvatarGradient;
+  availableUsers = signal<User[]>([]);
+  isEdit = signal(false);
 
   ngOnInit(): void { this.load(); }
 
@@ -42,8 +50,76 @@ export class SuppliersComponent implements OnInit {
     this.userSvc.getAll().subscribe({ next: u => this.supplierUsers.set(u.filter(x => x.role === 'ROLE_SUPPLIER')) });
   }
 
-  openCreate(): void { this.editTarget.set(null); this.form = { userId: 0, categoryId: 0, companyName: '', address: '' }; this.showModal.set(true); }
-  openEdit(s: SupplierResponse): void { this.editTarget.set(s); this.form = { userId: s.userId, categoryId: s.categoryId, companyName: s.companyName, address: s.address }; this.showModal.set(true); }
+  openCreate(): void {
+    this.isEdit.set(false);
+    forkJoin({
+      users: this.userSvc.getAll(),
+      existing: this.svc.getAll()
+    }).subscribe({
+
+      next: ({ users, existing }) => {
+
+        const takenUserIds = new Set(
+          existing.map(s => s.userId)
+        );
+
+        this.availableUsers.set(
+          users.filter(
+            u =>
+              u.role === 'ROLE_SUPPLIER' &&
+              !takenUserIds.has(u.id)
+          )
+        );
+
+        this.editTarget.set(null);
+
+        this.form = {
+          userId: null as number | null,
+          categoryId: 0,
+          companyName: '',
+          address: ''
+        };
+
+        this.showModal.set(true);
+      }
+    });
+  }
+  openEdit(s: SupplierResponse): void {
+    this.isEdit.set(true);
+    forkJoin({
+      users: this.userSvc.getAll(),
+      existing: this.svc.getAll()
+    }).subscribe({
+
+      next: ({ users, existing }) => {
+
+        const takenUserIds = new Set(
+          existing
+            .filter(x => x.id !== s.id)
+            .map(x => x.userId)
+        );
+
+        this.availableUsers.set(
+          users.filter(
+            u =>
+              u.role === 'ROLE_SUPPLIER' &&
+              !takenUserIds.has(u.id)
+          )
+        );
+
+        this.editTarget.set(s);
+
+        this.form = {
+          userId: s.userId,
+          categoryId: s.categoryId,
+          companyName: s.companyName,
+          address: s.address
+        };
+
+        this.showModal.set(true);
+      }
+    });
+  }
   closeModal(): void { this.showModal.set(false); }
 
   save(): void {

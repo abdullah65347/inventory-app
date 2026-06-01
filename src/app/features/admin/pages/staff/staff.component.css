@@ -1,12 +1,3 @@
-.text-success {
-    color: var(--success) !important
-}
-
-.text-danger {
-    color: var(--danger) !important
-}
-
-
 .user-cell {
     display: flex;
     align-items: center;

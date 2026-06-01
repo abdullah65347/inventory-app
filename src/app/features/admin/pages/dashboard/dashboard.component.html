@@ -107,14 +107,13 @@
         <h6 class="card-title">Recent Sales</h6>
         <a routerLink="/admin/sales" class="view-all">View all</a>
       </div>
-      <div class="card-body" style="padding:0">
-        @if (recentSales().length === 0) {
-        <div class="empty-state"><i class="bi bi-receipt"></i>
-          <p>No sales yet</p>
-        </div>
-        } @else {
-        <table>
-          <thead>
+        <app-table [hasData]="recentSales().length > 0">
+          <ng-template #empty>
+            <div class="empty-state"><i class="bi bi-receipt"></i>
+              <p>No sales yet</p>
+            </div>
+          </ng-template>
+          <ng-template #header>
             <tr>
               <th>#</th>
               <th>Sold By</th>
@@ -123,8 +122,8 @@
               <th>Payment</th>
               <th>Date</th>
             </tr>
-          </thead>
-          <tbody>
+          </ng-template>
+          <ng-template #body>
             @for (s of recentSales(); track s.id) {
             <tr>
               <td><strong>#{{ s.id }}</strong></td>
@@ -139,10 +138,8 @@
               <td>{{ s.saleDate | date:'MMM d' }}</td>
             </tr>
             }
-          </tbody>
-        </table>
-        }
-      </div>
+          </ng-template>
+        </app-table>
     </div>
 
     <!-- Low Stock -->
@@ -151,21 +148,20 @@
         <h6 class="card-title">Low Stock Alerts</h6>
         <a routerLink="/admin/inventory" class="view-all">View all</a>
       </div>
-      <div class="card-body" style="padding:0">
-        @if (lowStock().length === 0) {
-        <div class="empty-state"><i class="bi bi-check-circle"></i>
-          <p>All stock levels healthy</p>
-        </div>
-        } @else {
-        <table>
-          <thead>
+        <app-table [hasData]="lowStock().length > 0">
+          <ng-template #empty>
+            <div class="empty-state"><i class="bi bi-check-circle"></i>
+              <p>All stock levels healthy</p>
+            </div>
+          </ng-template>
+          <ng-template #header>
             <tr>
               <th>Product</th>
               <th>Stock</th>
               <th>Reorder</th>
             </tr>
-          </thead>
-          <tbody>
+          </ng-template>
+          <ng-template #body>
             @for (item of lowStock(); track item.id) {
             <tr>
               <td><strong>{{ item.productName }}</strong></td>
@@ -173,10 +169,8 @@
               <td>{{ item.reorderLevel }}</td>
             </tr>
             }
-          </tbody>
-        </table>
-        }
-      </div>
+          </ng-template>
+        </app-table>
     </div>
   </div>
   }

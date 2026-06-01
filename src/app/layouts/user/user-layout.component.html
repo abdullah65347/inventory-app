@@ -1,13 +1,10 @@
 <div class="layout-wrapper">
   <aside class="sidebar" [class.sidebar-open]="sidebarOpen()">
-    <app-sidebar
-      [sections]="navSections"
-      roleLabel="Customer"
-      accentGradient="linear-gradient(135deg,#10b981,#06b6d4)">
+    <app-sidebar [sections]="navSections" roleLabel="Customer" accentGradient="linear-gradient(135deg,#10b981,#06b6d4)">
     </app-sidebar>
   </aside>
   @if (sidebarOpen()) {
-    <div class="sidebar-overlay" (click)="sidebarOpen.set(false)"></div>
+  <div class="sidebar-overlay" (click)="sidebarOpen.set(false)"></div>
   }
   <main class="main-content">
     <header class="topbar">
@@ -21,8 +18,8 @@
         </div>
       </div>
       <div class="topbar-actions">
+        <app-theme-toggle />
         <button class="topbar-btn"><i class="bi bi-bell"></i></button>
-        <div class="avatar" style="background:linear-gradient(135deg,#10b981,#06b6d4)">{{ userInitials }}</div>
       </div>
     </header>
     <div class="page-content"><router-outlet /></div>

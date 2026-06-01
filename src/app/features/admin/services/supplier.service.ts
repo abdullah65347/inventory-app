@@ -6,7 +6,7 @@ import { SupplierRequest, SupplierResponse } from '../../common/models/supplier.
 
 @Injectable({ providedIn: 'root' })
 export class SupplierService {
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService) { }
 
   create(data: SupplierRequest): Observable<SupplierResponse> {
     return this.api.post<SupplierResponse>(API_ENDPOINTS.SUPPLIERS.BASE, data);
@@ -24,7 +24,10 @@ export class SupplierService {
     return this.api.delete<void>(API_ENDPOINTS.SUPPLIERS.BY_ID(id));
   }
   toggleActive(id: number, active: boolean): Observable<SupplierResponse> {
-    return this.api.put<SupplierResponse>(API_ENDPOINTS.SUPPLIERS.ACTIVE(id), { active });
+    return this.api.put<SupplierResponse>(
+      `${API_ENDPOINTS.SUPPLIERS.ACTIVE(id)}?active=${active}`,
+      {}
+    );
   }
   getByUser(userId: number): Observable<SupplierResponse> {
     return this.api.get<SupplierResponse>(API_ENDPOINTS.SUPPLIERS.BY_USER(userId));

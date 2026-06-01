@@ -1,12 +1,10 @@
 :host ::ng-deep .table-wrap {
     overflow-x: auto;
-    border-radius: 20px;
-    border: 1px solid rgba(226, 232, 240, 0.8);
-    background: rgba(255, 255, 255, 0.88);
-    backdrop-filter: blur(12px);
-    box-shadow:
-        0 4px 10px rgba(15, 23, 42, 0.03),
-        0 12px 32px rgba(15, 23, 42, 0.05);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    box-shadow: var(--shadow-sm);
+    transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 :host ::ng-deep table {
@@ -16,51 +14,34 @@
 }
 
 :host ::ng-deep thead {
-    background:
-        linear-gradient(to bottom,
-            #fbfcfe,
-            #f8fafc);
+    background: var(--border-light);
 }
 
 :host ::ng-deep thead th {
     padding: 14px 18px;
-
     font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
-
-    color: #94a3b8;
-
-    border-bottom: 1px solid rgba(226, 232, 240, 0.9);
-
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
     white-space: nowrap;
-
     position: relative;
+    transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
 }
 
 :host ::ng-deep tbody td {
-    padding: 18px;
-
-    font-size: 14px;
+    padding: 16px 18px;
+    font-size: 13.5px;
     font-weight: 500;
-
-    color: #1e293b;
-
-    border-bottom: 1px solid rgba(241, 245, 249, 0.9);
-
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-light);
     vertical-align: middle;
-
-    transition:
-        background 0.2s ease,
-        transform 0.2s ease;
+    transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, transform 0.2s ease;
 }
 
 :host ::ng-deep tbody tr {
-    transition:
-        background 0.2s ease,
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
+    transition: background-color 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
 }
 
 :host ::ng-deep tbody tr:last-child td {
@@ -68,22 +49,19 @@
 }
 
 :host ::ng-deep tbody tr:nth-child(even) {
-    background: rgba(241, 246, 251, 0.7);
+    background: rgba(241, 246, 251, 0.2);
+}
+
+:root[data-theme="dark"] :host ::ng-deep tbody tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.015);
 }
 
 :host ::ng-deep tbody tr:hover td {
-    color: #0f172a;
+    color: var(--text-primary);
 }
 
 :host ::ng-deep tbody tr:hover {
-
-    background:
-        linear-gradient(to right,
-            rgba(248, 250, 255, 1),
-            rgba(244, 247, 255, 1));
-
-    box-shadow:
-        inset 3px 0 0 var(--primary);
-
+    background: var(--border-light);
+    box-shadow: inset 3px 0 0 var(--primary);
     transform: translateY(-1px);
 }

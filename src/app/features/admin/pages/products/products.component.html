@@ -1,77 +1,200 @@
 <div class="page-enter" @fadeIn>
   <div class="page-header">
-    <div class="page-header-left"><h4>Products</h4><p>Manage all products and set selling prices</p></div>
+    <div class="page-header-left">
+      <h4>Products</h4>
+      <p>Manage all products and set selling prices</p>
+    </div>
     <div class="page-header-right">
-      <input class="form-control form-control-sm" style="width:220px" placeholder="Search..." [(ngModel)]="search" (input)="filter()">
+      <input class="form-control form-control-sm" style="width:220px" placeholder="Search..." [(ngModel)]="search"
+        (input)="filter()">
+      <button class="btn btn-primary btn-md" (click)="openCreate()">
+        <i class="bi bi-plus-lg"></i> Add Product
+      </button>
     </div>
   </div>
   @if (loading()) { <app-loader /> }
   @else {
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>#</th><th>Product</th><th>SKU</th><th>Category</th><th>Supplier</th><th>Cost</th><th>Sell Price</th><th>Stock</th><th>Actions</th></tr></thead>
-        <tbody>
-          @if (filtered().length === 0) {
-            <tr><td colspan="9"><div class="empty-state"><i class="bi bi-box-seam"></i><p>No products found</p></div></td></tr>
-          }
-          @for (p of filtered(); track p.id) {
-            <tr>
-              <td><strong>#{{ p.id }}</strong></td>
-              <td>
-                <div><div style="font-weight:600">{{ p.name }}</div>
-                <div style="font-size:11px;color:var(--text-muted)">{{ p.description | slice:0:40 }}...</div></div>
-              </td>
-              <td><code class="sku">{{ p.sku }}</code></td>
-              <td><span class="badge badge-secondary">{{ p.categoryName }}</span></td>
-              <td>{{ p.supplierName }}</td>
-              <td>{{ p.supplierToAdminPrice | number:'1.2-2' }}</td>
-              <td>
-                @if (p.adminToUserPrice) {
-                  <span style="font-weight:700;color:var(--success)">{{ p.adminToUserPrice | number:'1.2-2' }}</span>
-                } @else {
-                  <span class="badge badge-warning">Not Set</span>
-                }
-              </td>
-              <td><span class="badge {{ p.availableStock <= 10 ? 'badge-danger' : 'badge-success' }}">{{ p.availableStock }}</span></td>
-              <td><button class="btn btn-sm btn-primary" (click)="openPrice(p)"><i class="bi bi-tag"></i> Set Price</button></td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Product</th>
+          <th>SKU</th>
+          <th>Category</th>
+          <th>Cost</th>
+          <th>Sell Price</th>
+          <th>Stock</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (filtered().length === 0) {
+        <tr>
+          <td colspan="9">
+            <div class="empty-state"><i class="bi bi-box-seam"></i>
+              <p>No products found</p>
+            </div>
+          </td>
+        </tr>
+        }
+        @for (p of filtered(); track p.id) {
+        <tr>
+          <td><strong>#{{ p.id }}</strong></td>
+          <td>
+            <div>
+              <div style="font-weight:600">{{ p.name }}</div>
+              <div style="font-size:11px;color:var(--text-muted)">{{ p.description | slice:0:40 }}...</div>
+            </div>
+          </td>
+          <td><code class="sku">{{ p.sku }}</code></td>
+          <td><span class="badge badge-secondary">{{ p.categoryName }}</span></td>
+          <td>{{ p.supplierToAdminPrice | number:'1.2-2' }}</td>
+          <td>
+            @if (p.adminToUserPrice) {
+            <span style="font-weight:700;color:var(--success)">{{ p.adminToUserPrice | number:'1.2-2' }}</span>
+            } @else {
+            <span class="badge badge-warning">Not Set</span>
+            }
+          </td>
+          <td><span class="badge {{ p.availableStock <= 10 ? 'badge-danger' : 'badge-success' }}">{{ p.availableStock
+              }}</span></td>
+          <td><button class="btn btn-sm btn-primary" (click)="openPrice(p)"><i class="bi bi-tag"></i> Set Price</button>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
   }
 </div>
 
 @if (priceTarget()) {
-  <div class="modal-overlay" (click)="closePrice()">
-    <div class="modal-box modal-sm" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h5 class="modal-title">Set Selling Price</h5>
-        <button class="modal-close" (click)="closePrice()">×</button>
+<div class="modal-overlay" (click)="closePrice()">
+  <div class="modal-box modal-sm" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h5 class="modal-title">Set Selling Price</h5>
+      <button class="modal-close" (click)="closePrice()">×</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px">
+        <strong>{{ priceTarget()!.name }}</strong>
+      </p>
+      <div class="form-group">
+        <label class="form-label">Cost Price</label>
+        <input class="form-control" [value]="priceTarget()!.supplierToAdminPrice | number:'1.2-2'" readonly
+          style="background:#f8faff">
       </div>
-      <div class="modal-body">
-        <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px">
-          <strong>{{ priceTarget()!.name }}</strong>
-        </p>
-        <div class="form-group">
-          <label class="form-label">Cost Price</label>
-          <input class="form-control" [value]="priceTarget()!.supplierToAdminPrice | number:'1.2-2'" readonly style="background:#f8faff">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Selling Price</label>
-          <input class="form-control" type="number" [(ngModel)]="newPrice" min="0" step="0.01" placeholder="0.00">
-        </div>
-        @if (newPrice > 0) {
-          <div class="alert alert-info">
-            <i class="bi bi-info-circle"></i>
-            Margin: {{ margin | number:'1.2-2' }} ({{ marginPct }}%)
-          </div>
-        }
+      <div class="form-group">
+        <label class="form-label">Selling Price</label>
+        <input class="form-control" type="number" [(ngModel)]="newPrice" min="0" step="0.01" placeholder="0.00">
       </div>
-      <div class="modal-footer">
-        <button class="btn btn-outline-secondary" (click)="closePrice()">Cancel</button>
-        <button class="btn btn-primary" (click)="savePrice()">Save Price</button>
+      @if (newPrice > 0) {
+      <div class="alert alert-info">
+        <i class="bi bi-info-circle"></i>
+        Margin: {{ margin | number:'1.2-2' }} ({{ marginPct }}%)
       </div>
+      }
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline-secondary" (click)="closePrice()">Cancel</button>
+      <button class="btn btn-primary" (click)="savePrice()">Save Price</button>
     </div>
   </div>
+</div>
 }
+
+@if (showCreate()) {
+<div class="modal-overlay" (click)="closeCreate()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <h5 class="modal-title">Create Product</h5>
+      <button class="modal-close" (click)="closeCreate()">×</button>
+    </div>
+
+    <div class="modal-body">
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group">
+          <label class="form-label">Product Name</label>
+          <input class="form-control" [(ngModel)]="createForm.name" placeholder="Laptop">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">SKU</label>
+          <input class="form-control" [(ngModel)]="createForm.sku" placeholder="LAP-001">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea class="form-control" rows="2" [(ngModel)]="createForm.description" placeholder="Product description">
+        </textarea>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group">
+          <label class="form-label">Cost Price</label>
+          <input type="number" class="form-control" [(ngModel)]="createForm.costPrice" min="0" step="0.01">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Selling Price</label>
+          <input type="number" class="form-control" [(ngModel)]="createForm.sellingPrice" min="0" step="0.01">
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group">
+          <label class="form-label">Initial Stock</label>
+          <input type="number" class="form-control" [(ngModel)]="createForm.quantity" min="1">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Supplier</label>
+
+          <select class="form-select" [(ngModel)]="createForm.supplierId">
+
+            <option [ngValue]="0">
+              -- Select Supplier --
+            </option>
+
+            @for (s of suppliers(); track s.id) {
+            <option [ngValue]="s.id">
+              {{ s.companyName }}
+            </option>
+            }
+          </select>
+
+          <div style="margin-top:8px">
+            <button type="button" class="btn btn-sm btn-outline-primary" (click)="openSupplierModal()">
+
+              <i class="bi bi-plus-lg"></i>
+              Add New Supplier
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline-secondary" (click)="closeCreate()">
+        Cancel
+      </button>
+
+      <button class="btn btn-primary" (click)="createProduct()">
+
+        Create Product
+      </button>
+    </div>
+
+  </div>
+</div>
+}
+
+<app-supplier-form [visible]="showSupplierModal()" [form]="supplierForm" [categories]="categories()" [isEdit]="false"
+  [availableUsers]="availableUsers()" (close)="closeSupplierModal()" (save)="saveSupplier()">
+</app-supplier-form>

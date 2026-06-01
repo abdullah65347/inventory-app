@@ -6,10 +6,13 @@ import { ProductRequest, AdminProductResponse, SupplierProductResponse } from '.
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService) { }
 
   create(data: ProductRequest): Observable<SupplierProductResponse> {
     return this.api.post<SupplierProductResponse>(API_ENDPOINTS.PRODUCTS.BASE, data);
+  }
+  createByAdmin(data: any) {
+    return this.api.post(`${API_ENDPOINTS.PRODUCTS.BASE}/admin`, data);
   }
   getAll(): Observable<AdminProductResponse[]> {
     return this.api.get<AdminProductResponse[]>(API_ENDPOINTS.PRODUCTS.BASE);
@@ -23,8 +26,8 @@ export class ProductService {
   updateSupplierPrice(id: number, price: number): Observable<SupplierProductResponse> {
     return this.api.put<SupplierProductResponse>(API_ENDPOINTS.PRODUCTS.SUPPLIER_PRICE(id), { supplierToAdminPrice: price });
   }
-  updateAdminPrice(id: number, price: number): Observable<AdminProductResponse> {
-    return this.api.put<AdminProductResponse>(API_ENDPOINTS.PRODUCTS.ADMIN_PRICE(id), { adminToUserPrice: price });
+  updateAdminPrice(id: number, price: number) {
+    return this.api.put(`${API_ENDPOINTS.PRODUCTS.ADMIN_PRICE(id)}?price=${price}`, {});
   }
   addStock(id: number, quantity: number): Observable<SupplierProductResponse> {
     return this.api.post<SupplierProductResponse>(API_ENDPOINTS.PRODUCTS.ADD_STOCK(id), { quantity });

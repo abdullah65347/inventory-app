@@ -1,4 +1,4 @@
-# 📦 InvenTrack — Inventory Management System
+# 📦 Inventra — Inventory Management System
 
 A full-featured **Angular 17 Standalone** frontend with a clean, modular architecture mapping exactly to the backend REST API.
 

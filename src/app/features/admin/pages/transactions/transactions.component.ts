@@ -38,6 +38,20 @@ export class TransactionsComponent implements OnInit {
     this.filtered.set(data);
   }
 
-  get inCount(): number { return this.transactions().filter(t => t.transactionType === 'STOCK_IN').length; }
-  get outCount(): number { return this.transactions().filter(t => t.transactionType === 'STOCK_OUT').length; }
+  get inCount(): number {
+    return this.transactions()
+      .filter(t => t.transactionType === 'STOCK_IN')
+      .length;
+  }
+
+  get outCount(): number {
+    return this.transactions()
+      .filter(t => t.transactionType === 'STOCK_OUT')
+      .length;
+  }
+
+  get totalMoved(): number {
+    return this.transactions()
+      .reduce((sum, t) => sum + t.quantity, 0);
+  }
 }

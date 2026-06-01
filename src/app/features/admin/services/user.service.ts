@@ -6,7 +6,7 @@ import { User } from '../../../core/models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService) { }
 
   getAll(): Observable<User[]> {
     return this.api.get<User[]>(API_ENDPOINTS.USERS.BASE);
@@ -29,6 +29,16 @@ export class UserService {
   }
 
   toggleActive(id: number, active: boolean): Observable<User> {
-    return this.api.put<User>(API_ENDPOINTS.USERS.ACTIVE(id), { active });
+    return this.api.put<User>(
+      `${API_ENDPOINTS.USERS.ACTIVE(id)}?active=${active}`,
+      {}
+    );
+  }
+
+  assignRole(id: number, role: string): Observable<User> {
+    return this.api.put<User>(
+      `${API_ENDPOINTS.USERS.ROLE(id)}?role=${role}`,
+      {}
+    );
   }
 }

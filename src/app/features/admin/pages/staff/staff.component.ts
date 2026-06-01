@@ -11,13 +11,15 @@ import { ManagerResponse } from '../../../common/models/manager.model';
 import { User } from '../../../../core/models/user.model';
 import { fadeIn } from '../../../../shared/animations/fade.animation';
 import { forkJoin } from 'rxjs';
+import { initials } from 'src/app/core/utils/role.util';
+import { getAvatarGradient } from 'src/app/core/utils/avatar.util';
 
 @Component({
     selector: 'app-staff',
     standalone: true,
     imports: [CommonModule, FormsModule, LoaderComponent],
     templateUrl: './staff.component.html',
-    // styleUrls: ['./staff.component.css'],
+    styleUrls: ['./staff.component.css'],
     animations: [fadeIn]
 })
 export class StaffComponent implements OnInit {
@@ -31,6 +33,8 @@ export class StaffComponent implements OnInit {
     availableUsers = signal<User[]>([]);
     loading = signal(true);
     showCreate = signal(false);
+    initials = initials;
+    getAvatarGradient = getAvatarGradient;
 
     // assign manager
     assignTarget = signal<StaffResponse | null>(null);

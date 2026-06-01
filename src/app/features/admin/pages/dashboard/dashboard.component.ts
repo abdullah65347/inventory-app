@@ -17,6 +17,7 @@ import { paymentModeBadge } from '../../../../core/utils/role.util';
 import { SaleResponse } from '../../../common/models/sale.model';
 import { InventoryResponse } from '../../../common/models/inventory.model';
 import { TransactionResponse } from '../../../common/models/transaction.model';
+import { AppTableComponent } from 'src/app/shared/components/app-table/app-table.component';
 
 Chart.register(...registerables);
 
@@ -26,7 +27,8 @@ Chart.register(...registerables);
   imports: [
     CommonModule,
     RouterLink,
-    LoaderComponent
+    LoaderComponent,
+    AppTableComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],

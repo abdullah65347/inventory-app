@@ -6,7 +6,7 @@ import { ProductRequest, SupplierProductResponse } from '../../common/models/pro
 
 @Injectable({ providedIn: 'root' })
 export class SupplierProductService {
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService) { }
 
   create(data: ProductRequest): Observable<SupplierProductResponse> {
     return this.api.post<SupplierProductResponse>(API_ENDPOINTS.PRODUCTS.BASE, data);
@@ -15,9 +15,15 @@ export class SupplierProductService {
     return this.api.get<SupplierProductResponse[]>(API_ENDPOINTS.PRODUCTS.BY_SUPPLIER(supplierId));
   }
   updatePrice(id: number, price: number): Observable<SupplierProductResponse> {
-    return this.api.put<SupplierProductResponse>(API_ENDPOINTS.PRODUCTS.SUPPLIER_PRICE(id), { supplierToAdminPrice: price });
+    return this.api.put<SupplierProductResponse>(
+      `${API_ENDPOINTS.PRODUCTS.SUPPLIER_PRICE(id)}?price=${price}`,
+      {}
+    );
   }
   addStock(id: number, quantity: number): Observable<SupplierProductResponse> {
-    return this.api.post<SupplierProductResponse>(API_ENDPOINTS.PRODUCTS.ADD_STOCK(id), { quantity });
+    return this.api.post<SupplierProductResponse>(
+      `${API_ENDPOINTS.PRODUCTS.ADD_STOCK(id)}?quantity=${quantity}`,
+      {}
+    );
   }
 }

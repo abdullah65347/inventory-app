@@ -64,20 +64,32 @@
             </span>
           </td>
           <td>
-            {{ u.createdAt | date:'dd MMM yyyy hh:mm a' }}
+            {{ u.createdAt | date:'dd MMM yyyy' }}
           </td>
           <td>
             <div class="action-btns">
-              <button class="btn btn-icon btn-ghost" (click)="toggleActive(u)"
-                [title]="u.active ? 'Deactivate' : 'Activate'">
-                <i class="bi {{ u.active ? 'bi-toggle-on text-success' : 'bi-toggle-off text-danger' }} fs-4"></i>
+              @if (u.role === 'ROLE_USER') {
+              <button class="btn btn-sm btn-outline-secondary" (click)="openAssign(u)" title="Assign Role">
+                <i class="bi bi-person-check-fill"></i> Assign Role
               </button>
-              <button class="btn btn-icon btn-ghost" (click)="openEdit(u)" title="Edit">
-                <i class="bi bi-pencil fs-6"></i>
-              </button>
-              <button class="btn btn-icon btn-ghost text-danger" (click)="deleteUser(u)" title="Delete">
-                <i class="bi bi-trash fs-5"></i>
-              </button>
+              }
+              @else {
+              <div class="action-btns">
+                <button class="btn btn-icon btn-ghost disabled-action" (click)="toggleActive(u)"
+                  [disabled]="u.role === 'ROLE_ADMIN'" [title]="u.active ? 'Deactivate' : 'Activate'">
+                  <i class="bi {{ u.active ? 'bi-toggle-on text-success' : 'bi-toggle-off text-danger' }} fs-4"></i>
+                </button>
+
+                <button class="btn btn-icon btn-ghost" (click)="openEdit(u)" title="Edit">
+                  <i class="bi bi-pencil fs-6"></i>
+                </button>
+
+                <button class="btn btn-icon btn-ghost text-danger disabled-action" (click)="deleteUser(u)"
+                  [disabled]="u.role === 'ROLE_ADMIN'" title="Delete">
+                  <i class="bi bi-trash fs-5"></i>
+                </button>
+              </div>
+              }
             </div>
           </td>
         </tr>
@@ -137,7 +149,7 @@
     <div class="modal-body">
       <div class="form-group">
         <label class="form-label">Role</label>
-        <select class="form-select" [(ngModel)]="registerForm.role">
+        <select class="form-select select-head" [(ngModel)]="registerForm.role">
           @for (r of availableRoles; track r) {
           <option [value]="r">{{ roleLabel(r) }}</option>
           }
@@ -171,6 +183,46 @@
       <button class="btn btn-outline-secondary" (click)="closeRegister()">Cancel</button>
       <button class="btn btn-primary" (click)="submitRegister()">Create Account</button>
     </div>
+  </div>
+</div>
+}
+@if (showAssignRole()) {
+<div class="modal-overlay" (click)="closeAssign()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <h5 class="modal-title">Assign Role</h5>
+      <button class="modal-close" (click)="closeAssign()">×</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Role</label>
+
+        <select class="form-select" [(ngModel)]="selectedRole">
+          <option value="">
+            -- Select Role --
+          </option>
+
+          @for (r of assignableRoles; track r) {
+          <option [value]="r">
+            {{ roleLabel(r) }}
+          </option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline-secondary" (click)="closeAssign()">
+        Cancel
+      </button>
+
+      <button class="btn btn-primary" [disabled]="!selectedRole" (click)="assignRole()">
+        Assign Role
+      </button>
+    </div>
+
   </div>
 </div>
 }

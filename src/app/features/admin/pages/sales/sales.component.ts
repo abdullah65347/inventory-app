@@ -75,4 +75,28 @@ export class AdminSalesComponent implements OnInit {
   closeDetails(): void {
     this.detailItem.set(null);
   }
+  get totalRevenue(): number {
+    return this.sales()
+      .reduce((sum, sale) => sum + sale.totalAmount, 0);
+  }
+
+  get totalProductsSold(): number {
+    return this.sales()
+      .reduce(
+        (total, sale) =>
+          total +
+          sale.items.reduce(
+            (itemTotal, item) => itemTotal + item.quantity,
+            0
+          ),
+        0
+      );
+  }
+
+  get averageOrderValue(): number {
+    return this.sales().length > 0
+      ? this.totalRevenue / this.sales().length
+      : 0;
+  }
+
 }

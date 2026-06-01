@@ -94,4 +94,34 @@ export class PurchasesComponent implements OnInit {
 
   openCreate(): void { this.showCreate.set(true); this.selectedSupplierId = 0; this.orderItems = []; }
   closeCreate(): void { this.showCreate.set(false); this.supProducts.set([]); this.orderItems = []; }
+
+  get pendingCount(): number {
+    return this.purchases()
+      .filter(p => p.status === 'PENDING')
+      .length;
+  }
+
+  get confirmedCount(): number {
+    return this.purchases()
+      .filter(p => p.status === 'CONFIRMED')
+      .length;
+  }
+
+  get deliveredCount(): number {
+    return this.purchases()
+      .filter(p => p.status === 'DELIVERED')
+      .length;
+  }
+
+  get cancelledCount(): number {
+    return this.purchases()
+      .filter(p => p.status === 'CANCELED')
+      .length;
+  }
+
+  get totalPurchaseAmount(): number {
+    return this.purchases()
+      .reduce((sum, p) => sum + p.totalAmount, 0);
+  }
+
 }
