@@ -30,8 +30,8 @@
         Go to Dashboard <i class="bi bi-arrow-right-short"></i>
       </button>
       } @else {
-      <a routerLink="/auth/login" class="btn btn-ghost nav-btn-signin">Sign In</a>
-      <a routerLink="/auth/register" class="btn btn-primary btn-glow">Get Started</a>
+      <a (click)="openModal('login')" class="btn btn-ghost nav-btn-signin">Sign In</a>
+      <a (click)="openModal('register')" class="btn btn-primary btn-glow">Get Started</a>
       }
     </div>
   </header>
@@ -54,7 +54,8 @@
       </p>
 
       <div class="hero-buttons">
-        <button (click)="goToDashboard()" class="btn btn-lg btn-primary btn-glow">
+        <!-- <button (click)="goToDashboard()" class="btn btn-lg btn-primary btn-glow"> -->
+        <button (click)="openModal(auth.isLoggedIn() ? 'login' : 'register')" class="btn btn-lg btn-primary btn-glow">
           @if (auth.isLoggedIn()) { Access Your Workspace } @else { Start Free Trial }
           <i class="bi bi-arrow-right"></i>
         </button>
@@ -458,3 +459,7 @@
   </footer>
 
 </div>
+@if (showModal()) {
+<app-auth-modal [mode]="modalMode()" (close)="closeModal()" (switchMode)="modalMode.set($event)">
+</app-auth-modal>
+}

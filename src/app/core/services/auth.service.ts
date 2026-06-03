@@ -66,7 +66,7 @@ export class AuthService {
   logout(): void {
     this.tokenSvc.removeToken();
     this.currentUser.set(null);
-    this.router.navigate(['/auth/login']);
+    this.router.navigate(['']);
   }
 
   isLoggedIn(): boolean { return this.tokenSvc.isValid(); }
