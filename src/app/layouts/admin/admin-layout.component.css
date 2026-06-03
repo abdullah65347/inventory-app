@@ -1,19 +1,85 @@
+.main-content {
+  transition: margin-left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.notif-bell {
+  position: relative;
+}
+
+.bell-dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--danger);
+  border: 2px solid var(--bg-card);
+  pointer-events: none;
+}
+
+/* Topbar left group */
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.topbar-title-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.topbar-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Home icon button next to portal name */
+.topbar-home-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  color: var(--text-muted);
+  font-size: 13px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.topbar-home-btn:hover {
+  color: var(--primary);
+  background: var(--primary-light);
+}
+
+/* Sidebar overlay */
 .sidebar-overlay {
   display: none;
 }
 
 @media (max-width: 1024px) {
-  .sidebar {
+
+  .sidebar,
+  .sidebar.collapsed {
+    width: var(--sidebar-width);
     transform: translateX(-100%);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .sidebar.sidebar-open {
+
+  .sidebar.sidebar-open,
+  .sidebar.collapsed.sidebar-open {
     transform: translateX(0);
   }
+
   .sidebar-overlay {
     display: block;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0, 0, 0, 0.5);
     z-index: 999;
   }
 }

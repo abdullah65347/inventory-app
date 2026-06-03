@@ -1,5 +1,5 @@
 <div class="layout-wrapper">
-  <aside class="sidebar" [class.sidebar-open]="sidebarOpen()">
+  <aside class="sidebar" [class.collapsed]="collapsed()" [class.sidebar-open]="sidebarOpen()">
     <app-sidebar [sections]="navSections" roleLabel="Admin" profileRoute="/admin/profile"
       accentGradient="linear-gradient(135deg,#4f46e5,#7c3aed)">
     </app-sidebar>
@@ -9,20 +9,34 @@
   <div class="sidebar-overlay" (click)="sidebarOpen.set(false)"></div>
   }
 
-  <main class="main-content">
+  <main class="main-content" [class.sidebar-collapsed]="collapsed()">
     <header class="topbar">
       <div class="topbar-left">
-        <button class="topbar-btn d-lg-none" (click)="sidebarOpen.set(!sidebarOpen())">
-          <i class="bi bi-list"></i>
+        <!-- Desktop: collapse/expand. Mobile: open overlay -->
+        <button class="topbar-btn" (click)="onMenuClick()">
+          <i class="bi" [ngClass]="collapsed() ? 'bi-layout-sidebar' : 'bi-list'"></i>
         </button>
-        <div>
-          <p class="topbar-title">Admin Portal</p>
+        <div class="topbar-title-group">
+          <div class="topbar-title-row">
+            <p class="topbar-title">Admin Portal</p>
+            <a routerLink="" class="topbar-home-btn" title="Home">
+              <i class="bi bi-house-fill"></i>
+            </a>
+          </div>
           <p class="topbar-sub">Inventory Management System</p>
         </div>
       </div>
       <div class="topbar-actions">
         <app-theme-toggle />
-        <button class="topbar-btn"><i class="bi bi-bell"></i></button>
+        <!-- Replace the bell button with this -->
+        <button class="topbar-btn notif-bell" (click)="notifDrawer.toggle()" title="Notifications">
+          <i class="bi bi-bell-fill"></i>
+          @if (notifDrawer.items().length > 0) {
+          <span class="bell-dot"></span>
+          }
+        </button>
+
+        <app-low-stock-sidebar #notifDrawer />
       </div>
     </header>
     <div class="page-content"><router-outlet /></div>

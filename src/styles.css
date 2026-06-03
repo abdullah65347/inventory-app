@@ -25,6 +25,7 @@
   /* Sidebar */
   --bg-sidebar: #0f2f36;
   --sidebar-width: 260px;
+  --sidebar-width-collapsed: 68px;
 
   --text-primary: #0f172a;
   --text-secondary: #475569;
@@ -169,11 +170,16 @@ body {
   transition: var(--transition-slow);
 }
 
+.main-content.sidebar-collapsed {
+  margin-left: var(--sidebar-width-collapsed);
+}
+
 .page-content {
   flex: 1;
   padding: 24px;
 }
 
+/* ── SIDEBAR ───────────────────── */
 /* ── SIDEBAR ───────────────────── */
 .sidebar {
   width: var(--sidebar-width);
@@ -186,8 +192,58 @@ body {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  transition: var(--transition-slow);
+  overflow-x: hidden;
+  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   border-right: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+/* ── COLLAPSED STATE (desktop icon-only) ── */
+.sidebar.collapsed {
+  width: var(--sidebar-width-collapsed);
+  overflow: visible;
+}
+
+.sidebar.collapsed .brand-name,
+.sidebar.collapsed .brand-sub,
+.sidebar.collapsed .nav-section-label,
+.sidebar.collapsed .nav-item span,
+.sidebar.collapsed .nav-badge,
+.sidebar.collapsed .profile-name,
+.sidebar.collapsed .profile-role,
+.sidebar.collapsed .bi-chevron-up {
+  display: none;
+}
+
+.sidebar.collapsed .sidebar-brand {
+  justify-content: center;
+  padding: 20px 0 16px;
+}
+
+.sidebar.collapsed .brand-logo {
+  margin: 0 auto;
+}
+
+.sidebar.collapsed .nav-item {
+  justify-content: center;
+  padding: 10px 0;
+  margin: 1px 6px;
+  width: calc(100% - 12px);
+  gap: 0;
+}
+
+.sidebar.collapsed .nav-item i {
+  width: auto;
+  font-size: 18px;
+}
+
+.sidebar.collapsed .sidebar-footer {
+  padding: 12px 6px;
+}
+
+.sidebar.collapsed .profile-card {
+  justify-content: center;
+  padding: 10px 0;
+  gap: 0;
 }
 
 .sidebar-brand {
@@ -429,13 +485,15 @@ body {
   position: absolute;
   bottom: calc(100% + 8px);
   left: 0;
-  right: 0;
+  min-width: 220px;
+  /* fixed width so it doesn't clip */
   background: var(--bg-card);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-xl);
   border: 1px solid var(--border);
   overflow: hidden;
-  z-index: 200;
+  z-index: 2000;
+  /* above everything */
   animation: dropUp 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -913,6 +971,7 @@ body {
   border: 1px solid var(--border);
   background: var(--bg-card);
   box-shadow: var(--shadow-sm);
+
   transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 

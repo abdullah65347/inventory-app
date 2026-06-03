@@ -8,7 +8,8 @@ import { InventoryResponse } from "src/app/features/common/models/inventory.mode
     selector: 'app-low-stock-sidebar',
     standalone: true,
     imports: [CommonModule, RouterModule],
-    templateUrl: './low-stock-sidebar.component.html'
+    templateUrl: './low-stock-sidebar.component.html',
+    styleUrl: './low-stock-sidebar.component.css'
 })
 export class LowStockSidebarComponent implements OnInit {
     private inventorySvc = inject(InventoryService);
@@ -21,4 +22,10 @@ export class LowStockSidebarComponent implements OnInit {
 
     toggle() { this.open.set(!this.open()); }
     close() { this.open.set(false); }
+
+    getStockPercent(item: InventoryResponse): number {
+        if (item.reorderLevel === 0) return 0;
+        // Cap at 100, so bar never overflows
+        return Math.min((item.availableStock / item.reorderLevel) * 100, 100);
+    }
 }

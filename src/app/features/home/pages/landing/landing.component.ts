@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ThemeToggleComponent } from '../../../../shared/components/theme-toggle/theme-toggle.component';
+import { AuthModalComponent } from 'src/app/features/auth/pages/auth-modal/auth-modal.component';
 
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [CommonModule, RouterLink, ThemeToggleComponent],
+  imports: [CommonModule, RouterLink, ThemeToggleComponent, AuthModalComponent],
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.css']
 })
@@ -23,6 +24,9 @@ export class LandingComponent {
   iphoneStock = signal(8);
   restockedCount = signal(0);
   showAlert = signal(false);
+  // Add these to LandingComponent class:
+  showModal = signal(false);
+  modalMode = signal<'login' | 'register'>('login');
 
   setTab(tab: 'admin' | 'manager' | 'supplier' | 'staff'): void {
     this.activeTab.set(tab);
@@ -34,6 +38,15 @@ export class LandingComponent {
     this.restockedCount.update(c => c + 1);
     this.showAlert.set(true);
     setTimeout(() => this.showAlert.set(false), 3000);
+  }
+
+  openModal(mode: 'login' | 'register'): void {
+    this.modalMode.set(mode);
+    this.showModal.set(true);
+  }
+
+  closeModal(): void {
+    this.showModal.set(false);
   }
 
   resetSimulator(): void {

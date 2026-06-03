@@ -1,0 +1,323 @@
+<div class="modal-backdrop" (click)="onBackdropClick($event)">
+    <div class="modal-shell">
+        <div class="flip-card" [class.flipped]="mode === 'register'">
+
+            <!-- ────────── FRONT (LOGIN) ────────── -->
+            <div class="flip-face flip-front">
+
+                <!-- Visual panel -->
+                <div class="visual-panel login-visual">
+                    <div class="inventory-bg">
+                        <i class="bi bi-box-seam"></i>
+                        <i class="bi bi-archive"></i>
+                        <i class="bi bi-truck"></i>
+                        <i class="bi bi-boxes"></i>
+                    </div>
+                    <span class="visual-orb o1"></span>
+                    <span class="visual-orb o2"></span>
+                    <span class="visual-orb o3"></span>
+                    <div class="visual-inner">
+                        <div class="visual-top">
+                            <span class="visual-badge"><i class="bi bi-shield-lock-fill"></i> Secure Access</span>
+                            <div class="visual-text">
+                                <h2>Welcome back to<br />Inventra</h2>
+                                <p>Real-time inventory intelligence at your fingertips.</p>
+                            </div>
+                        </div>
+                        <div class="visual-features">
+                            <div class="visual-feature"><span class="vf-icon"><i
+                                        class="bi bi-lightning-charge-fill"></i></span> Lightning-fast sync</div>
+                            <div class="visual-feature"><span class="vf-icon"><i
+                                        class="bi bi-graph-up-arrow"></i></span> Smart forecasting</div>
+                            <div class="visual-feature"><span class="vf-icon"><i class="bi bi-people-fill"></i></span>
+                                Team collaboration</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form panel -->
+                <div class="form-panel">
+                    <button class="close-btn" (click)="close.emit()" aria-label="Close">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                    <div class="form-inner">
+                        <div class="form-brand">
+                            <span class="brand-dot"></span> Inventra
+                        </div>
+
+                        <h2 class="form-title">Sign in</h2>
+                        <p class="form-sub">Enter your credentials to continue</p>
+
+                        @if (loginError()) {
+                        <div class="form-alert danger">
+                            <i class="bi bi-exclamation-circle-fill"></i> {{ loginError() }}
+                        </div>
+                        }
+
+                        <div class="field-group">
+                            <label>Username</label>
+                            <div class="field-wrap">
+                                <i class="bi bi-envelope-fill field-ic"></i>
+                                <input type="text" [(ngModel)]="loginForm.username" [class.err]="loginErrors.username"
+                                    placeholder="Email or Phone Number" (keyup.enter)="login()"
+                                    autocomplete="username" />
+                            </div>
+                            @if (loginErrors.username) { <span class="err-msg">{{ loginErrors.username }}</span> }
+                        </div>
+
+                        <div class="field-group">
+                            <label>Password</label>
+                            <div class="field-wrap">
+                                <i class="bi bi-lock-fill field-ic"></i>
+                                <input [type]="showLoginPass() ? 'text' : 'password'" [(ngModel)]="loginForm.password"
+                                    [class.err]="loginErrors.password" placeholder="Your password"
+                                    (keyup.enter)="login()" autocomplete="current-password" />
+                                <button type="button" class="toggle-pass" (click)="showLoginPass.set(!showLoginPass())">
+                                    <i class="bi" [class.bi-eye-fill]="!showLoginPass()"
+                                        [class.bi-eye-slash-fill]="showLoginPass()"></i>
+                                </button>
+                            </div>
+                            @if (loginErrors.password) { <span class="err-msg">{{ loginErrors.password }}</span> }
+                        </div>
+
+                        <div class="forgot-row">
+                            <button class="forgot-link" (click)="showForgot.set(true)">Forgot password?</button>
+                        </div>
+
+                        <button class="submit-btn" (click)="login()" [disabled]="loginLoading()">
+                            @if (loginLoading()) {
+                            <span class="spinner-border spinner-border-sm"></span> Signing in...
+                            } @else {
+                            Sign In <i class="bi bi-arrow-right"></i>
+                            }
+                        </button>
+
+                        <div class="divider">or continue with</div>
+
+                        <button class="google-btn" (click)="signInWithGoogle()">
+                            <svg class="google-icon" viewBox="0 0 48 48">
+                                <path fill="#FFC107"
+                                    d="M43.6 20.5H42V20H24v8h11.3C33.7 32.4 29.3 35.5 24 35.5c-6.4 0-11.5-5.2-11.5-11.5S17.6 12.5 24 12.5c2.9 0 5.6 1.1 7.6 2.9l5.7-5.7C33.7 6.5 29.1 4.5 24 4.5 13.2 4.5 4.5 13.2 4.5 24S13.2 43.5 24 43.5 43.5 34.8 43.5 24c0-1.2-.1-2.3-.4-3.5z" />
+                                <path fill="#FF3D00"
+                                    d="M6.3 14.7l6.6 4.8C14.7 16 19 12.5 24 12.5c2.9 0 5.6 1.1 7.6 2.9l5.7-5.7C33.7 6.5 29.1 4.5 24 4.5 16.4 4.5 9.8 8.8 6.3 14.7z" />
+                                <path fill="#4CAF50"
+                                    d="M24 43.5c5 0 9.6-1.9 13-5l-6-5.1c-1.9 1.3-4.3 2.1-7 2.1-5.3 0-9.7-3.1-11.3-7.5l-6.5 5C9.7 39.1 16.3 43.5 24 43.5z" />
+                                <path fill="#1976D2"
+                                    d="M43.6 20.5H42V20H24v8h11.3c-.7 2.1-2.1 3.9-3.9 5.2l6 5.1c-.4.4 6.6-4.8 6.6-14.3 0-1.2-.1-2.3-.4-3.5z" />
+                            </svg>
+                            Sign in with Google
+                        </button>
+
+                        <p class="switch-line">
+                            No account yet?
+                            <button class="switch-link" (click)="switch('register')">Create one</button>
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ────────── BACK (REGISTER) ────────── -->
+            <div class="flip-face flip-back">
+
+                <!-- Form panel first (so it appears on the left after flip) -->
+                <div class="form-panel">
+                    <button class="close-btn" (click)="close.emit()" aria-label="Close">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                    <div class="form-inner">
+                        <div class="form-brand">
+                            <span class="brand-dot reg-dot"></span> Inventra
+                        </div>
+
+                        <h2 class="form-title">Create account</h2>
+                        <p class="form-sub">Fill in your details to get started</p>
+
+                        @if (regApiError()) {
+                        <div class="form-alert danger">
+                            <i class="bi bi-exclamation-circle-fill"></i> {{ regApiError() }}
+                        </div>
+                        }
+                        @if (regSuccess()) {
+                        <div class="form-alert success">
+                            <i class="bi bi-check-circle-fill"></i> {{ regSuccess() }}
+                        </div>
+                        }
+
+                        <div class="field-row">
+                            <div class="field-group">
+                                <label>Full Name</label>
+                                <div class="field-wrap">
+                                    <i class="bi bi-person-fill field-ic"></i>
+                                    <input type="text" [(ngModel)]="regForm.name" [class.err]="regErrors.name"
+                                        placeholder="Full Name" />
+                                </div>
+                                @if (regErrors.name) { <span class="err-msg">{{ regErrors.name }}</span> }
+                            </div>
+                            <div class="field-group">
+                                <label>Phone</label>
+                                <div class="field-wrap">
+                                    <i class="bi bi-telephone-fill field-ic"></i>
+                                    <input type="tel" inputmode="numeric" maxlength="10" [ngModel]="regForm.phone"
+                                        (input)="onPhoneInput($event)" [class.err]="regErrors.phone"
+                                        placeholder="10-digit number" />
+                                </div>
+                                @if (regErrors.phone) { <span class="err-msg">{{ regErrors.phone }}</span> }
+                            </div>
+                        </div>
+
+                        <div class="field-group">
+                            <label>Email Address</label>
+                            <div class="field-wrap">
+                                <i class="bi bi-envelope-fill field-ic"></i>
+                                <input type="email" [(ngModel)]="regForm.email" [class.err]="regErrors.email"
+                                    placeholder="you@example.com" />
+                            </div>
+                            @if (regErrors.email) { <span class="err-msg">{{ regErrors.email }}</span> }
+                        </div>
+
+                        <div class="field-group">
+                            <label>Address</label>
+                            <div class="field-wrap">
+                                <i class="bi bi-geo-alt-fill field-ic"></i>
+                                <input type="text" [(ngModel)]="regForm.address" [class.err]="regErrors.address"
+                                    placeholder="City, State" />
+                            </div>
+                            @if (regErrors.address) { <span class="err-msg">{{ regErrors.address }}</span> }
+                        </div>
+
+                        <div class="field-row">
+                            <div class="field-group">
+                                <label>Password</label>
+                                <div class="field-wrap">
+                                    <i class="bi bi-lock-fill field-ic"></i>
+                                    <input [type]="showRegPass() ? 'text' : 'password'" [(ngModel)]="regForm.password"
+                                        (ngModelChange)="onPasswordChange()" [class.err]="regErrors.password"
+                                        placeholder="Min 6 chars" />
+                                    <button type="button" class="toggle-pass" (click)="showRegPass.set(!showRegPass())">
+                                        <i class="bi" [class.bi-eye-fill]="!showRegPass()"
+                                            [class.bi-eye-slash-fill]="showRegPass()"></i>
+                                    </button>
+                                </div>
+                                @if (regErrors.password) { <span class="err-msg">{{ regErrors.password }}</span> }
+                                @if (regForm.password && !regErrors.password) {
+                                <div class="strength-bar">
+                                    <div class="strength-track">
+                                        <div class="strength-fill" [style.width.%]="passwordStrength() * 25"
+                                            [style.background]="strengthColor"></div>
+                                    </div>
+                                    <span class="strength-lbl" [style.color]="strengthColor">{{ strengthLabel }}</span>
+                                </div>
+                                }
+                            </div>
+                            <div class="field-group">
+                                <label>Confirm Password</label>
+                                <div class="field-wrap">
+                                    <i class="bi bi-shield-lock-fill field-ic"></i>
+                                    <input [type]="showRegConfirm() ? 'text' : 'password'"
+                                        [(ngModel)]="regForm.confirmPassword" [class.err]="regErrors.confirmPassword"
+                                        placeholder="Re-enter password" />
+                                    <button type="button" class="toggle-pass"
+                                        (click)="showRegConfirm.set(!showRegConfirm())">
+                                        <i class="bi" [class.bi-eye-fill]="!showRegConfirm()"
+                                            [class.bi-eye-slash-fill]="showRegConfirm()"></i>
+                                    </button>
+                                </div>
+                                @if (regErrors.confirmPassword) { <span class="err-msg">{{ regErrors.confirmPassword
+                                    }}</span> }
+                                @if (regForm.confirmPassword && regForm.password === regForm.confirmPassword &&
+                                !regErrors.confirmPassword) {
+                                <span class="match-ok"><i class="bi bi-check-circle-fill"></i> Passwords match</span>
+                                }
+                            </div>
+                        </div>
+
+                        <button class="submit-btn reg-btn" (click)="register()" [disabled]="regLoading()">
+                            @if (regLoading()) {
+                            <span class="spinner-border spinner-border-sm"></span> Creating account...
+                            } @else {
+                            Create Account <i class="bi bi-arrow-right"></i>
+                            }
+                        </button>
+
+                        <p class="switch-line">
+                            Already have an account?
+                            <button class="switch-link" (click)="switch('login')">Sign in</button>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Visual panel on the right for register face -->
+                <div class="visual-panel reg-visual">
+                    <div class="inventory-bg">
+                        <i class="bi bi-box-seam"></i>
+                        <i class="bi bi-archive"></i>
+                        <i class="bi bi-truck"></i>
+                        <i class="bi bi-boxes"></i>
+                    </div>
+                    <span class="visual-orb o1"></span>
+                    <span class="visual-orb o2"></span>
+                    <span class="visual-orb o3"></span>
+                    <div class="visual-inner">
+                        <div class="visual-top">
+                            <span class="visual-badge"><i class="bi bi-rocket-takeoff-fill"></i> Join Inventra</span>
+                            <div class="visual-text">
+                                <h2>Start managing<br />smarter</h2>
+                                <p>Set up your account and take control of your supply chain today.</p>
+                            </div>
+                        </div>
+                        <div class="visual-features">
+                            <div class="visual-feature"><span class="vf-icon"><i class="bi bi-check2-circle"></i></span>
+                                Free 14-day trial</div>
+                            <div class="visual-feature"><span class="vf-icon"><i
+                                        class="bi bi-cloud-check-fill"></i></span> Cloud-based & secure</div>
+                            <div class="visual-feature"><span class="vf-icon"><i class="bi bi-headset"></i></span> 24/7
+                                expert support</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ────────── FORGOT PASSWORD OVERLAY ────────── -->
+        @if (showForgot()) {
+        <div class="forgot-overlay" (click)="onForgotBackdrop($event)">
+            <div class="forgot-box">
+                <button class="close-btn" (click)="showForgot.set(false)" aria-label="Close">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+                <div class="forgot-icon"><i class="bi bi-key-fill"></i></div>
+                <h3>Reset your password</h3>
+                <p>Enter your email and we'll send you a reset link.</p>
+
+                @if (forgotSuccess()) {
+                <div class="form-alert success">
+                    <i class="bi bi-check-circle-fill"></i> {{ forgotSuccess() }}
+                </div>
+                } @else {
+                <div class="field-group">
+                    <div class="field-wrap">
+                        <i class="bi bi-envelope-fill field-ic"></i>
+                        <input type="email" [(ngModel)]="forgotEmail" [class.err]="forgotError()"
+                            placeholder="you@example.com" />
+                    </div>
+                    @if (forgotError()) { <span class="err-msg">{{ forgotError() }}</span> }
+                </div>
+                <button class="submit-btn" (click)="sendForgot()" [disabled]="forgotLoading()">
+                    @if (forgotLoading()) {
+                    <span class="spinner-border spinner-border-sm"></span> Sending...
+                    } @else {
+                    Send Reset Link <i class="bi bi-send-fill"></i>
+                    }
+                </button>
+                }
+
+                <button class="back-link" (click)="showForgot.set(false)">
+                    <i class="bi bi-arrow-left"></i> Back to sign in
+                </button>
+            </div>
+        </div>
+        }
+    </div>
+</div>
