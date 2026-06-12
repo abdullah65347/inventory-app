@@ -22,30 +22,7 @@
     --am-radius: 24px;
 }
 
-/* Dark mode — works with OS preference OR .dark-mode class on <html>/<body> */
-@media (prefers-color-scheme: dark) {
-    :host {
-        --am-backdrop: rgba(0, 0, 0, 0.82);
-        --am-surface: #0f172a;
-        --am-surface-2: #1e293b;
-        --am-surface-3: #273449;
-        --am-border: #334155;
-        --am-border-strong: #475569;
-        --am-text: #f1f5f9;
-        --am-text-2: #cbd5e1;
-        --am-text-3: #94a3b8;
-        --am-muted: #64748b;
-        --am-primary: #818cf8;
-        --am-primary-2: #a78bfa;
-        --am-primary-soft: rgba(129, 140, 248, 0.18);
-        --am-danger-soft: rgba(220, 38, 38, 0.12);
-        --am-success-soft: rgba(16, 185, 129, 0.12);
-        --am-shadow: 0 40px 90px rgba(0, 0, 0, 0.8);
-    }
-}
-
-:host-context(.dark-mode),
-:host-context(.dark) {
+:host-context([data-theme="dark"]) {
     --am-backdrop: rgba(0, 0, 0, 0.82);
     --am-surface: #0f172a;
     --am-surface-2: #1e293b;

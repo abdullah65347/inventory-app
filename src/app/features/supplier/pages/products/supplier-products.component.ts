@@ -84,4 +84,9 @@ export class SupplierProductsComponent implements OnInit {
       error: () => this.toast.error('Failed to update price')
     });
   }
+
+  get totalProducts(): number { return this.products().length; }
+  get activeProducts(): number { return this.products().filter(p => p.active).length; }
+  get lowStockProducts(): number { return this.products().filter(p => p.availableStock <= 10).length; }
+  get totalUnits(): number { return this.products().reduce((sum, p) => sum + p.availableStock, 0); }
 }

@@ -1,0 +1,12 @@
+﻿.manager-cards-gap { margin-bottom: 18px; }
+.notice {
+  padding: 16px;
+  color: var(--danger);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.name-cell { display: flex; align-items: center; gap: 8px; }
+.avatar { background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; }
+.muted { color: var(--text-muted); font-size: 12px; }
+

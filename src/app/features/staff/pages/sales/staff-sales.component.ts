@@ -80,7 +80,7 @@ export class StaffSalesComponent implements OnInit {
     });
 
     ngOnInit(): void {
-        this.productSvc.getAll().subscribe({
+        this.productSvc.getAdminProducts().subscribe({
             next: p => { this.allProducts.set(p); this.loading.set(false); },
             error: () => this.loading.set(false)
         });

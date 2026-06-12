@@ -1,84 +1,124 @@
 <div class="page-enter" @fadeIn>
+
+  <!-- Header -->
   <div class="page-header">
     <div class="page-header-left">
       <h4>Dashboard</h4>
-      <p>Welcome, {{ auth.currentUser()?.name }}!</p>
+      <p>Welcome back, {{ auth.currentUser()?.name }}!</p>
     </div>
-    <a routerLink="/supplier/products" class="btn btn-primary btn-sm">
-      <i class="bi bi-plus-lg"></i> Add Product
-    </a>
+    <div class="page-header">
+      <div class="page-header-right">
+        <a routerLink="/supplier/products" class="btn btn-primary btn-sm">
+          <i class="bi bi-plus-lg"></i> Add Product
+        </a>
+      </div>
+    </div>
   </div>
 
-  @if (loading()) { <app-loader /> }
-  @else {
-    <div class="grid-4" style="margin-bottom:24px">
-      <div class="stat-card c-primary">
-        <div class="stat-icon c-primary"><i class="bi bi-box-seam-fill"></i></div>
-        <div class="stat-value">{{ stats().products }}</div>
-        <div class="stat-label">My Products</div>
-        <div class="stat-trend up"><i class="bi bi-arrow-up-short"></i> Active listings</div>
-      </div>
-      <div class="stat-card c-success">
-        <div class="stat-icon c-success"><i class="bi bi-boxes"></i></div>
-        <div class="stat-value">{{ stats().stock }}</div>
-        <div class="stat-label">Total Stock</div>
-        <div class="stat-trend up"><i class="bi bi-arrow-up-short"></i> Units available</div>
-      </div>
-      <div class="stat-card c-warning">
-        <div class="stat-icon c-warning"><i class="bi bi-hourglass-split"></i></div>
-        <div class="stat-value">{{ stats().pending }}</div>
-        <div class="stat-label">Pending Orders</div>
-      </div>
-      <div class="stat-card c-secondary">
-        <div class="stat-icon c-secondary"><i class="bi bi-check-circle-fill"></i></div>
-        <div class="stat-value">{{ stats().delivered }}</div>
-        <div class="stat-label">Delivered</div>
-      </div>
-    </div>
+  @if (loading()) {
+  <app-loader></app-loader>
+  } @else {
 
-    <div class="grid-2" style="margin-bottom:24px">
-      <div class="card">
-        <div class="card-header">
-          <h6 class="card-title"><i class="bi bi-pie-chart-fill me-2"></i>Stock Distribution</h6>
-        </div>
-        <div class="card-body">
-          <div class="chart-wrap"><canvas #pieChart></canvas></div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-header">
-          <h6 class="card-title"><i class="bi bi-graph-up me-2"></i>Stock Trend</h6>
-        </div>
-        <div class="card-body">
-          <div class="chart-wrap"><canvas #lineChart></canvas></div>
-        </div>
-      </div>
+  <!-- Stat Cards -->
+  <div class="cards mb-24" [@fadeInList]="stats()">
+    <div class="stat-card c-primary">
+      <div class="stat-icon c-primary"><i class="bi bi-box-seam-fill"></i></div>
+      <div class="stat-value">{{ stats().products }}</div>
+      <div class="stat-label">My Products</div>
     </div>
+    <div class="stat-card c-success">
+      <div class="stat-icon c-success"><i class="bi bi-boxes"></i></div>
+      <div class="stat-value">{{ stats().stock }}</div>
+      <div class="stat-label">Total Stock</div>
+    </div>
+    <div class="stat-card c-warning">
+      <div class="stat-icon c-warning"><i class="bi bi-hourglass-split"></i></div>
+      <div class="stat-value">{{ stats().pending }}</div>
+      <div class="stat-label">Pending Orders</div>
+    </div>
+    <div class="stat-card c-accent">
+      <div class="stat-icon c-accent"><i class="bi bi-check2-circle"></i></div>
+      <div class="stat-value">{{ stats().confirmed }}</div>
+      <div class="stat-label">Confirmed</div>
+    </div>
+    <div class="stat-card c-secondary">
+      <div class="stat-icon c-secondary"><i class="bi bi-truck"></i></div>
+      <div class="stat-value">{{ stats().delivered }}</div>
+      <div class="stat-label">Delivered</div>
+    </div>
+  </div>
 
+  <!-- Charts Row -->
+  <div class="grid-2 mb-24">
+
+    <!-- Stacked Bar: Monthly Order Value by Status -->
     <div class="card">
       <div class="card-header">
-        <h6 class="card-title">Recent Purchase Orders</h6>
-        <a routerLink="/supplier/orders" style="font-size:12px;color:var(--primary);text-decoration:none;font-weight:600">View all</a>
+        <h6 class="card-title">
+          <i class="bi bi-bar-chart-fill me-2 text-primary"></i>Monthly Order Value
+        </h6>
+        <span class="badge badge-secondary">LAST 6 MONTHS</span>
       </div>
-      <div class="card-body" style="padding:0">
-        @if (orders().length === 0) {
-          <div class="empty-state"><i class="bi bi-cart-check"></i><p>No orders yet</p></div>
-        } @else {
-          <table>
-            <thead><tr><th>Order #</th><th>Items</th><th>Total</th><th>Status</th></tr></thead>
-            <tbody>
-              @for (o of orders().slice(0,5); track o.id) {
-                <tr>
-                  <td><strong>#{{ o.id }}</strong></td>
-                  <td>{{ o.items.length }}</td>
-                  <td>{{ o.totalAmount | number:'1.2-2' }}</td>
-                  <td><span class="badge {{ statusBadge(o.status) }}">{{ o.status }}</span></td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        }
+      <div class="card-body">
+        <div class="chart-wrap"><canvas #barChart></canvas></div>
       </div>
     </div>
+
+    <!-- Donut: Top 5 Products by Stock -->
+    <div class="card">
+      <div class="card-header">
+        <h6 class="card-title">
+          <i class="bi bi-pie-chart-fill me-2 text-primary"></i>Top 5 Products by Stock
+        </h6>
+        <span class="badge badge-secondary">PRODUCTS</span>
+      </div>
+      <div class="card-body">
+        <div class="chart-wrap"><canvas #donutChart></canvas></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Recent Orders Table -->
+  <div class="card">
+    <div class="card-header">
+      <h6 class="card-title">Recent Purchase Orders</h6>
+      <a routerLink="/supplier/orders" class="view-all">View all</a>
+    </div>
+    <div class="card-body" style="padding: 0">
+      @if (recentOrders().length === 0) {
+      <div class="empty-state">
+        <i class="bi bi-cart-check"></i>
+        <p>No orders yet</p>
+      </div>
+      } @else {
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Items</th>
+            <th>Total Amount</th>
+            <th>Status</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (o of recentOrders(); track o.id) {
+          <tr>
+            <td><strong>#{{ o.id }}</strong></td>
+            <td>{{ o.items.length }} item{{ o.items.length !== 1 ? 's' : '' }}</td>
+            <td><strong>₹{{ o.totalAmount | number:'1.0-0' }}</strong></td>
+            <td>
+              <span class="badge {{ statusBadge(o.status) }}">{{ o.status }}</span>
+            </td>
+            <td>{{ o.createdAt | date:'MMM d, y' }}</td>
+          </tr>
+          }
+        </tbody>
+      </table>
+      }
+    </div>
+  </div>
+
   }
 </div>

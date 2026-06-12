@@ -12,6 +12,7 @@ import { fadeIn } from '../../../../shared/animations/fade.animation';
     standalone: true,
     imports: [CommonModule, LoaderComponent],
     templateUrl: './manager-purchases.component.html',
+    styleUrls: ['./manager-purchases.component.css'],
     animations: [fadeIn]
 })
 export class ManagerPurchasesComponent implements OnInit {
@@ -36,8 +37,12 @@ export class ManagerPurchasesComponent implements OnInit {
     confirm(p: PurchaseResponse): void {
         if (!confirm('Confirm delivery? Inventory will be updated.')) return;
         this.svc.confirm(p.id).subscribe({
-            next: () => { this.toast.success('Delivery confirmed — inventory updated'); this.load(); },
+            next: () => { this.toast.success('Delivery confirmed and inventory updated'); this.load(); },
             error: err => this.toast.error(err?.error?.message ?? 'Failed')
         });
     }
+
+    get pendingCount(): number { return this.purchases().filter(p => p.status === 'PENDING').length; }
+    get deliveredCount(): number { return this.purchases().filter(p => p.status === 'DELIVERED').length; }
+    get confirmedCount(): number { return this.purchases().filter(p => p.status === 'CONFIRMED').length; }
 }

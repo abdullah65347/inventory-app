@@ -1,95 +1,66 @@
-<div class="page-enter" @fadeIn>
-    <div class="page-header">
-        <div class="page-header-left">
-            <h4>Confirm Deliveries</h4>
-            <p>Review delivered orders and confirm to update inventory</p>
-        </div>
-    </div>
+﻿<div class="page-enter manager-page" @fadeIn>
+  <div class="page-header">
+    <div class="page-header-left"><h4>Confirm Deliveries</h4><p>Validate delivered purchase orders and finalize stock updates.</p></div>
+  </div>
 
-    @if (loading()) { <app-loader /> }
-    @else {
+  @if (loading()) { <app-loader /> }
+  @else {
+    <section class="grid-4 compact-stats manager-cards-gap">
+      <article class="stat-card c-primary"><div class="stat-icon c-primary"><i class="bi bi-cart-fill"></i></div><div class="stat-value">{{ purchases().length }}</div><div class="stat-label">Total Orders</div></article>
+      <article class="stat-card c-warning"><div class="stat-icon c-warning"><i class="bi bi-hourglass-split"></i></div><div class="stat-value">{{ pendingCount }}</div><div class="stat-label">Pending</div></article>
+      <article class="stat-card c-accent"><div class="stat-icon c-accent"><i class="bi bi-truck"></i></div><div class="stat-value">{{ deliveredCount }}</div><div class="stat-label">Delivered</div></article>
+      <article class="stat-card c-success"><div class="stat-icon c-success"><i class="bi bi-check-circle-fill"></i></div><div class="stat-value">{{ confirmedCount }}</div><div class="stat-label">Confirmed</div></article>
+    </section>
+
     <div class="table-wrap">
-        <table>
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Supplier</th>
-                    <th>Items</th>
-                    <th>Total</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (purchases().length === 0) {
-                <tr>
-                    <td colspan="6">
-                        <div class="empty-state"><i class="bi bi-truck"></i>
-                            <p>No purchases found</p>
-                        </div>
-                    </td>
-                </tr>
-                }
-                @for (p of purchases(); track p.id) {
-                <tr>
-                    <td><strong>#{{ p.id }}</strong></td>
-                    <td>{{ p.supplierName ?? 'Supplier #' + p.supplierId }}</td>
-                    <td>{{ p.items.length }}</td>
-                    <td><strong>₹{{ p.totalAmount | number:'1.2-2' }}</strong></td>
-                    <td><span class="badge {{ statusBadge(p.status) }}">{{ p.status }}</span></td>
-                    <td>
-                        <div style="display:flex;gap:4px">
-                            <button class="btn btn-icon btn-ghost" (click)="detailItem.set(p)">
-                                <i class="bi bi-eye"></i>
-                            </button>
-                            @if (p.status === 'DELIVERED') {
-                            <button class="btn btn-sm btn-success" (click)="confirm(p)">
-                                <i class="bi bi-check-lg"></i> Confirm
-                            </button>
-                            }
-                        </div>
-                    </td>
-                </tr>
-                }
-            </tbody>
-        </table>
+      <table>
+        <thead><tr><th>#</th><th>Supplier</th><th>Items</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>
+          @if (purchases().length === 0) {
+            <tr><td colspan="6"><div class="empty-state"><i class="bi bi-truck"></i><p>No purchases found</p></div></td></tr>
+          }
+          @for (p of purchases(); track p.id) {
+            <tr>
+              <td><strong>#{{ p.id }}</strong></td>
+              <td>{{ p.supplierName ?? ('Supplier #' + p.supplierId) }}</td>
+              <td>{{ p.items.length }}</td>
+              <td><strong>{{ p.totalAmount | number:'1.2-2' }}</strong></td>
+              <td><span class="badge {{ statusBadge(p.status) }}">{{ p.status }}</span></td>
+              <td>
+                <div class="actions">
+                  <button class="btn btn-icon btn-ghost" (click)="detailItem.set(p)" title="View"><i class="bi bi-eye"></i></button>
+                  @if (p.status === 'DELIVERED') {
+                    <button class="btn btn-sm btn-success" (click)="confirm(p)"><i class="bi bi-check-lg"></i> Confirm</button>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
     </div>
-    }
+  }
 </div>
 
 @if (detailItem()) {
 <div class="modal-overlay" (click)="detailItem.set(null)">
-    <div class="modal-box" (click)="$event.stopPropagation()">
-        <div class="modal-header">
-            <h5 class="modal-title">Purchase #{{ detailItem()!.id }}</h5>
-            <button class="modal-close" (click)="detailItem.set(null)">×</button>
-        </div>
-        <div class="modal-body">
-            <p>Status: <span class="badge {{ statusBadge(detailItem()!.status) }}">{{ detailItem()!.status }}</span></p>
-            <p style="margin-top:6px">Total: <strong>₹{{ detailItem()!.totalAmount | number:'1.2-2' }}</strong></p>
-            <div class="table-wrap" style="margin-top:14px">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Product</th>
-                            <th>Qty</th>
-                            <th>Unit Price</th>
-                            <th>Subtotal</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @for (i of detailItem()!.items; track i.productId) {
-                        <tr>
-                            <td>{{ i.productName }}</td>
-                            <td>{{ i.quantity }}</td>
-                            <td>₹{{ i.unitPrice | number:'1.2-2' }}</td>
-                            <td>₹{{ i.subTotal | number:'1.2-2' }}</td>
-                        </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <div class="modal-header"><h5 class="modal-title">Purchase #{{ detailItem()!.id }}</h5><button class="modal-close" (click)="detailItem.set(null)">×</button></div>
+    <div class="modal-body">
+      <p>Status: <span class="badge {{ statusBadge(detailItem()!.status) }}">{{ detailItem()!.status }}</span></p>
+      <p class="spaced">Total: <strong>{{ detailItem()!.totalAmount | number:'1.2-2' }}</strong></p>
+      <div class="table-wrap spaced">
+        <table>
+          <thead><tr><th>Product</th><th>Qty</th><th>Unit Price</th><th>Subtotal</th></tr></thead>
+          <tbody>
+            @for (i of detailItem()!.items; track i.productId) {
+              <tr><td>{{ i.productName }}</td><td>{{ i.quantity }}</td><td>{{ i.unitPrice | number:'1.2-2' }}</td><td>{{ i.subTotal | number:'1.2-2' }}</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
     </div>
+  </div>
 </div>
 }
+

@@ -1,1 +1,12 @@
-/* styles */
+.action-row {
+  display: flex;
+  gap: 6px;
+}
+
+.detail-total {
+  margin-top: 6px;
+}
+
+.detail-table {
+  margin-top: 14px;
+}
