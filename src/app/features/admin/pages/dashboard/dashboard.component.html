@@ -22,44 +22,65 @@
   @if (loading()) {
   <app-loader></app-loader>
   } @else {
+
   <!-- Stat Cards -->
   <div class="cards mb-24" [@fadeInList]="stats()">
     <div class="stat-card c-primary">
       <div class="stat-icon c-primary"><i class="bi bi-people-fill"></i></div>
       <div class="stat-value">{{ stats().users }}</div>
       <div class="stat-label">Total Users</div>
-      <!-- <div class="stat-trend up"><i class="bi bi-arrow-up-short"></i> +12% this month</div> -->
     </div>
-    <!-- <div class="stat-card c-secondary">
-      <div class="stat-icon c-secondary"><i class="bi bi-truck"></i></div>
-      <div class="stat-value">{{ stats().suppliers }}</div>
-      <div class="stat-label">Total Suppliers</div>
-      <div class="stat-trend up"><i class="bi bi-arrow-up-short"></i> +3 new</div>
-    </div> -->
     <div class="stat-card c-success">
       <div class="stat-icon c-success"><i class="bi bi-box-seam-fill"></i></div>
       <div class="stat-value">{{ stats().products }}</div>
       <div class="stat-label">Products</div>
-      <!-- <div class="stat-trend up"><i class="bi bi-arrow-up-short"></i> +8 this week</div> -->
     </div>
     <div class="stat-card c-accent">
       <div class="stat-icon c-accent"><i class="bi bi-receipt-cutoff"></i></div>
       <div class="stat-value">{{ stats().sales }}</div>
       <div class="stat-label">Total Sales</div>
-      <!-- <div class="stat-trend up"><i class="bi bi-arrow-up-short"></i> +18 today</div> -->
     </div>
     <div class="stat-card c-danger">
       <div class="stat-icon c-danger"><i class="bi bi-exclamation-triangle-fill"></i></div>
       <div class="stat-value">{{ stats().lowStock }}</div>
       <div class="stat-label">Low Stock Items</div>
-      <!-- <div class="stat-trend down"><i class="bi bi-arrow-down-short"></i> Needs attention</div> -->
     </div>
     <div class="stat-card c-warning">
       <div class="stat-icon c-warning"><i class="bi bi-graph-up-arrow"></i></div>
       <div class="stat-value">{{ stats().revenue | number:'1.0-0' }}</div>
       <div class="stat-label">Total Revenue</div>
-      <!-- <div class="stat-trend up"><i class="bi bi-arrow-up-short"></i> +24%</div> -->
     </div>
+  </div>
+
+  <!-- Time Range Selector -->
+  <div class="range-selector mb-24">
+    <span class="range-label">Time Range:</span>
+
+    @for (r of timeRanges; track r.value) {
+    <button class="range-btn" [class.active]="selectedRange() === r.value" (click)="setRange(r.value)">
+      {{ r.label }}
+    </button>
+    }
+
+    @if (selectedRange() === 'custom') {
+    <div class="custom-range">
+      <label class="date-field">
+        <span>From</span>
+        <input type="date" [value]="customFrom()" [max]="maxDate()"
+          (change)="onCustomFromChange($any($event.target).value)" />
+      </label>
+
+      <label class="date-field">
+        <span>To</span>
+        <input type="date" [value]="customTo()" [min]="customFrom()" [max]="maxDate()"
+          (change)="onCustomToChange($any($event.target).value)" />
+      </label>
+
+      @if (customError()) {
+      <span class="range-error">{{ customError() }}</span>
+      }
+    </div>
+    }
   </div>
 
   <!-- Charts Row -->
@@ -67,9 +88,13 @@
     <div class="card">
       <div class="card-header">
         <h6 class="card-title">
-          <i class="bi bi-bar-chart-fill me-2 text-primary"></i>Monthly Revenue & Orders
+          <i class="bi bi-bar-chart-fill me-2 text-primary"></i>Revenue & Orders
         </h6>
-        <span class="badge badge-primary">Last 6 Months</span>
+        <span class="badge badge-secondary">
+          @if (selectedRange() === '15days') { Last 15 Days }
+          @else if (selectedRange() === '6months') { Last 6 Months }
+          @else { Custom Range }
+        </span>
       </div>
       <div class="card-body">
         <div class="chart-wrap"><canvas #barChart></canvas></div>
@@ -77,22 +102,44 @@
     </div>
     <div class="card">
       <div class="card-header">
-        <h6 class="card-title"><i class="bi bi-pie-chart-fill me-2 text-secondary"></i>Sales by Payment Mode</h6>
-        <span class="badge badge-secondary">Products</span>
+        <h6 class="card-title">
+          <i class="bi bi-pie-chart-fill me-2 text-primary"></i>Sales by Top 5 Products
+        </h6>
+        <span class="badge badge-secondary">PRODUCTS</span>
       </div>
       <div class="card-body">
-        <div class="chart-wrap"><canvas #pieChart></canvas></div>
+        <div class="chart-wrap"><canvas #productPieChart></canvas></div>
       </div>
     </div>
+
   </div>
 
   <!-- Line Chart -->
   <div class="card mb-24">
     <div class="card-header">
       <h6 class="card-title">
-        <i class="bi bi-pie-chart-fill me-2 text-secondary"></i>Inventory Trends (Stock In vs Stock Out)
+        <i class="bi bi-arrow-left-right me-2 text-secondary"></i>Purchase Cost vs Sale Value
       </h6>
-      <span class="badge badge-secondary">All Time</span>
+      <span class="badge badge-secondary">
+        @if (selectedRange() === '15days') { Last 15 Days }
+        @else if (selectedRange() === '6months') { Last 6 Months }
+        @else { Custom Range }
+      </span>
+    </div>
+    <div class="card-body">
+      <div class="chart-wrap"><canvas #pieChart></canvas></div>
+    </div>
+  </div>
+  <div class="card mb-24">
+    <div class="card-header">
+      <h6 class="card-title">
+        <i class="bi bi-activity me-2 text-secondary"></i>Inventory Trends (Stock In vs Stock Out)
+      </h6>
+      <span class="badge badge-secondary">
+        @if (selectedRange() === '15days') { Last 15 Days }
+        @else if (selectedRange() === '6months') { Last 6 Months }
+        @else { Custom Range }
+      </span>
     </div>
     <div class="card-body">
       <div class="chart-wrap"><canvas #lineChart></canvas></div>
@@ -107,39 +154,39 @@
         <h6 class="card-title">Recent Sales</h6>
         <a routerLink="/admin/sales" class="view-all">View all</a>
       </div>
-        <app-table [hasData]="recentSales().length > 0">
-          <ng-template #empty>
-            <div class="empty-state"><i class="bi bi-receipt"></i>
-              <p>No sales yet</p>
-            </div>
-          </ng-template>
-          <ng-template #header>
-            <tr>
-              <th>#</th>
-              <th>Sold By</th>
-              <th>Customer</th>
-              <th>Amount</th>
-              <th>Payment</th>
-              <th>Date</th>
-            </tr>
-          </ng-template>
-          <ng-template #body>
-            @for (s of recentSales(); track s.id) {
-            <tr>
-              <td><strong>#{{ s.id }}</strong></td>
-              <td>{{ s.soldByName ||'—' }}</td>
-              <td>{{ s.customerName ||'—' }}</td>
-              <td><strong>₹{{ s.totalAmount | number:'1.0-0' }}</strong></td>
-              <td>
-                <span class="badge {{ paymentModeBadge(s.paymentMode) }}">
-                  {{ s.paymentMode }}
-                </span>
-              </td>
-              <td>{{ s.saleDate | date:'MMM d' }}</td>
-            </tr>
-            }
-          </ng-template>
-        </app-table>
+      <app-table [hasData]="recentSales().length > 0">
+        <ng-template #empty>
+          <div class="empty-state"><i class="bi bi-receipt"></i>
+            <p>No sales yet</p>
+          </div>
+        </ng-template>
+        <ng-template #header>
+          <tr>
+            <th>#</th>
+            <th>Sold By</th>
+            <th>Customer</th>
+            <th>Amount</th>
+            <th>Payment</th>
+            <th>Date</th>
+          </tr>
+        </ng-template>
+        <ng-template #body>
+          @for (s of recentSales(); track s.id) {
+          <tr>
+            <td><strong>#{{ s.id }}</strong></td>
+            <td>{{ s.soldByName || '—' }}</td>
+            <td>{{ s.customerName || '—' }}</td>
+            <td><strong>₹{{ s.totalAmount | number:'1.0-0' }}</strong></td>
+            <td>
+              <span class="badge {{ paymentModeBadge(s.paymentMode) }}">
+                {{ s.paymentMode }}
+              </span>
+            </td>
+            <td>{{ s.saleDate | date:'MMM d' }}</td>
+          </tr>
+          }
+        </ng-template>
+      </app-table>
     </div>
 
     <!-- Low Stock -->
@@ -148,30 +195,31 @@
         <h6 class="card-title">Low Stock Alerts</h6>
         <a routerLink="/admin/inventory" class="view-all">View all</a>
       </div>
-        <app-table [hasData]="lowStock().length > 0">
-          <ng-template #empty>
-            <div class="empty-state"><i class="bi bi-check-circle"></i>
-              <p>All stock levels healthy</p>
-            </div>
-          </ng-template>
-          <ng-template #header>
-            <tr>
-              <th>Product</th>
-              <th>Stock</th>
-              <th>Reorder</th>
-            </tr>
-          </ng-template>
-          <ng-template #body>
-            @for (item of lowStock(); track item.id) {
-            <tr>
-              <td><strong>{{ item.productName }}</strong></td>
-              <td><span class="badge badge-danger">{{ item.availableStock }}</span></td>
-              <td>{{ item.reorderLevel }}</td>
-            </tr>
-            }
-          </ng-template>
-        </app-table>
+      <app-table [hasData]="lowStock().length > 0">
+        <ng-template #empty>
+          <div class="empty-state"><i class="bi bi-check-circle"></i>
+            <p>All stock levels healthy</p>
+          </div>
+        </ng-template>
+        <ng-template #header>
+          <tr>
+            <th>Product</th>
+            <th>Stock</th>
+            <th>Reorder</th>
+          </tr>
+        </ng-template>
+        <ng-template #body>
+          @for (item of lowStock(); track item.id) {
+          <tr>
+            <td><strong>{{ item.productName }}</strong></td>
+            <td><span class="badge badge-danger">{{ item.availableStock }}</span></td>
+            <td>{{ item.reorderLevel }}</td>
+          </tr>
+          }
+        </ng-template>
+      </app-table>
     </div>
   </div>
+
   }
 </div>

@@ -1,1 +1,25 @@
-/* styles */
+.product-name {
+  font-weight: 600;
+}
+
+.product-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.action-row {
+  display: flex;
+  gap: 4px;
+}
+
+.modal-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .modal-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}

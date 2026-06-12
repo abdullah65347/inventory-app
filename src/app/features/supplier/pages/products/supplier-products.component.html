@@ -8,6 +8,29 @@
 
   @if (loading()) { <app-loader /> }
   @else {
+    <div class="grid-4 compact-stats" style="margin-bottom:20px">
+      <div class="stat-card c-primary">
+        <div class="stat-icon c-primary"><i class="bi bi-box-seam-fill"></i></div>
+        <div class="stat-value">{{ totalProducts }}</div>
+        <div class="stat-label">My Products</div>
+      </div>
+      <div class="stat-card c-success">
+        <div class="stat-icon c-success"><i class="bi bi-check-circle-fill"></i></div>
+        <div class="stat-value">{{ activeProducts }}</div>
+        <div class="stat-label">Active Products</div>
+      </div>
+      <div class="stat-card c-danger">
+        <div class="stat-icon c-danger"><i class="bi bi-exclamation-triangle-fill"></i></div>
+        <div class="stat-value">{{ lowStockProducts }}</div>
+        <div class="stat-label">Low Stock</div>
+      </div>
+      <div class="stat-card c-accent">
+        <div class="stat-icon c-accent"><i class="bi bi-boxes"></i></div>
+        <div class="stat-value">{{ totalUnits }}</div>
+        <div class="stat-label">Total Units</div>
+      </div>
+    </div>
+
     <div class="table-wrap">
       <table>
         <thead><tr><th>#</th><th>Product</th><th>SKU</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th></tr></thead>
@@ -20,8 +43,8 @@
               <td><strong>#{{ p.id }}</strong></td>
               <td>
                 <div>
-                  <div style="font-weight:600">{{ p.name }}</div>
-                  <div style="font-size:11px;color:var(--text-muted)">{{ p.description | slice:0:50 }}</div>
+                  <div class="product-name">{{ p.name }}</div>
+                  <div class="product-sub">{{ p.description | slice:0:50 }}</div>
                 </div>
               </td>
               <td><code class="sku">{{ p.sku }}</code></td>
@@ -29,7 +52,7 @@
               <td><span class="badge {{ p.availableStock <= 10 ? 'badge-danger' : 'badge-success' }}">{{ p.availableStock }}</span></td>
               <td><span class="badge {{ p.active ? 'badge-success' : 'badge-danger' }}">{{ p.active ? 'Active' : 'Inactive' }}</span></td>
               <td>
-                <div style="display:flex;gap:4px">
+                <div class="action-row">
                   <button class="btn btn-sm btn-outline-secondary" (click)="openAddStock(p)" title="Add Stock">
                     <i class="bi bi-plus-circle"></i> Stock
                   </button>
@@ -55,7 +78,7 @@
         <button class="modal-close" (click)="closeCreate()">×</button>
       </div>
       <div class="modal-body">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="modal-grid-2">
           <div class="form-group">
             <label class="form-label">Product Name</label>
             <input class="form-control" [(ngModel)]="createForm.name" placeholder="USB-C Cable">
@@ -69,7 +92,7 @@
           <label class="form-label">Description</label>
           <textarea class="form-control" [(ngModel)]="createForm.description" rows="2" placeholder="Product description..."></textarea>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="modal-grid-2">
           <div class="form-group">
             <label class="form-label">Price (to Admin)</label>
             <input class="form-control" type="number" [(ngModel)]="createForm.supplierToAdminPrice" min="0" step="0.01">

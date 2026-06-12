@@ -13,6 +13,7 @@ import { PaginatorComponent } from '../../../../shared/components/paginator/pagi
     standalone: true,
     imports: [CommonModule, LoaderComponent, PaginatorComponent],
     templateUrl: './manager-sales.component.html',
+    styleUrls: ['./manager-sales.component.css'],
     animations: [fadeIn]
 })
 export class ManagerSalesComponent implements OnInit {
@@ -46,4 +47,8 @@ export class ManagerSalesComponent implements OnInit {
         this.pageSize.set(size);
         this.page.set(1);
     }
+
+    get totalRevenue(): number { return this.sales().reduce((sum, s) => sum + s.totalAmount, 0); }
+    get cashSales(): number { return this.sales().filter(s => s.paymentMode === 'CASH').length; }
+    get upiSales(): number { return this.sales().filter(s => s.paymentMode === 'UPI').length; }
 }

@@ -15,6 +15,7 @@ import { of } from 'rxjs';
     standalone: true,
     imports: [CommonModule, LoaderComponent],
     templateUrl: './manager-staff.component.html',
+    styleUrls: ['./manager-staff.component.css'],
     animations: [fadeIn]
 })
 export class ManagerStaffComponent implements OnInit {
@@ -32,11 +33,10 @@ export class ManagerStaffComponent implements OnInit {
         const user = this.auth.currentUser();
 
         if (!user) {
-            // currentUser not loaded yet — fetch from backend first
             this.auth.fetchMe().pipe(
                 switchMap(u => this.managerSvc.getByUser(u.id)),
                 switchMap(m => this.staffSvc.getByManager(m.id)),
-                catchError(err => {
+                catchError(() => {
                     this.error.set('Could not load staff. Make sure your manager profile is set up.');
                     this.loading.set(false);
                     return of([]);
@@ -45,10 +45,9 @@ export class ManagerStaffComponent implements OnInit {
             return;
         }
 
-        // user already loaded
         this.managerSvc.getByUser(user.id).pipe(
             switchMap(m => this.staffSvc.getByManager(m.id)),
-            catchError(err => {
+            catchError(() => {
                 this.error.set('Could not load staff. Make sure your manager profile is set up.');
                 this.loading.set(false);
                 return of([]);
@@ -60,13 +59,13 @@ export class ManagerStaffComponent implements OnInit {
         this.staffList.set(staff);
         this.loading.set(false);
 
-        // load sale count per staff member
         staff.forEach(s => {
-            this.saleSvc.getBySoldBy(s.userId).pipe(
-                catchError(() => of([]))
-            ).subscribe(sales => {
+            this.saleSvc.getBySoldBy(s.userId).pipe(catchError(() => of([]))).subscribe(sales => {
                 this.salesCount.update(c => ({ ...c, [s.id]: sales.length }));
             });
         });
     }
+
+    get activeCount(): number { return this.staffList().filter(s => s.active).length; }
+    get inactiveCount(): number { return this.staffList().filter(s => !s.active).length; }
 }

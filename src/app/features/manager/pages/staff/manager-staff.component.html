@@ -1,69 +1,74 @@
-<div class="page-enter" @fadeIn>
-    <div class="page-header">
-        <div class="page-header-left">
-            <h4>My Staff</h4>
-            <p>View staff assigned to you and their sales activity</p>
-        </div>
+﻿<div class="page-enter manager-page" @fadeIn>
+  <div class="page-header">
+    <div class="page-header-left">
+      <h4>My Staff</h4>
+      <p>Monitor assigned staff and compare contribution at a glance.</p>
     </div>
+  </div>
 
-    @if (loading()) {
-    <app-loader />
-    } @else if (error()) {
-    <div class="empty-state">
-        <i class="bi bi-exclamation-circle" style="color:var(--danger)"></i>
-        <p style="color:var(--danger)">{{ error() }}</p>
-    </div>
-    } @else {
-    <div class="table-wrap">
-        <table>
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Total Sales</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (staffList().length === 0) {
-                <tr>
-                    <td colspan="5">
-                        <div class="empty-state">
-                            <i class="bi bi-people"></i>
-                            <p>No staff assigned to you yet. Ask admin to assign staff.</p>
-                        </div>
-                    </td>
-                </tr>
-                }
-                @for (s of staffList(); track s.id) {
-                <tr>
-                    <td><span class="row-id">#{{ s.id }}</span></td>
-                    <td>
-                        <div style="display:flex;align-items:center;gap:8px">
-                            <div class="avatar avatar-sm" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">
-                                {{ s.userName.slice(0,2).toUpperCase() }}
-                            </div>
-                            {{ s.userName }}
-                        </div>
-                    </td>
-                    <td>{{ s.userEmail }}</td>
-                    <td>
-                        @if (salesCount()[s.id] !== undefined) {
-                        <strong>{{ salesCount()[s.id] }}</strong> sales
-                        } @else {
-                        <span style="color:var(--muted)">loading...</span>
-                        }
-                    </td>
-                    <td>
-                        <span class="badge {{ s.active ? 'badge-success' : 'badge-danger' }}">
-                            {{ s.active ? 'Active' : 'Inactive' }}
-                        </span>
-                    </td>
-                </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-    }
+  @if (loading()) { <app-loader /> }
+  @else if (error()) {
+  <div class="card notice"><i class="bi bi-exclamation-triangle"></i>
+    <p>{{ error() }}</p>
+  </div>
+  }
+  @else {
+  <section class="grid-3 compact-stats mb-24">
+    <article class="stat-card c-primary">
+      <div class="stat-icon c-primary"><i class="bi bi-people-fill"></i></div>
+      <div class="stat-value">{{ staffList().length }}</div>
+      <div class="stat-label">Assigned Staff</div>
+    </article>
+    <article class="stat-card c-success">
+      <div class="stat-icon c-success"><i class="bi bi-person-check-fill"></i></div>
+      <div class="stat-value">{{ activeCount }}</div>
+      <div class="stat-label">Active</div>
+    </article>
+    <article class="stat-card c-danger">
+      <div class="stat-icon c-danger"><i class="bi bi-person-x-fill"></i></div>
+      <div class="stat-value">{{ inactiveCount }}</div>
+      <div class="stat-label">Inactive</div>
+    </article>
+  </section>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Sales Count</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (staffList().length === 0) {
+        <tr>
+          <td colspan="5">
+            <div class="empty-state"><i class="bi bi-people"></i>
+              <p>No staff assigned to you yet.</p>
+            </div>
+          </td>
+        </tr>
+        }
+        @for (s of staffList(); track s.id) {
+        <tr>
+          <td><span class="row-id">#{{ s.id }}</span></td>
+          <td>
+            <div class="name-cell">
+              <div class="avatar avatar-sm">{{ s.userName.slice(0,2).toUpperCase() }}</div><span>{{ s.userName }}</span>
+            </div>
+          </td>
+          <td>{{ s.userEmail }}</td>
+          <td>@if (salesCount()[s.id] !== undefined) { <strong>{{ salesCount()[s.id] }}</strong> } @else { <span
+              class="muted">Loading...</span> }</td>
+          <td><span class="badge {{ s.active ? 'badge-success' : 'badge-danger' }}">{{ s.active ? 'Active' : 'Inactive'
+              }}</span></td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  }
 </div>

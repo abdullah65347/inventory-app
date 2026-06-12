@@ -9,6 +9,7 @@ import { PurchaseResponse } from '../../../common/models/purchase.model';
 import { statusBadge } from '../../../../core/utils/role.util';
 import { fadeIn } from '../../../../shared/animations/fade.animation';
 import { ToastService } from 'src/app/shared/components/toast/toast.service';
+import { PurchaseService } from 'src/app/features/admin/services/purchase.service';
 
 @Component({
   selector: 'app-supplier-orders',
@@ -22,6 +23,7 @@ export class SupplierOrdersComponent implements OnInit {
   auth = inject(AuthService);
   supplierSvc = inject(SupplierService);
   orderSvc = inject(SupplierOrderService);
+  private svc = inject(PurchaseService);
   toast = inject(ToastService);
 
   orders = signal<PurchaseResponse[]>([]);
@@ -32,17 +34,7 @@ export class SupplierOrdersComponent implements OnInit {
   statusBadge = statusBadge;
 
   ngOnInit(): void {
-    const user = this.auth.currentUser();
-    if (!user) return;
-    this.supplierSvc.getByUser(user.id).subscribe({
-      next: s => {
-        this.orderSvc.getBySupplier(s.id).subscribe({
-          next: o => { this.orders.set(o); this.applyFilter(); this.loading.set(false); },
-          error: () => this.loading.set(false)
-        });
-      },
-      error: () => this.loading.set(false)
-    });
+    this.load();
   }
 
   applyFilter(): void {
@@ -60,5 +52,31 @@ export class SupplierOrdersComponent implements OnInit {
       error: err => this.toast.error(err?.error?.message ?? 'Failed')
     });
   }
+  cancel(p: PurchaseResponse): void {
+    if (!confirm('Cancel this order?')) return;
+    this.svc.cancel(p.id).subscribe({
+      next: () => { this.toast.success('Cancelled'); this.load(); },
+      error: () => this.toast.error('Failed')
+    });
+  }
+  load(): void {
+    this.loading.set(true);
+    const user = this.auth.currentUser();
+    if (!user) return;
+    this.supplierSvc.getByUser(user.id).subscribe({
+      next: s => {
+        this.orderSvc.getBySupplier(s.id).subscribe({
+          next: o => { this.orders.set(o); this.applyFilter(); this.loading.set(false); },
+          error: () => this.loading.set(false)
+        });
+      },
+      error: () => this.loading.set(false)
+    });
+  }
+
+  get totalOrders(): number { return this.orders().length; }
+  get pendingOrders(): number { return this.orders().filter(o => o.status === 'PENDING').length; }
+  get deliveredOrders(): number { return this.orders().filter(o => o.status === 'DELIVERED').length; }
+  get confirmedOrders(): number { return this.orders().filter(o => o.status === 'CONFIRMED').length; }
 
 }
