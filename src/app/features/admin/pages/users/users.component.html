@@ -5,18 +5,20 @@
       <p>Manage all system users and roles</p>
     </div>
     <div class="page-header-right">
-      <input class="form-control form-control-sm" style="width:220px" placeholder="Search users..." [(ngModel)]="search"
-        (input)="applyFilter()">
       <button class="btn btn-primary btn-md" (click)="openRegister()">
         <i class="bi bi-person-plus-fill"></i> Create User
       </button>
     </div>
   </div>
-
+  <app-stat-strip [items]="dashboardStats()"></app-stat-strip>
   @if (loading()) { <app-loader /> }
   @else {
   <div class="table-wrap">
-    <app-table [hasData]="filtered().length > 0">
+    <app-table [hasData]="filtered().length > 0" [showSearch]="true" [searchQuery]="search"
+      [searchPlaceholder]="'Search users...'" (search)="search = $event; applyFilter()" [showFilter]="true"
+      [filterValue]="selectedRole" [filterPlaceholder]="'Filter by Role'" [filterOptions]="roleFilterOptions"
+      (filter)="selectedRole = $event; applyFilter()" [showSort]="true" [sortValue]="selectedSort"
+      [sortPlaceholder]="'Sort By'" [sortOptions]="sortOptions" (sort)="selectedSort = $event; applyFilter()">
       <ng-template #empty>
         <div class="empty-state">
           <i class="bi bi-people"></i>

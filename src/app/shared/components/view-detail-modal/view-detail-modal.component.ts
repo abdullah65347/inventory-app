@@ -39,8 +39,6 @@ export class ViewDetailModalComponent {
       return '—';
     }
 
-    // BOOLEAN STATUS
-
     if (field.key === 'active') {
       return value ? 'Active' : 'Inactive';
     }
@@ -49,13 +47,9 @@ export class ViewDetailModalComponent {
       return value.replace('ROLE_', '');
     }
 
-    // DATE FORMAT
+    const dateFields = ['createdAt', 'updatedAt'];
 
-    if (
-      field.key.toLowerCase().includes('date') ||
-      field.key.toLowerCase().includes('at')
-    ) {
-
+    if (dateFields.includes(field.key)) {
       return new Date(value).toLocaleString('en-GB', {
         day: '2-digit',
         month: 'short',
@@ -64,7 +58,6 @@ export class ViewDetailModalComponent {
         minute: '2-digit',
         hour12: true
       });
-
     }
 
     return value;

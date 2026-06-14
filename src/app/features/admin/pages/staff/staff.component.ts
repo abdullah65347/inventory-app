@@ -11,13 +11,16 @@ import { ManagerResponse } from '../../../common/models/manager.model';
 import { User } from '../../../../core/models/user.model';
 import { fadeIn } from '../../../../shared/animations/fade.animation';
 import { forkJoin } from 'rxjs';
+import { AppTableComponent } from 'src/app/shared/components/app-table/app-table.component';
+import { PaginatorComponent } from '../../../../shared/components/paginator/paginator.component';
+import { paginate, PageResult } from '../../../../core/utils/paginate.util';
 import { initials } from 'src/app/core/utils/role.util';
 import { getAvatarGradient } from 'src/app/core/utils/avatar.util';
 
 @Component({
     selector: 'app-staff',
     standalone: true,
-    imports: [CommonModule, FormsModule, LoaderComponent],
+    imports: [CommonModule, FormsModule, LoaderComponent, AppTableComponent, PaginatorComponent],
     templateUrl: './staff.component.html',
     styleUrls: ['./staff.component.css'],
     animations: [fadeIn]
@@ -29,12 +32,25 @@ export class StaffComponent implements OnInit {
     private toast = inject(ToastService);
 
     staffList = signal<StaffResponse[]>([]);
+    filtered = signal<StaffResponse[]>([]);
     managers = signal<ManagerResponse[]>([]);
     availableUsers = signal<User[]>([]);
     loading = signal(true);
     showCreate = signal(false);
     initials = initials;
     getAvatarGradient = getAvatarGradient;
+
+    page = signal(1);
+    pageSize = signal(10);
+    search = '';
+    selectedSort = '';
+
+    sortOptions = [
+        { value: 'name_asc', label: 'Name (A-Z)' },
+        { value: 'name_desc', label: 'Name (Z-A)' },
+        { value: 'manager_asc', label: 'Manager (A-Z)' },
+        { value: 'manager_desc', label: 'Manager (Z-A)' },
+    ];
 
     // assign manager
     assignTarget = signal<StaffResponse | null>(null);
@@ -50,9 +66,40 @@ export class StaffComponent implements OnInit {
     load(): void {
         this.loading.set(true);
         this.svc.getAll().subscribe({
-            next: s => { this.staffList.set(s); this.loading.set(false); },
+            next: s => { this.staffList.set(s); this.applyFilter(); this.loading.set(false); },
             error: () => this.loading.set(false)
         });
+    }
+
+    applyFilter(): void {
+        const s = this.search.toLowerCase();
+        let list = this.staffList().filter(st =>
+            st.userName.toLowerCase().includes(s) || (st.userEmail || '').toLowerCase().includes(s) || (st.managerName || '').toLowerCase().includes(s)
+        );
+
+        if (this.selectedSort) {
+            list = [...list].sort((a, b) => {
+                switch (this.selectedSort) {
+                    case 'name_asc': return a.userName.localeCompare(b.userName);
+                    case 'name_desc': return b.userName.localeCompare(a.userName);
+                    case 'manager_asc': return (a.managerName || '').localeCompare(b.managerName || '');
+                    case 'manager_desc': return (b.managerName || '').localeCompare(a.managerName || '');
+                    default: return 0;
+                }
+            });
+        }
+
+        this.filtered.set(list);
+        this.page.set(1);
+    }
+
+    get paged(): PageResult<StaffResponse> {
+        return paginate(this.filtered(), this.page(), this.pageSize());
+    }
+
+    onPageSize(size: number): void {
+        this.pageSize.set(size);
+        this.page.set(1);
     }
 
     openCreate(): void {

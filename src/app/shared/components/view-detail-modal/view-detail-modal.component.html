@@ -1,47 +1,30 @@
 @if (visible) {
-
 <div class="modal-overlay" (click)="closeModal()">
-
-    <div class="modal-box" (click)="$event.stopPropagation()">
+    <div class="modal-box modal-lg detail-modal" (click)="$event.stopPropagation()">
 
         <!-- HEADER -->
-
-        <div class="modal-header">
-            <h5>{{ title }}</h5>
-
-            <button class="modal-close" (click)="closeModal()">
-                ×
-            </button>
+        <div class="modal-header detail-header">
+            <h5 class="modal-title">
+                <i class="bi bi-box-seam-fill"></i>
+                {{ title }}
+            </h5>
+            <button class="modal-close" (click)="closeModal()">×</button>
         </div>
 
         <!-- BODY -->
-
-        <div class="modal-body">
-
+        <div class="modal-body detail-body">
             <div class="detail-grid">
-
                 @for (field of fields; track field.key) {
-
                 <div class="detail-item" [class.full-width]="field.width === 'full'">
-
-                    <label>
-                        {{ field.label }}
-                    </label>
-
+                    <label>{{ field.label }}</label>
                     <div class="detail-value">
                         {{ formatValue(field) }}
                     </div>
-
                 </div>
-
                 }
-
             </div>
-
         </div>
 
     </div>
-
 </div>
-
 }

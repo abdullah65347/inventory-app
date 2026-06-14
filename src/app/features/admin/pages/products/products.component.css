@@ -1,1 +1,38 @@
-/* styles */
+.product-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.product-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: linear-gradient(135deg,
+            var(--primary),
+            var(--primary-light));
+
+    color: #fff;
+    font-size: 14px;
+}
+
+.product-info {
+    flex: 1;
+}
+
+.product-name-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-weight: 600;
+}
+
+.product-desc {
+    font-size: 11px;
+    color: var(--text-muted);
+}

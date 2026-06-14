@@ -1,7 +1,7 @@
 <div class="layout-wrapper">
   <aside class="sidebar" [class.collapsed]="collapsed()" [class.sidebar-open]="sidebarOpen()">
-    <app-sidebar [sections]="navSections" roleLabel="Supplier" profileRoute="/supplier/profile"
-      accentGradient="linear-gradient(135deg,#7c3aed,#06b6d4)">
+    <app-sidebar [sections]="navSections" roleLabel="Manager" profileRoute="/manager/profile"
+      accentGradient="linear-gradient(135deg,#f59e0b,#ef4444)">
     </app-sidebar>
   </aside>
 
@@ -18,12 +18,12 @@
         </button>
         <div class="topbar-title-group">
           <div class="topbar-title-row">
-            <p class="topbar-title">Supplier Portal</p>
+            <p class="topbar-title">Manager Portal</p>
             <a routerLink="" class="topbar-home-btn" title="Home">
               <i class="bi bi-house-fill"></i>
             </a>
           </div>
-          <p class="topbar-sub">Manage your products & orders</p>
+          <p class="topbar-sub">Team & operations overview</p>
         </div>
       </div>
       <div class="topbar-actions">

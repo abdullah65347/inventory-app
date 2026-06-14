@@ -1,20 +1,52 @@
+@if (showSearch || showFilter || showSort) {
+<div class="table-controls-bar">
+  @if (showSearch) {
+  <div class="table-search-wrapper">
+    <i class="bi bi-search search-icon"></i>
+    <input type="text" [value]="searchQuery" [placeholder]="searchPlaceholder" (input)="onSearch($event)"
+      class="form-control table-search-input" />
+  </div>
+  }
+
+  <div class="table-dropdowns-wrapper">
+    @if (showFilter) {
+    <select [value]="filterValue" (change)="onFilter($event)" class="form-select table-control-dropdown">
+      <option value="">{{ filterPlaceholder }}</option>
+      @for (opt of filterOptions; track opt.value) {
+      <option [value]="opt.value">{{ opt.label }}</option>
+      }
+    </select>
+    }
+
+    @if (showSort) {
+    <select [value]="sortValue" (change)="onSort($event)" class="form-select table-control-dropdown">
+      <option value="">{{ sortPlaceholder }}</option>
+      @for (opt of sortOptions; track opt.value) {
+      <option [value]="opt.value">{{ opt.label }}</option>
+      }
+    </select>
+    }
+  </div>
+</div>
+}
+
 <div class="table-wrap">
-    <table>
-        <thead>
-            <ng-container *ngTemplateOutlet="headerTemplate"></ng-container>
-        </thead>
-        <tbody>
-            @if (!hasData) {
-            <tr>
-                <td colspan="100">
-                    <ng-container *ngTemplateOutlet="emptyTemplate">
-                    </ng-container>
-                </td>
-            </tr>
-            }
-            @else {
-            <ng-container *ngTemplateOutlet="bodyTemplate"></ng-container>
-            }
-        </tbody>
-    </table>
+  <table>
+    <thead>
+      <ng-container *ngTemplateOutlet="headerTemplate"></ng-container>
+    </thead>
+    <tbody>
+      @if (!hasData) {
+      <tr>
+        <td colspan="100">
+          <ng-container *ngTemplateOutlet="emptyTemplate">
+          </ng-container>
+        </td>
+      </tr>
+      }
+      @else {
+      <ng-container *ngTemplateOutlet="bodyTemplate"></ng-container>
+      }
+    </tbody>
+  </table>
 </div>

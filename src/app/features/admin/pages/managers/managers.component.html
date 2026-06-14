@@ -13,63 +13,114 @@
 
     @if (loading()) { <app-loader /> }
     @else {
-    <app-table [hasData]="managers().length > 0">
-        <ng-template #header>
-            <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Department</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </ng-template>
-        <ng-template #empty>
-            <div class="empty-state"><i class="bi bi-person-badge"></i>
-                <p>No managers yet</p>
+    <div class="manager-toolbar">
+        <div class="toolbar-left">
+            <div class="toolbar-title">
+                <i class="bi bi-funnel"></i>
+                <span>Filter Managers</span>
             </div>
-        </ng-template>
-        <ng-template #body>
-            @for (m of managers(); track m.id) {
-            <tr>
-                <td><span class="row-id">#{{ m.id }}</span></td>
-                <td>
-                    <div class="user-cell">
-                        <div class="avatar avatar-sm" [style.background]="getAvatarGradient(m.userName)">
-                            {{ initials(m.userName) }}
-                        </div>
-                        <div class="user-name-row">
-                            <span>{{ m.userName }}</span>
+            <div class="search-box">
+                <i class="bi bi-search"></i>
+                <input type="text" class="form-control" placeholder="Search managers..." [(ngModel)]="search"
+                    (ngModelChange)="applyFilter()">
+            </div>
+        </div>
 
-                        </div>
-                    </div>
-                </td>
-                <td>{{ m.userEmail }}</td>
-                <td>{{ m.department || '—' }}</td>
-                <td>
-                    <span class="badge {{ m.active ? 'badge-success' : 'badge-danger' }}">
-                        {{ m.active ? 'Active' : 'Inactive' }}
-                    </span>
-                </td>
-                <td>
-                    <div style="display:flex;gap:4px">
-                        <button class="btn btn-icon btn-ghost" title="View Staff" (click)="openStaffView(m)">
-                            <i class="bi bi-people-fill fs-6"></i>
-                        </button>
-                        <button class="btn btn-icon btn-ghost" (click)="openEdit(m)">
-                            <i class="bi bi-pencil fs-6"></i>
-                        </button>
-                        <button class="btn btn-icon btn-ghost" (click)="toggleActive(m)"
-                            [title]="m.active ? 'Deactivate' : 'Activate'">
-                            <i
-                                class="bi {{ m.active ? 'bi-toggle-on text-success' : 'bi-toggle-off text-danger' }} fs-4"></i>
-                        </button>
-                    </div>
-                </td>
-            </tr>
+        <select class="form-select sort-select" [(ngModel)]="selectedSort" (change)="applyFilter()">
+            <option value="">Sort By</option>
+
+            @for (opt of sortOptions; track opt.value) {
+            <option [value]="opt.value">
+                {{ opt.label }}
+            </option>
             }
-        </ng-template>
-    </app-table>
+        </select>
+    </div>
+
+    @if (paged.items.length > 0) {
+
+    <div class="manager-grid">
+
+        @for (m of paged.items; track m.id) {
+
+        <div class="manager-card">
+
+            <div class="manager-card-top">
+
+                <div class="manager-user">
+
+                    <div class="avatar manager-avatar" [style.background]="getAvatarGradient(m.userName)">
+                        {{ initials(m.userName) }}
+                    </div>
+
+                    <div>
+                        <h5>{{ m.userName }}</h5>
+                        <p>{{ m.userEmail }}</p>
+                    </div>
+
+                </div>
+
+                <span class="badge {{ m.active ? 'badge-success' : 'badge-danger' }}">
+                    {{ m.active ? 'Active' : 'Inactive' }}
+                </span>
+
+            </div>
+
+            <div class="manager-body">
+
+                <div class="info-row">
+                    <span class="label">Manager ID</span>
+                    <span>MANG-000{{ m.id }}</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="label">Department</span>
+                    <span class="depart-info">{{ m.department || 'Not Assigned' }}</span>
+                </div>
+
+            </div>
+
+            <div class="manager-actions">
+
+                <button class="btn btn-outline-primary btn-sm" (click)="openStaffView(m)">
+                    <i class="bi bi-people-fill"></i>
+                    Staff
+                </button>
+
+                <button class="btn btn-outline-secondary btn-sm" (click)="openEdit(m)">
+                    <i class="bi bi-pencil"></i>
+                    Edit
+                </button>
+
+                <button class="btn btn-sm" [ngClass]="m.active ? 'btn-danger' : 'btn-success'"
+                    (click)="toggleActive(m)">
+
+                    <i class="bi" [class.bi-pause-circle]="m.active" [class.bi-check-circle]="!m.active"></i>
+
+                    {{ m.active ? 'Deactivate' : 'Activate' }}
+                </button>
+
+            </div>
+
+        </div>
+
+        }
+
+    </div>
+
+    } @else {
+
+    <div class="empty-state">
+        <i class="bi bi-person-badge"></i>
+        <p>No managers found</p>
+    </div>
+
+    }
+    <!-- <div class="pagination-wrapper">
+        <app-paginator [totalItems]="paged.totalItems" [totalPages]="paged.totalPages" [currentPage]="paged.currentPage"
+            [pageSize]="paged.pageSize" (pageChange)="page.set($event)" (pageSizeChange)="onPageSize($event)">
+        </app-paginator>
+    </div> -->
     }
 </div>
 

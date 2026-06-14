@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../services/user.service';
@@ -14,11 +14,12 @@ import { ViewDetailModalComponent, ViewField } from 'src/app/shared/components/v
 import { AppTableComponent } from 'src/app/shared/components/app-table/app-table.component';
 import { getAvatarGradient } from 'src/app/core/utils/avatar.util';
 import { ROLES } from 'src/app/shared/constants/roles.constant';
+import { StatStripComponent, StatStripItem } from 'src/app/shared/components/stats-strip/stat-strip.component';
 
 @Component({
   selector: 'app-admin-users',
   standalone: true,
-  imports: [CommonModule, FormsModule, LoaderComponent, ViewDetailModalComponent, AppTableComponent, PaginatorComponent],
+  imports: [CommonModule, FormsModule, LoaderComponent, StatStripComponent, ViewDetailModalComponent, AppTableComponent, PaginatorComponent],
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.css'],
   animations: [fadeIn]
@@ -34,6 +35,40 @@ export class UsersComponent implements OnInit {
   page = signal(1);
   pageSize = signal(10);
   search = '';
+  selectedRole = '';
+  selectedSort = '';
+
+  roleFilterOptions = [
+    { value: 'ROLE_ADMIN', label: 'Admin' },
+    { value: 'ROLE_MANAGER', label: 'Manager' },
+    { value: 'ROLE_STAFF', label: 'Staff' },
+    { value: 'ROLE_SUPPLIER', label: 'Supplier' },
+    { value: 'ROLE_USER', label: 'User' },
+  ];
+
+  sortOptions = [
+    { value: 'name_asc', label: 'Name (A-Z)' },
+    { value: 'name_desc', label: 'Name (Z-A)' },
+    { value: 'email_asc', label: 'Email (A-Z)' },
+    { value: 'email_desc', label: 'Email (Z-A)' },
+    { value: 'joined_desc', label: 'Newest Joined' },
+    { value: 'joined_asc', label: 'Oldest Joined' },
+  ];
+
+  dashboardStats = computed<StatStripItem[]>(() => [
+    { icon: 'bi-people-fill', value: this.users().length, label: 'Total Users', iconClass: 'icon-primary', format: 'number' },
+    { icon: 'bi-person-workspace', value: this.users().filter(u => u.role === 'ROLE_MANAGER').length, label: 'Managers', iconClass: 'icon-accent', format: 'number' },
+    { icon: 'bi-person-badge-fill', value: this.users().filter(u => u.role === 'ROLE_STAFF').length, label: 'Staff', iconClass: 'icon-success', format: 'number' },
+    { icon: 'bi-truck', value: this.users().filter(u => u.role === 'ROLE_SUPPLIER').length, label: 'Suppliers', iconClass: 'icon-warning', format: 'number' },
+    {
+      icon: 'bi-person-plus-fill', value: this.users().filter(u => {
+        const created = new Date(u.createdAt ?? '');
+        const today = new Date();
+        return created.getMonth() === today.getMonth() &&
+          created.getFullYear() === today.getFullYear();
+      }).length, label: 'New Users', iconClass: 'icon-danger', format: 'number'
+    }
+  ]);
 
   // edit
   showModal = signal(false);
@@ -53,7 +88,6 @@ export class UsersComponent implements OnInit {
   showViewModal = signal(false);
   showAssignRole = signal(false);
   selectedUser: User | null = null;
-  selectedRole = '';
 
   viewFields: ViewField[] = [
     {
@@ -119,9 +153,29 @@ export class UsersComponent implements OnInit {
 
   applyFilter(): void {
     const s = this.search.toLowerCase();
-    this.filtered.set(this.users().filter(u =>
+    let list = this.users().filter(u =>
       u.name.toLowerCase().includes(s) || u.email.toLowerCase().includes(s)
-    ));
+    );
+
+    if (this.selectedRole) {
+      list = list.filter(u => u.role === this.selectedRole);
+    }
+
+    if (this.selectedSort) {
+      list = [...list].sort((a, b) => {
+        switch (this.selectedSort) {
+          case 'name_asc': return a.name.localeCompare(b.name);
+          case 'name_desc': return b.name.localeCompare(a.name);
+          case 'email_asc': return a.email.localeCompare(b.email);
+          case 'email_desc': return b.email.localeCompare(a.email);
+          case 'joined_desc': return new Date(b.createdAt ?? '').getTime() - new Date(a.createdAt ?? '').getTime();
+          case 'joined_asc': return new Date(a.createdAt ?? '').getTime() - new Date(b.createdAt ?? '').getTime();
+          default: return 0;
+        }
+      });
+    }
+
+    this.filtered.set(list);
     this.page.set(1); // reset on filter change
   }
   viewUser(user: User): void {

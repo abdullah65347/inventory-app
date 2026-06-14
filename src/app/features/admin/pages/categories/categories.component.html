@@ -4,160 +4,116 @@
       <h4>Categories</h4>
       <p>Manage product inventory categories</p>
     </div>
-
     <div class="page-header-right">
       <button class="btn btn-primary" (click)="openCreate()">
         <i class="bi bi-plus-lg"></i> Add Category
       </button>
     </div>
   </div>
-
   @if (loading()) {
   <app-loader />
   } @else {
-
-  <app-table [hasData]="categories().length > 0">
-
-    <ng-template #header>
-      <tr>
-        <th>#</th>
-        <th>Category</th>
-        <th>Products</th>
-        <th>Status</th>
-        <th>Actions</th>
-      </tr>
-    </ng-template>
-
-    <ng-template #empty>
-      <div class="empty-state">
-        <i class="bi bi-tags"></i>
-        <p>No categories available</p>
+  <div class="manager-toolbar">
+    <div class="toolbar-left">
+      <div class="toolbar-title">
+        <i class="bi bi-funnel"></i>
+        <span>Filter Categories</span>
       </div>
-    </ng-template>
-
-    <ng-template #body>
-      @for (c of categories(); track c.id) {
-      <tr>
-
-        <td>
-          <span class="row-id">#{{ c.id }}</span>
-        </td>
-
-        <td>
-          <div class="category-cell">
-
-            <div class="category-icon">
-              <i class="bi bi-tag-fill"></i>
-            </div>
-
-            <div>
-              <div class="category-name">
-                {{ c.name }}
-              </div>
-
-              <div class="category-sub">
-                Inventory Category
-              </div>
-            </div>
-
-          </div>
-        </td>
-
-        <td>
-          <div class="product-count-card">
-
-            <div class="product-count-number">
-              {{ c.totalProducts || 0 }}
-            </div>
-
-            <div class="product-count-info">
-              <div class="product-count-title">
-                Products
-              </div>
-
-              <small class="product-count-subtitle">
-                Available
-              </small>
-            </div>
-
-          </div>
-        </td>
-
-        <td>
-          <span class="badge badge-success">
-            Active
-          </span>
-        </td>
-
-        <td>
-          <div style="display:flex;gap:4px">
-
-            <button class="btn btn-icon btn-ghost" title="Edit Category" (click)="openEdit(c)">
-              <i class="bi bi-pencil fs-6"></i>
-            </button>
-
-            <button class="btn btn-icon btn-ghost" title="Delete Category" (click)="delete(c)">
-              <i class="bi bi-trash3 fs-6 text-danger"></i>
-            </button>
-
-          </div>
-        </td>
-
-      </tr>
+      <div class="search-box">
+        <i class="bi bi-search"></i>
+        <input type="text" class="form-control" placeholder="Search categories..." [(ngModel)]="search"
+          (ngModelChange)="applyFilter()">
+      </div>
+    </div>
+    <select class="form-select sort-select" [(ngModel)]="selectedSort" (change)="applyFilter()">
+      <option value="">Sort By</option>
+      @for (opt of sortOptions; track opt.value) {
+      <option [value]="opt.value">
+        {{ opt.label }}
+      </option>
       }
-    </ng-template>
+    </select>
+  </div>
+  @if (paged.items.length > 0) {
+  <div class="category-grid">
+    @for (c of paged.items; track c.id) {
+    <div class="category-card">
+      <div class="category-card-top">
+        <div class="category-info">
+          <div class="category-icon">
+            <i class="bi bi-grid-3x3-gap-fill"></i>
+          </div>
+          <h5>{{ c.name }}</h5>
+        </div>
+        <span class="badge badge-success">
+          <i class="bi bi-check-circle-fill"></i> Active
+        </span>
+      </div>
 
-  </app-table>
+      <div class="category-body">
+        <div class="info-row">
+          <span class="label">Category ID</span>
+          <span>CAT-000{{ c.id }}</span>
+        </div>
+      </div>
 
+      <div class="category-stock">
+        <span class="stock-label">
+          <i class="bi bi-boxes"></i> Available Stock
+        </span>
+        <span class="stock-value">
+          {{ c.totalProducts || 0 }} <small>items</small>
+        </span>
+      </div>
+
+      <div class="category-actions">
+        <button class="btn btn-outline-secondary btn-sm" (click)="openEdit(c)">
+          <i class="bi bi-pencil-square"></i>
+          Edit
+        </button>
+        <button class="btn btn-outline-danger btn-sm" (click)="delete(c)">
+          <i class="bi bi-trash3-fill"></i>
+          Delete
+        </button>
+      </div>
+    </div>
+    }
+  </div>
+  } @else {
+  <div class="empty-state">
+    <i class="bi bi-tags"></i>
+    <p>No categories available</p>
+  </div>
+  }
   }
 </div>
-
 @if (showModal()) {
 <div class="modal-overlay" (click)="closeModal()">
-
   <div class="modal-box" (click)="$event.stopPropagation()">
-
     <div class="modal-header">
-
       <h5 class="modal-title">
         {{ editTarget() ? 'Edit Category' : 'Create Category' }}
       </h5>
-
       <button class="modal-close" (click)="closeModal()">
         ×
       </button>
-
     </div>
-
     <div class="modal-body">
-
       <div class="form-group">
-
         <label class="form-label">
           Category Name
         </label>
-
         <input class="form-control" [(ngModel)]="formName" placeholder="Enter category name" (keyup.enter)="save()">
-
       </div>
-
     </div>
-
     <div class="modal-footer">
-
       <button class="btn btn-outline-secondary" (click)="closeModal()">
         Cancel
       </button>
-
       <button class="btn btn-primary" (click)="save()">
-
         {{ editTarget() ? 'Save Changes' : 'Create Category' }}
-
       </button>
-
     </div>
-
   </div>
-
 </div>
 }

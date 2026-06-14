@@ -7,11 +7,13 @@ import { LoaderComponent } from '../../../../shared/components/loader/loader.com
 import { CategoryResponse } from '../../../common/models/category.model';
 import { fadeIn } from '../../../../shared/animations/fade.animation';
 import { AppTableComponent } from 'src/app/shared/components/app-table/app-table.component';
+import { PaginatorComponent } from '../../../../shared/components/paginator/paginator.component';
+import { paginate, PageResult } from '../../../../core/utils/paginate.util';
 
 @Component({
   selector: 'app-admin-categories',
   standalone: true,
-  imports: [CommonModule, FormsModule, LoaderComponent, AppTableComponent],
+  imports: [CommonModule, FormsModule, LoaderComponent, AppTableComponent, PaginatorComponent],
   templateUrl: './categories.component.html',
   styleUrls: ['./categories.component.css'],
   animations: [fadeIn]
@@ -21,16 +23,61 @@ export class CategoriesComponent implements OnInit {
   private toast = inject(ToastService);
 
   categories = signal<CategoryResponse[]>([]);
+  filtered = signal<CategoryResponse[]>([]);
   loading = signal(true);
   showModal = signal(false);
   editTarget = signal<CategoryResponse | null>(null);
   formName = '';
 
+  page = signal(1);
+  pageSize = signal(10);
+  search = '';
+  selectedSort = '';
+
+  sortOptions = [
+    { value: 'name_asc', label: 'Name (A-Z)' },
+    { value: 'name_desc', label: 'Name (Z-A)' },
+    { value: 'products_desc', label: 'Products Count (High to Low)' },
+    { value: 'products_asc', label: 'Products Count (Low to High)' },
+  ];
+
   ngOnInit(): void { this.load(); }
 
   load(): void {
     this.loading.set(true);
-    this.svc.getCategoryCount().subscribe({ next: c => { this.categories.set(c); this.loading.set(false); }, error: () => this.loading.set(false) });
+    this.svc.getCategoryCount().subscribe({
+      next: c => { this.categories.set(c); this.applyFilter(); this.loading.set(false); },
+      error: () => this.loading.set(false)
+    });
+  }
+
+  applyFilter(): void {
+    const s = this.search.toLowerCase();
+    let list = this.categories().filter(c => c.name.toLowerCase().includes(s));
+
+    if (this.selectedSort) {
+      list = [...list].sort((a, b) => {
+        switch (this.selectedSort) {
+          case 'name_asc': return a.name.localeCompare(b.name);
+          case 'name_desc': return b.name.localeCompare(a.name);
+          case 'products_desc': return (b.totalProducts || 0) - (a.totalProducts || 0);
+          case 'products_asc': return (a.totalProducts || 0) - (b.totalProducts || 0);
+          default: return 0;
+        }
+      });
+    }
+
+    this.filtered.set(list);
+    this.page.set(1);
+  }
+
+  get paged(): PageResult<CategoryResponse> {
+    return paginate(this.filtered(), this.page(), this.pageSize());
+  }
+
+  onPageSize(size: number): void {
+    this.pageSize.set(size);
+    this.page.set(1);
   }
 
   openCreate(): void { this.editTarget.set(null); this.formName = ''; this.showModal.set(true); }

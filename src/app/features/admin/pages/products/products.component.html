@@ -5,8 +5,6 @@
       <p>Manage all products and set selling prices</p>
     </div>
     <div class="page-header-right">
-      <input class="form-control form-control-sm" style="width:220px" placeholder="Search..." [(ngModel)]="search"
-        (input)="filter()">
       <button class="btn btn-primary btn-md" (click)="openCreate()">
         <i class="bi bi-plus-lg"></i> Add Product
       </button>
@@ -15,8 +13,13 @@
   @if (loading()) { <app-loader /> }
   @else {
   <div class="table-wrap">
-    <table>
-      <thead>
+    <app-table [hasData]="paged.items.length > 0" [showSearch]="true" [searchQuery]="search"
+      [searchPlaceholder]="'Search products...'" (search)="search = $event; filter()" [showFilter]="true"
+      [filterValue]="selectedCategory" [filterPlaceholder]="'Filter by Category'"
+      [filterOptions]="categoryFilterOptions" (filter)="selectedCategory = $event; filter()" [showSort]="true"
+      [sortValue]="selectedSort" [sortPlaceholder]="'Sort By'" [sortOptions]="sortOptions"
+      (sort)="selectedSort = $event; filter()">
+      <ng-template #header>
         <tr>
           <th>#</th>
           <th>Product</th>
@@ -27,24 +30,31 @@
           <th>Stock</th>
           <th>Actions</th>
         </tr>
-      </thead>
-      <tbody>
-        @if (filtered().length === 0) {
-        <tr>
-          <td colspan="9">
-            <div class="empty-state"><i class="bi bi-box-seam"></i>
-              <p>No products found</p>
-            </div>
-          </td>
-        </tr>
-        }
-        @for (p of filtered(); track p.id) {
+      </ng-template>
+      <ng-template #empty>
+        <div class="empty-state"><i class="bi bi-box-seam"></i>
+          <p>No products found</p>
+        </div>
+      </ng-template>
+      <ng-template #body>
+        @for (p of paged.items; track p.id) {
         <tr>
           <td><strong>#{{ p.id }}</strong></td>
           <td>
-            <div>
-              <div style="font-weight:600">{{ p.name }}</div>
-              <div style="font-size:11px;color:var(--text-muted)">{{ p.description | slice:0:40 }}...</div>
+            <div class="product-cell">
+              <div class="product-info">
+                <div class="product-name-row">
+                  <span>{{ p.name }}</span>
+
+                  <button class="btn btn-icon btn-ghost" (click)="viewProduct(p)">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                </div>
+
+                <div class="product-desc">
+                  {{ p.description | slice:0:40 }}...
+                </div>
+              </div>
             </div>
           </td>
           <td><code class="sku">{{ p.sku }}</code></td>
@@ -63,8 +73,11 @@
           </td>
         </tr>
         }
-      </tbody>
-    </table>
+      </ng-template>
+    </app-table>
+    <app-paginator [totalItems]="paged.totalItems" [totalPages]="paged.totalPages" [currentPage]="paged.currentPage"
+      [pageSize]="paged.pageSize" (pageChange)="page.set($event)" (pageSizeChange)="onPageSize($event)">
+    </app-paginator>
   </div>
   }
 </div>
@@ -198,3 +211,6 @@
 <app-supplier-form [visible]="showSupplierModal()" [form]="supplierForm" [categories]="categories()" [isEdit]="false"
   [availableUsers]="availableUsers()" (close)="closeSupplierModal()" (save)="saveSupplier()">
 </app-supplier-form>
+<app-view-detail-modal [visible]="showViewModal()" [title]="'Product Details'" [data]="selectedProduct"
+  [fields]="viewFields" (close)="closeViewDetailModal()">
+</app-view-detail-modal>
