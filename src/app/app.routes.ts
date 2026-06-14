@@ -34,6 +34,7 @@ export const routes: Routes = [
       { path: 'products', loadComponent: () => import('./features/admin/pages/products/products.component').then(m => m.AdminProductsComponent) },
       { path: 'purchases', loadComponent: () => import('./features/admin/pages/purchases/purchases.component').then(m => m.PurchasesComponent) },
       { path: 'sales', loadComponent: () => import('./features/admin/pages/sales/sales.component').then(m => m.AdminSalesComponent) },
+      { path: 'sales/create', loadComponent: () => import('./features/staff/pages/sales/staff-sales.component').then(m => m.StaffSalesComponent) },
       { path: 'inventory', loadComponent: () => import('./features/admin/pages/inventory/inventory.component').then(m => m.InventoryComponent) },
       { path: 'transactions', loadComponent: () => import('./features/admin/pages/transactions/transactions.component').then(m => m.TransactionsComponent) },
       { path: 'profile', loadComponent: () => import('./features/common/pages/profile/profile.component').then(m => m.ProfileComponent) },

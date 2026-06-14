@@ -2,493 +2,456 @@
 
     <!-- PAGE HEADER -->
     <div class="page-header">
-
         <div class="page-header-left">
             <h4>New Sale</h4>
-            <p>Fast billing & inventory sales management</p>
+            <p>Fast billing &amp; inventory sales management</p>
         </div>
 
         @if (billItems.length > 0) {
-
         <div class="header-actions">
-
             <div class="cart-chip">
                 <i class="bi bi-bag-check"></i>
-                {{ itemCount }} Items
+                {{ itemCount }} Items &nbsp;·&nbsp; ₹{{ billTotal | number:'1.2-2' }}
             </div>
-
             <button class="btn btn-outline-secondary btn-sm" (click)="clearCart()">
                 <i class="bi bi-trash3"></i>
                 Clear
             </button>
-
         </div>
-
         }
-
     </div>
 
     @if (loading()) {
-
     <app-loader />
-
-    }
-
-    @else {
+    } @else {
 
     <div class="sales-layout">
 
-        <!-- LEFT -->
+        <!-- ── LEFT ── -->
         <div class="sales-main">
 
             <!-- CUSTOMER -->
             <div class="sales-card">
-
                 <div class="card-head">
-
                     <div class="step-dot">1</div>
-
                     <div>
                         <h5>Customer Details</h5>
                         <p>Customer billing information</p>
                     </div>
-
                 </div>
 
                 <div class="customer-grid">
-
                     <div class="form-group">
-
-                        <label class="form-label">
-                            Full Name
-                            <span class="required">*</span>
-                        </label>
-
+                        <label class="form-label">Full Name <span class="required-star">*</span></label>
                         <div class="input-icon-wrap">
                             <i class="bi bi-person field-icon"></i>
-
                             <input class="form-control" [(ngModel)]="customerForm.name"
                                 placeholder="Enter customer name">
                         </div>
-
                     </div>
-
                     <div class="form-group">
-
-                        <label class="form-label">
-                            Mobile
-                            <span class="required">*</span>
-                        </label>
-
+                        <label class="form-label">Mobile <span class="required-star">*</span></label>
                         <div class="input-icon-wrap">
                             <i class="bi bi-telephone field-icon"></i>
-
                             <input class="form-control" [(ngModel)]="customerForm.phone" placeholder="10 digit mobile">
                         </div>
-
                     </div>
-
                 </div>
 
-                <div class="form-group">
-
-                    <label class="form-label">
-                        Email
-                    </label>
-
+                <div class="form-group mb-0">
+                    <label class="form-label">Email</label>
                     <div class="input-icon-wrap">
-
                         <i class="bi bi-envelope field-icon"></i>
-
                         <input class="form-control" [(ngModel)]="customerForm.email" placeholder="customer@example.com">
-
                     </div>
-
                 </div>
-
             </div>
 
             <!-- PRODUCTS -->
             <div class="sales-card">
-
                 <div class="card-head">
-
                     <div class="step-dot product-dot">2</div>
-
                     <div>
                         <h5>Products</h5>
                         <p>Search products and add to billing</p>
                     </div>
-
                 </div>
 
                 <!-- SEARCH -->
                 <div class="search-bar">
-
                     <div class="input-icon-wrap">
-
                         <i class="bi bi-search field-icon"></i>
-
                         <input class="form-control" [ngModel]="search()" (ngModelChange)="onSearch($event)"
                             placeholder="Search product name / SKU">
-
                         @if (search()) {
-
                         <button class="search-clear" (click)="onSearch('')">
-
                             <i class="bi bi-x-circle-fill"></i>
-
                         </button>
-
                         }
-
                     </div>
-
                 </div>
 
                 <!-- CATEGORY -->
                 <div class="category-wrap">
-
                     <button class="category-btn" [class.active]="selectedCategory() === 'ALL'"
-                        (click)="setCategory('ALL')">
-
-                        All
-                    </button>
-
+                        (click)="setCategory('ALL')">All</button>
                     @for (c of categories(); track c.id) {
-
                     <button class="category-btn" [class.active]="selectedCategory() === c.name"
-                        (click)="setCategory(c.name)">
-
-                        {{ c.name }}
-                    </button>
-
+                        (click)="setCategory(c.name)">{{ c.name }}</button>
                     }
-
                 </div>
 
                 <!-- PRODUCT TABLE -->
                 <div class="inventory-wrapper">
-
                     <div class="inventory-head">
-
                         <div>Product</div>
                         <div>Category</div>
                         <div>Price</div>
+                        <div>Stock</div>
                         <div></div>
-
                     </div>
 
                     <div class="inventory-scroll">
-
-                        @if (visibleProducts().length === 0) {
-
+                        @if (filteredProducts().length === 0) {
                         <div class="empty-box">
-
                             <i class="bi bi-box-seam"></i>
                             <p>No products found</p>
-
                         </div>
-
-                        }
-
-                        @else {
-
+                        } @else {
                         @for (p of visibleProducts(); track p.id) {
-
                         <div class="inventory-row" [class.disabled]="p.availableStock <= 0">
 
-                            <!-- PRODUCT -->
                             <div class="product-info">
-
                                 <div class="product-avatar">
                                     {{ p.name.charAt(0).toUpperCase() }}
                                 </div>
-
                                 <div>
-
-                                    <div class="product-name">
-                                        {{ p.name }}
-                                    </div>
-
-                                    <div class="product-sku">
-                                        {{ p.sku }}
-                                    </div>
-
+                                    <div class="product-name">{{ p.name }}</div>
+                                    <div class="product-sku">{{ p.sku }}</div>
                                 </div>
-
                             </div>
 
-                            <!-- CATEGORY -->
-                            <div class="product-category">
-                                {{ p.categoryName || '—' }}
-                            </div>
+                            <div class="product-category">{{ p.categoryName || '—' }}</div>
 
-                            <!-- PRICE -->
-                            <div class="product-price">
-                                ₹{{ p.adminToUserPrice | number:'1.2-2' }}
-                            </div>
+                            <div class="product-price">₹{{ p.adminToUserPrice | number:'1.2-2' }}</div>
 
-                            <!-- BUTTON -->
                             <div>
+                                <span class="stock-badge" [class.low]="p.availableStock <= 5">
+                                    {{ p.availableStock }}
+                                </span>
+                            </div>
 
+                            <div>
+                                @if (qtyInCart(p.id) > 0) {
+                                <div class="qty-inline">
+                                    <button class="qty-btn-sm"
+                                        (click)="updateQty({productId: p.id, productName: p.name, sku: p.sku, quantity: qtyInCart(p.id), price: p.adminToUserPrice, subtotal: qtyInCart(p.id)*p.adminToUserPrice, maxStock: p.availableStock}, -1)">
+                                        <i class="bi bi-dash"></i>
+                                    </button>
+                                    <span class="qty-count">{{ qtyInCart(p.id) }}</span>
+                                    <button class="qty-btn-sm" (click)="addToCart(p)"
+                                        [disabled]="qtyInCart(p.id) >= p.availableStock">
+                                        <i class="bi bi-plus"></i>
+                                    </button>
+                                </div>
+                                } @else {
                                 <button class="add-btn" (click)="addToCart(p)" [disabled]="p.availableStock <= 0">
-
-                                    <i class="bi bi-plus-lg"></i>
-                                    Add
+                                    <i class="bi bi-plus-lg"></i> Add
                                 </button>
-
+                                }
                             </div>
 
                         </div>
-
                         }
 
+                        <!-- LOAD MORE -->
+                        @if (hasMore()) {
+                        <div class="load-more-row">
+                            <button class="load-more-btn" (click)="loadMore()">
+                                <i class="bi bi-arrow-down-circle"></i>
+                                Load more products
+                                <span class="load-more-count">
+                                    ({{ filteredProducts().length - visibleProducts().length }} remaining)
+                                </span>
+                            </button>
+                        </div>
                         }
-
+                        }
                     </div>
-
                 </div>
-
             </div>
 
         </div>
 
-        <!-- RIGHT -->
+        <!-- ── RIGHT ── -->
         <div class="sales-sidebar">
 
             <!-- PAYMENT -->
             <div class="sales-card">
-
                 <div class="card-head">
-
                     <div class="step-dot payment-dot">3</div>
-
                     <div>
                         <h5>Payment Method</h5>
                         <p>Select payment mode</p>
                     </div>
-
                 </div>
-
                 <div class="payment-grid">
-
                     @for (m of paymentModes; track m.value) {
-
                     <button class="payment-card" [class.active]="paymentMode === m.value"
                         (click)="paymentMode = m.value">
-
                         <i class="bi {{ m.icon }}"></i>
-
                         <span>{{ m.label }}</span>
-
                     </button>
-
                     }
-
                 </div>
-
             </div>
 
             <!-- SUMMARY -->
             <div class="sales-card summary-card">
-
                 <div class="summary-header">
-
                     <div>
                         <h5>Billing Summary</h5>
                         <p>{{ itemCount }} total items</p>
                     </div>
-
                     <div class="summary-icon">
                         <i class="bi bi-receipt"></i>
                     </div>
-
                 </div>
 
                 @if (billItems.length > 0) {
-
                 <div class="summary-items">
-
-                    @for (item of billItems.slice(0,3); track item.productId) {
-
+                    @for (item of billItems.slice(0, 3); track item.productId) {
                     <div class="summary-line">
-
-                        <div class="summary-product">
-
-                            <span class="summary-product-name">
-                                {{ item.productName }}
-                            </span>
-
-                        </div>
-
-                        <strong>
-                            ₹{{ item.subtotal | number:'1.2-2' }}
-                        </strong>
-
+                        <span class="summary-product-name">{{ item.productName }}</span>
+                        <strong>₹{{ item.subtotal | number:'1.2-2' }}</strong>
                     </div>
-
                     }
-
                     @if (billItems.length > 3) {
-
-                    <div class="more-items">
-                        +{{ billItems.length - 3 }} more items
-                    </div>
-
+                    <div class="more-items">+{{ billItems.length - 3 }} more items</div>
                     }
-
                 </div>
-
                 }
 
                 <div class="summary-total">
-
                     <span>Total Amount</span>
-
-                    <h3>
-                        ₹{{ billTotal | number:'1.2-2' }}
-                    </h3>
-
+                    <h3>₹{{ billTotal | number:'1.2-2' }}</h3>
                 </div>
 
                 <button class="btn btn-primary checkout-btn" (click)="submitSale()" [disabled]="!canSubmit">
-
                     @if (submitting()) {
-
                     <span class="btn-loader">
                         <span class="spinner spinner-sm"></span>
                         Processing...
                     </span>
-
+                    } @else {
+                    <i class="bi bi-check-circle"></i> Complete Sale
                     }
-
-                    @else {
-
-                    <span>
-                        <i class="bi bi-check-circle"></i>
-                        Complete Sale
-                    </span>
-
-                    }
-
                 </button>
-
             </div>
 
         </div>
-
     </div>
-
     }
 
 </div>
 
-<!-- CART MODAL -->
+<!-- ── FLOATING CART BTN ── -->
 @if (billItems.length > 0) {
-
-<div class="floating-cart-btn" (click)="showCartModal = true">
-
+<div class="floating-cart-btn" (click)="openCartModal()">
     <i class="bi bi-cart3"></i>
-
-    <span>
-        {{ itemCount }}
-    </span>
-
+    <span>{{ itemCount }}</span>
 </div>
-
 }
 
+<!-- ── CART MODAL ── -->
 @if (showCartModal) {
-
-<div class="modal-overlay" (click)="showCartModal = false">
-
+<div class="modal-overlay" (click)="closeCartModal()">
     <div class="cart-modal" (click)="$event.stopPropagation()">
-
         <div class="cart-modal-header">
-
             <div>
-
                 <h5>Cart Items</h5>
-                <p>{{ itemCount }} items added</p>
-
+                <p>{{ itemCount }} items &nbsp;·&nbsp; ₹{{ billTotal | number:'1.2-2' }}</p>
             </div>
-
-            <button class="modal-close-btn" (click)="showCartModal = false">
-
+            <button class="modal-close-btn" (click)="closeCartModal()">
                 <i class="bi bi-x-lg"></i>
-
             </button>
-
         </div>
 
         <div class="cart-modal-body">
-
             @for (item of billItems; track item.productId) {
-
             <div class="cart-row">
-
                 <div class="cart-left">
-
-                    <div class="cart-thumb">
-                        {{ item.productName.charAt(0).toUpperCase() }}
-                    </div>
-
+                    <div class="cart-thumb">{{ item.productName.charAt(0).toUpperCase() }}</div>
                     <div>
-
-                        <div class="cart-name">
-                            {{ item.productName }}
-                        </div>
-
-                        <div class="cart-sku">
-                            {{ item.sku }}
-                        </div>
-
+                        <div class="cart-name">{{ item.productName }}</div>
+                        <div class="cart-sku">{{ item.sku }}</div>
                     </div>
-
                 </div>
-
                 <div class="cart-controls">
-
                     <div class="qty-box">
-
                         <button class="qty-btn" (click)="updateQty(item, -1)">
-
                             <i class="bi bi-dash"></i>
-
                         </button>
-
                         <span>{{ item.quantity }}</span>
-
                         <button class="qty-btn" (click)="updateQty(item, +1)"
                             [disabled]="item.quantity >= item.maxStock">
-
                             <i class="bi bi-plus"></i>
-
                         </button>
-
                     </div>
-
-                    <div class="cart-total">
-                        ₹{{ item.subtotal | number:'1.2-2' }}
-                    </div>
-
+                    <div class="cart-total">₹{{ item.subtotal | number:'1.2-2' }}</div>
                     <button class="remove-btn" (click)="removeItem(item.productId)">
-
                         <i class="bi bi-trash3"></i>
-
                     </button>
-
                 </div>
+            </div>
+            }
+        </div>
 
+        <div class="cart-modal-footer">
+            <div class="cart-footer-total">
+                <span>Total</span>
+                <strong>₹{{ billTotal | number:'1.2-2' }}</strong>
+            </div>
+            <button class="btn btn-primary" (click)="submitSale(); closeCartModal()" [disabled]="!canSubmit">
+                <i class="bi bi-check-circle"></i> Complete Sale
+            </button>
+        </div>
+    </div>
+</div>
+}
+
+<!-- ══════════════════════════════════════
+     RECEIPT / BILL CONFIRMATION POPUP
+════════════════════════════════════════ -->
+@if (completedSale()) {
+<div class="modal-overlay receipt-overlay" (click)="dismissReceipt()">
+    <div class="receipt-modal" (click)="$event.stopPropagation()">
+
+        <!-- SUCCESS BANNER -->
+        <div class="receipt-success-banner">
+            <div class="receipt-check-ring">
+                <i class="bi bi-check-lg"></i>
+            </div>
+            <div>
+                <h4>Sale Complete!</h4>
+                <p>Bill #{{ completedSale()!.id }} confirmed</p>
+            </div>
+            <button class="receipt-close-btn" (click)="dismissReceipt()">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <!-- BILL BODY (printable) -->
+        <div class="receipt-body" id="receipt-print">
+
+            <!-- STORE HEADER -->
+            <div class="receipt-store-header">
+                <div class="receipt-store-logo">
+                    <i class="bi bi-shop"></i>
+                </div>
+                <div>
+                    <div class="receipt-store-name">INVENTRA</div>
+                    <div class="receipt-store-sub">Point of Sale Receipt</div>
+                </div>
             </div>
 
-            }
+            <!-- META ROW -->
+            <div class="receipt-meta-grid">
+                <div class="receipt-meta-item">
+                    <span class="receipt-meta-label">Bill No.</span>
+                    <span class="receipt-meta-value">#{{ completedSale()!.id }}</span>
+                </div>
+                <div class="receipt-meta-item">
+                    <span class="receipt-meta-label">Date</span>
+                    <span class="receipt-meta-value">{{ completedSale()!.saleDate | date:'dd MMM yyyy' }}</span>
+                </div>
+                <div class="receipt-meta-item">
+                    <span class="receipt-meta-label">Time</span>
+                    <span class="receipt-meta-value">{{ completedSale()!.saleDate | date:'h:mm a' }}</span>
+                </div>
+                <div class="receipt-meta-item">
+                    <span class="receipt-meta-label">Payment</span>
+                    <span class="receipt-meta-value receipt-payment-badge">
+                        {{ completedSale()!.paymentMode }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- CUSTOMER INFO -->
+            <div class="receipt-customer-row">
+                <div class="receipt-customer-avatar">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+                <div class="receipt-customer-info">
+                    <div class="receipt-customer-name">{{ completedSale()!.customerName }}</div>
+                    <div class="receipt-customer-phone">{{ completedSale()!.customerPhone }}</div>
+                </div>
+                <div class="receipt-customer-label">Customer</div>
+            </div>
+
+            <!-- DIVIDER -->
+            <div class="receipt-divider">
+                <div class="receipt-divider-line"></div>
+                <span>Items Purchased</span>
+                <div class="receipt-divider-line"></div>
+            </div>
+
+            <!-- ITEMS TABLE -->
+            <div class="receipt-items">
+                <div class="receipt-items-head">
+                    <span>Item</span>
+                    <span class="text-center">Qty</span>
+                    <span class="text-right">Rate</span>
+                    <span class="text-right">Amount</span>
+                </div>
+                @for (item of completedSale()!.items; track item.productId) {
+                <div class="receipt-item-row">
+                    <div class="receipt-item-name">
+                        <span class="receipt-item-dot"></span>
+                        {{ item.productName }}
+                    </div>
+                    <div class="text-center receipt-item-qty">× {{ item.quantity }}</div>
+                    <div class="text-right receipt-item-rate">₹{{ item.price | number:'1.2-2' }}</div>
+                    <div class="text-right receipt-item-subtotal">₹{{ item.subtotal | number:'1.2-2' }}</div>
+                </div>
+                }
+            </div>
+
+            <!-- TOTALS -->
+            <div class="receipt-totals">
+                <div class="receipt-total-row">
+                    <span>Subtotal</span>
+                    <span>₹{{ completedSale()!.totalAmount | number:'1.2-2' }}</span>
+                </div>
+                <div class="receipt-total-row">
+                    <span>Tax / GST</span>
+                    <span class="text-muted">—</span>
+                </div>
+                <div class="receipt-grand-total">
+                    <span>Total Paid</span>
+                    <strong>₹{{ completedSale()!.totalAmount | number:'1.2-2' }}</strong>
+                </div>
+            </div>
+
+            <!-- THANK YOU -->
+            <div class="receipt-thankyou">
+                <i class="bi bi-hearts"></i>
+                <p>Thank you for your purchase!</p>
+                <span>Please keep this receipt for your records.</span>
+            </div>
 
         </div>
 
+        <!-- FOOTER ACTIONS -->
+        <div class="receipt-footer">
+            <button class="btn btn-outline-secondary" (click)="printReceipt()">
+                <i class="bi bi-printer"></i> Print
+            </button>
+            <button class="btn btn-primary" (click)="dismissReceipt()">
+                <i class="bi bi-plus-circle"></i> New Sale
+            </button>
+        </div>
+
     </div>
-
 </div>
-
 }

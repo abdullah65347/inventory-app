@@ -4,43 +4,17 @@
       <h4>Inventory</h4>
       <p>Track stock levels across all products</p>
     </div>
-    <div class="page-header-right">
-      <select class="form-select form-select-sm" [(ngModel)]="filter" (change)="applyFilter()" style="width:140px">
-        <option value="all">All Items</option>
-        <option value="low">Low Stock</option>
-        <option value="ok">Healthy</option>
-      </select>
-      <input class="form-control form-control-sm" style="width:200px" placeholder="Search..." [(ngModel)]="search"
-        (input)="applyFilter()">
-    </div>
   </div>
 
-  <div class="grid-4 compact-stats" style="margin-bottom:24px">
-    <div class="stat-card c-primary">
-      <div class="stat-icon c-primary"><i class="bi bi-archive-fill"></i></div>
-      <div class="stat-value">{{ inventory().length }}</div>
-      <div class="stat-label">Total Products</div>
-    </div>
-    <div class="stat-card c-success">
-      <div class="stat-icon c-success"><i class="bi bi-check-circle-fill"></i></div>
-      <div class="stat-value">{{ okCount }}</div>
-      <div class="stat-label">Healthy Stock</div>
-    </div>
-    <div class="stat-card c-danger">
-      <div class="stat-icon c-danger"><i class="bi bi-exclamation-triangle-fill"></i></div>
-      <div class="stat-value">{{ lowCount }}</div>
-      <div class="stat-label">Low Stock</div>
-    </div>
-    <div class="stat-card c-accent">
-      <div class="stat-icon c-accent"><i class="bi bi-boxes"></i></div>
-      <div class="stat-value">{{ totalUnits }}</div>
-      <div class="stat-label">Total Units</div>
-    </div>
-  </div>
+  <app-stat-strip [items]="dashboardStats()"></app-stat-strip>
 
   @if (loading()) { <app-loader /> }
   @else {
-  <app-table [hasData]="filtered().length > 0">
+  <app-table [hasData]="paged.items.length > 0" [showSearch]="true" [searchQuery]="search"
+    [searchPlaceholder]="'Search inventory...'" (search)="search = $event; applyFilter()" [showFilter]="true"
+    [filterValue]="filter" [filterPlaceholder]="'Filter by Health'" [filterOptions]="statusFilterOptions"
+    (filter)="filter = $event; applyFilter()" [showSort]="true" [sortValue]="selectedSort" [sortPlaceholder]="'Sort By'"
+    [sortOptions]="sortOptions" (sort)="selectedSort = $event; applyFilter()">
     <ng-template #header>
       <tr>
         <th>#</th>
@@ -60,7 +34,7 @@
       </div>
     </ng-template>
     <ng-template #body>
-      @for (item of filtered(); track item.id) {
+      @for (item of paged.items; track item.id) {
       <tr>
         <td><strong>#{{ item.id }}</strong></td>
         <td><strong>{{ item.productName }}</strong></td>
@@ -86,6 +60,9 @@
       }
     </ng-template>
   </app-table>
+  <app-paginator [totalItems]="paged.totalItems" [totalPages]="paged.totalPages" [currentPage]="paged.currentPage"
+    [pageSize]="paged.pageSize" (pageChange)="page.set($event)" (pageSizeChange)="onPageSize($event)">
+  </app-paginator>
   }
 </div>
 

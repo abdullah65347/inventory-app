@@ -1,11 +1,5 @@
 .mb-24 {
-    margin-bottom: 24px;
-}
-
-.cards {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 16px;
+    margin-bottom: 18px;
 }
 
 .me-2 {
@@ -36,6 +30,7 @@
 }
 
 .range-selector {
+    margin-left: 12px;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -129,12 +124,115 @@
     color: #fff;
 }
 
+.card {
+    border-radius: var(--radius-lg);
+}
+
+.card app-table,
+.card .table-wrap {
+    overflow: hidden;
+    border-radius: inherit;
+}
+
 .range-error {
     font-size: 12px;
     color: #ef4444;
     font-weight: 500;
     align-self: flex-end;
     padding-bottom: 6px;
+}
+
+.stock-flow-banner {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 64px;
+}
+
+.flow-side {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.flow-side.right {
+    text-align: right;
+}
+
+.flow-icon-circle {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 2px solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 24px;
+}
+
+.flow-icon-warehouse {
+    border-color: #3b82f6;
+    color: #3b82f6;
+}
+
+.flow-icon-incoming {
+    border-color: #f59e0b;
+    color: #f59e0b;
+}
+
+.flow-label {
+    font-size: 13px;
+    color: var(--text-secondary, #64748b);
+    margin: 0 0 4px;
+}
+
+.flow-value {
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0;
+    color: var(--text);
+}
+
+.flow-unit {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-secondary, #64748b);
+}
+
+.flow-arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+    padding: 0 8px;
+    color: var(--text-tertiary, #94a3b8);
+}
+
+.flow-arrow span {
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+    .stock-flow-banner {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .flow-side.right {
+        text-align: left;
+        flex-direction: row-reverse;
+    }
+
+    .flow-arrow {
+        transform: rotate(90deg);
+    }
 }
 
 @media (prefers-color-scheme: dark) {

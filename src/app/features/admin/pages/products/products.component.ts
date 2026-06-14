@@ -14,11 +14,15 @@ import { UserService } from '../../services/user.service';
 import { CategoryResponse } from 'src/app/features/common/models/category.model';
 import { User } from 'src/app/core/models/user.model';
 import { forkJoin } from 'rxjs';
+import { ViewDetailModalComponent, ViewField } from 'src/app/shared/components/view-detail-modal/view-detail-modal.component';
+import { AppTableComponent } from 'src/app/shared/components/app-table/app-table.component';
+import { PaginatorComponent } from '../../../../shared/components/paginator/paginator.component';
+import { paginate, PageResult } from '../../../../core/utils/paginate.util';
 
 @Component({
   selector: 'app-admin-products',
   standalone: true,
-  imports: [CommonModule, FormsModule, LoaderComponent, SupplierFormComponent],
+  imports: [CommonModule, FormsModule, LoaderComponent, ViewDetailModalComponent, SupplierFormComponent, AppTableComponent, PaginatorComponent],
   templateUrl: './products.component.html',
   styleUrls: ['./products.component.css'],
   animations: [fadeIn]
@@ -34,6 +38,20 @@ export class AdminProductsComponent implements OnInit {
   filtered = signal<AdminProductResponse[]>([]);
   loading = signal(true);
   search = '';
+  selectedCategory = '';
+  selectedSort = '';
+  categoryFilterOptions: { value: any, label: string }[] = [];
+  sortOptions = [
+    { value: 'name_asc', label: 'Name (A-Z)' },
+    { value: 'name_desc', label: 'Name (Z-A)' },
+    { value: 'sell_asc', label: 'Price (Low to High)' },
+    { value: 'sell_desc', label: 'Price (High to Low)' },
+    { value: 'stock_desc', label: 'Stock (High to Low)' },
+    { value: 'stock_asc', label: 'Stock (Low to High)' },
+  ];
+
+  page = signal(1);
+  pageSize = signal(10);
   priceTarget = signal<AdminProductResponse | null>(null);
   showCreate = signal(false);
   suppliers = signal<SupplierResponse[]>([]);
@@ -41,6 +59,8 @@ export class AdminProductsComponent implements OnInit {
   categories = signal<CategoryResponse[]>([]);
   availableUsers = signal<User[]>([]);
   newPrice = 0;
+  showViewModal = signal(false);
+  selectedProduct: AdminProductResponse | null = null;
 
   supplierForm = {
     userId: null as number | null,
@@ -59,6 +79,59 @@ export class AdminProductsComponent implements OnInit {
     quantity: 0
   };
 
+  viewFields: ViewField[] = [
+    {
+      key: 'name',
+      label: 'Product Name',
+      width: 'half'
+    },
+    {
+      key: 'sku',
+      label: 'SKU',
+      width: 'half'
+    },
+    {
+      key: 'categoryName',
+      label: 'Category',
+      width: 'half'
+    },
+    {
+      key: 'supplierName',
+      label: 'Supplier',
+      width: 'half'
+    },
+    {
+      key: 'supplierToAdminPrice',
+      label: 'Cost Price',
+      width: 'half'
+    },
+    {
+      key: 'adminToUserPrice',
+      label: 'Selling Price',
+      width: 'half'
+    },
+    {
+      key: 'availableStock',
+      label: 'Available Stock',
+      width: 'half'
+    },
+    {
+      key: 'active',
+      label: 'Status',
+      width: 'half'
+    },
+    {
+      key: 'description',
+      label: 'Description',
+      width: 'full'
+    },
+    {
+      key: 'createdAt',
+      label: 'Created At',
+      width: 'half'
+    }
+  ];
+
   ngOnInit(): void {
     this.load();
 
@@ -66,7 +139,10 @@ export class AdminProductsComponent implements OnInit {
       next: res => this.suppliers.set(res)
     });
     this.catSvc.getAll().subscribe({
-      next: c => this.categories.set(c)
+      next: c => {
+        this.categories.set(c);
+        this.categoryFilterOptions = c.map(cat => ({ value: cat.id, label: cat.name }));
+      }
     });
   }
 
@@ -149,6 +225,16 @@ export class AdminProductsComponent implements OnInit {
       });
   }
 
+  viewProduct(product: AdminProductResponse): void {
+    this.selectedProduct = product;
+    this.showViewModal.set(true);
+  }
+
+  closeViewDetailModal(): void {
+    this.showViewModal.set(false);
+    this.selectedProduct = null;
+  }
+
   createProduct(): void {
 
     if (!this.createForm.supplierId) {
@@ -170,10 +256,41 @@ export class AdminProductsComponent implements OnInit {
 
   filter(): void {
     const s = this.search.toLowerCase();
-    this.filtered.set(this.products().filter(p =>
+    let list = this.products().filter(p =>
       p.name.toLowerCase().includes(s) || p.sku.toLowerCase().includes(s) ||
       (p.supplierName ?? '').toLowerCase().includes(s)
-    ));
+    );
+
+    if (this.selectedCategory) {
+      const catId = Number(this.selectedCategory);
+      list = list.filter(p => p.id === catId);
+    }
+
+    if (this.selectedSort) {
+      list = [...list].sort((a, b) => {
+        switch (this.selectedSort) {
+          case 'name_asc': return a.name.localeCompare(b.name);
+          case 'name_desc': return b.name.localeCompare(a.name);
+          case 'sell_asc': return (a.adminToUserPrice || 0) - (b.adminToUserPrice || 0);
+          case 'sell_desc': return (b.adminToUserPrice || 0) - (a.adminToUserPrice || 0);
+          case 'stock_desc': return b.availableStock - a.availableStock;
+          case 'stock_asc': return a.availableStock - b.availableStock;
+          default: return 0;
+        }
+      });
+    }
+
+    this.filtered.set(list);
+    this.page.set(1);
+  }
+
+  get paged(): PageResult<AdminProductResponse> {
+    return paginate(this.filtered(), this.page(), this.pageSize());
+  }
+
+  onPageSize(size: number): void {
+    this.pageSize.set(size);
+    this.page.set(1);
   }
 
   openPrice(p: AdminProductResponse): void { this.priceTarget.set(p); this.newPrice = p.adminToUserPrice ?? 0; }

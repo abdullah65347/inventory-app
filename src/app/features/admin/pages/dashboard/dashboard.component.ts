@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, inject, signal } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -19,6 +19,8 @@ import { SaleResponse } from '../../../common/models/sale.model';
 import { InventoryResponse } from '../../../common/models/inventory.model';
 import { TransactionResponse } from '../../../common/models/transaction.model';
 import { AppTableComponent } from 'src/app/shared/components/app-table/app-table.component';
+import { StatStripComponent, StatStripItem } from 'src/app/shared/components/stats-strip/stat-strip.component';
+import { PurchaseService } from '../../services/purchase.service';
 
 Chart.register(...registerables);
 
@@ -27,7 +29,7 @@ export type TimeRange = '15days' | '6months' | 'custom';
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, LoaderComponent, AppTableComponent],
+  imports: [CommonModule, FormsModule, RouterLink, LoaderComponent, AppTableComponent, StatStripComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
   animations: [fadeIn, fadeInList]
@@ -38,6 +40,7 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
   @ViewChild('pieChart') pieRef!: ElementRef<HTMLCanvasElement>;
   @ViewChild('lineChart') lineRef!: ElementRef<HTMLCanvasElement>;
   @ViewChild('productPieChart') productPieRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('categoryPieChart') categoryPieRef!: ElementRef<HTMLCanvasElement>;
 
   auth = inject(AuthService);
   private userSvc = inject(UserService);
@@ -46,11 +49,16 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
   private invSvc = inject(InventoryService);
   private txSvc = inject(TransactionService);
   private saleSvc = inject(SaleService);
+  private purchaseSvc = inject(PurchaseService);
+  private invData: InventoryResponse[] = [];
+  private purchaseData: any[] = [];
 
   loading = signal(true);
   recentSales = signal<SaleResponse[]>([]);
   lowStock = signal<InventoryResponse[]>([]);
   maxDate = signal(this.formatDateInput(new Date()));
+  quantityInHand = signal(0);
+  quantityToReceive = signal(0);
 
   stats = signal({
     users: 0, suppliers: 0, products: 0,
@@ -58,6 +66,14 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
   });
 
   selectedRange = signal<TimeRange>('6months');
+
+  dashboardStats = computed<StatStripItem[]>(() => [
+    { icon: 'bi-person-workspace', value: this.stats().users, label: 'Total Users', iconClass: 'icon-users', format: 'number' },
+    { icon: 'bi-boxes', value: this.stats().products, label: 'Products', iconClass: 'icon-products', format: 'number' },
+    { icon: 'bi-bag-check-fill', value: this.stats().sales, label: 'Total Sales', iconClass: 'icon-sales', format: 'number' },
+    { icon: 'bi-exclamation-octagon-fill', value: this.stats().lowStock, label: 'Low Stock Items', iconClass: 'icon-lowstock', format: 'number' },
+    { icon: 'bi-currency-rupee', value: this.stats().revenue, label: 'Total Revenue', iconClass: 'icon-revenue', format: 'currency' },
+  ]);
 
   // Custom date range (ISO strings yyyy-mm-dd for input[type=date])
   customFrom = signal<string>(this.formatDateInput(new Date(Date.now() - 30 * 86400000)));
@@ -87,8 +103,9 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
       products: this.prodSvc.getAdminProducts().pipe(catchError(() => of([]))),
       sales: this.saleSvc.getAll().pipe(catchError(() => of([]))),
       inventory: this.invSvc.getAll().pipe(catchError(() => of([]))),
-      txs: this.txSvc.getAll().pipe(catchError(() => of([])))
-    }).subscribe(({ users, suppliers, products, sales, inventory, txs }) => {
+      txs: this.txSvc.getAll().pipe(catchError(() => of([]))),
+      purchases: this.purchaseSvc.getAll().pipe(catchError(() => of([])))
+    }).subscribe(({ users, suppliers, products, sales, inventory, txs, purchases }) => {
 
       const lowStockItems = (inventory as InventoryResponse[])
         .filter(item => item.availableStock <= item.reorderLevel);
@@ -116,6 +133,20 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
       this.dataLoaded = true;
 
       if (this.chartsReady) this.renderCharts();
+
+      this.invData = inventory as InventoryResponse[];
+      this.purchaseData = purchases as any[];
+
+      this.quantityInHand.set(
+        this.invData.reduce((sum, item) => sum + item.availableStock, 0)
+      );
+
+      this.quantityToReceive.set(
+        this.purchaseData
+          .filter((p: any) => p.status !== 'DELIVERED' && p.status !== 'CANCELLED')
+          .flatMap((p: any) => p.items ?? p.purchaseItems ?? [])
+          .reduce((sum: number, item: any) => sum + item.quantity, 0)
+      );
     });
   }
 
@@ -296,6 +327,7 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
       this.renderPieChart();
       this.renderLineChart();
       this.renderProductPieChart();
+      this.renderCategoryPieChart();
     }, 150);
   }
 
@@ -567,24 +599,100 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
 
     this.chartInstances.push({ key: 'line', instance: chart });
   }
+  renderCategoryPieChart(): void {
+    if (!this.categoryPieRef) return;
+    const ctx = this.categoryPieRef.nativeElement.getContext('2d');
+    if (!ctx) return;
 
+    const buckets = this.buildBuckets();
+    const start = buckets[0]?.start;
+    const end = buckets[buckets.length - 1]?.end;
+
+    const filteredSales = this.salesData.filter(sale => {
+      const d = new Date(sale.saleDate);
+      return (!start || d >= start) && (!end || d <= end);
+    });
+
+    const categoryRevenue: Record<string, number> = {};
+
+    for (const sale of filteredSales as any[]) {
+      const items = sale.items ?? sale.saleItems ?? [];
+      for (const item of items) {
+        const product = this.prodData.find(p => p.id === item.productId);
+        const categoryName = product?.categoryName ?? product?.category?.name ?? 'Uncategorized';
+        const subtotal = item.subtotal ?? item.price * item.quantity;
+        categoryRevenue[categoryName] = (categoryRevenue[categoryName] || 0) + subtotal;
+      }
+    }
+
+    const sorted = Object.entries(categoryRevenue).sort((a, b) => b[1] - a[1]);
+    const labels = sorted.map(([name]) => name);
+    const data = sorted.map(([, value]) => value);
+
+    const colors = ['#3b82f6', '#f97316', '#94a3b8', '#fbbf24', '#10b981', '#a78bfa', '#f43f5e'];
+    const hoverColors = ['#2563eb', '#ea580c', '#64748b', '#f59e0b', '#059669', '#8b5cf6', '#e11d48'];
+
+    this.destroyChart('categoryPie');
+
+    const total = data.reduce((s, v) => s + v, 0);
+
+    const chart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels,
+        datasets: [{
+          data,
+          backgroundColor: colors,
+          hoverBackgroundColor: hoverColors,
+          borderColor: '#ffffff',
+          borderWidth: 3,
+          hoverOffset: 8
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'right',
+            labels: {
+              color: '#64748b',
+              usePointStyle: true,
+              pointStyle: 'circle',
+              padding: 18,
+              font: { size: 13 }
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: (ctx: any) => {
+                const pct = total > 0 ? ((ctx.raw / total) * 100).toFixed(0) : 0;
+                return `  ₹${(ctx.raw as number).toLocaleString('en-IN')} (${pct}%)`;
+              }
+            }
+          }
+        }
+      }
+    });
+
+    this.chartInstances.push({ key: 'categoryPie', instance: chart });
+  }
   renderProductPieChart(): void {
     if (!this.productPieRef) return;
     const ctx = this.productPieRef.nativeElement.getContext('2d');
     if (!ctx) return;
 
-    // Aggregate revenue per product from salesData
-    const revenueMap: Record<number, { name: string; revenue: number }> = {};
+    const buckets = this.buildBuckets();
+    const start = buckets[0]?.start;
+    const end = buckets[buckets.length - 1]?.end;
 
-    for (const sale of this.salesData) {
-      // sale items are not directly on SaleResponse — use txData as proxy via prodData
-    }
+    const filteredSales = this.salesData.filter(sale => {
+      const d = new Date(sale.saleDate);
+      return (!start || d >= start) && (!end || d <= end);
+    });
 
-    // Build revenue map from sale_items via salesData if your SaleResponse includes items,
-    // otherwise derive from prodData x salesData totals grouped by product
-    // Adjust depending on your SaleResponse shape:
     const productRevenue: { name: string; revenue: number }[] = this.prodData.map(p => {
-      const rev = this.salesData
+      const rev = filteredSales
         .flatMap((s: any) => s.items ?? s.saleItems ?? [])
         .filter((item: any) => item.productId === p.id)
         .reduce((sum: number, item: any) => sum + (item.subtotal ?? item.price * item.quantity), 0);
@@ -635,7 +743,8 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
                   strokeStyle: (ds.backgroundColor as string[])[i],
                   pointStyle: 'circle' as const,
                   hidden: false,
-                  index: i
+                  index: i,
+                  fontColor: '#64748b'
                 }));
               }
             }

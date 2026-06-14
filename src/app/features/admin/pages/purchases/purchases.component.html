@@ -8,52 +8,16 @@
       <button class="btn btn-primary" (click)="openCreate()"><i class="bi bi-cart-plus"></i> New Order</button>
     </div>
   </div>
-  <div class="cards compact-stats" style="margin-bottom:18px">
-    <div class="stat-card c-primary">
-      <div class="stat-icon c-primary">
-        <i class="bi bi-cart-fill"></i>
-      </div>
-      <div class="stat-value">{{ purchases().length }}</div>
-      <div class="stat-label">Total Orders</div>
-    </div>
-
-    <div class="stat-card c-warning">
-      <div class="stat-icon c-warning">
-        <i class="bi bi-hourglass-split"></i>
-      </div>
-      <div class="stat-value">{{ pendingCount }}</div>
-      <div class="stat-label">Pending</div>
-    </div>
-
-    <div class="stat-card c-accent">
-      <div class="stat-icon c-accent">
-        <i class="bi bi-truck"></i>
-      </div>
-      <div class="stat-value">{{ deliveredCount }}</div>
-      <div class="stat-label">Delivered</div>
-    </div>
-
-    <div class="stat-card c-success">
-      <div class="stat-icon c-success">
-        <i class="bi bi-check-circle-fill"></i>
-      </div>
-      <div class="stat-value">{{ confirmedCount }}</div>
-      <div class="stat-label">Confirmed</div>
-    </div>
-
-    <div class="stat-card c-danger">
-      <div class="stat-icon c-danger">
-        <i class="bi bi-x-circle-fill"></i>
-      </div>
-      <div class="stat-value">{{ cancelledCount }}</div>
-      <div class="stat-label">Cancelled</div>
-    </div>
-  </div>
+  <app-stat-strip [items]="dashboardStats()"></app-stat-strip>
   @if (loading()) { <app-loader /> }
   @else {
   <div class="table-wrap">
-    <table>
-      <thead>
+    <app-table [hasData]="paged.items.length > 0" [showSearch]="true" [searchQuery]="search"
+      [searchPlaceholder]="'Search purchases...'" (search)="search = $event; applyFilter()" [showFilter]="true"
+      [filterValue]="selectedStatus" [filterPlaceholder]="'Filter by Status'" [filterOptions]="statusFilterOptions"
+      (filter)="selectedStatus = $event; applyFilter()" [showSort]="true" [sortValue]="selectedSort"
+      [sortPlaceholder]="'Sort By'" [sortOptions]="sortOptions" (sort)="selectedSort = $event; applyFilter()">
+      <ng-template #header>
         <tr>
           <th>#</th>
           <th>Supplier</th>
@@ -62,18 +26,14 @@
           <th>Status</th>
           <th>Actions</th>
         </tr>
-      </thead>
-      <tbody>
-        @if (purchases().length === 0) {
-        <tr>
-          <td colspan="6">
-            <div class="empty-state"><i class="bi bi-cart"></i>
-              <p>No purchases yet</p>
-            </div>
-          </td>
-        </tr>
-        }
-        @for (p of purchases(); track p.id) {
+      </ng-template>
+      <ng-template #empty>
+        <div class="empty-state"><i class="bi bi-cart"></i>
+          <p>No purchases yet</p>
+        </div>
+      </ng-template>
+      <ng-template #body>
+        @for (p of paged.items; track p.id) {
         <tr>
           <td><strong>#{{ p.id }}</strong></td>
           <td>{{ p.supplierName ?? ('Supplier #' + p.supplierId) }}</td>
@@ -102,8 +62,11 @@
           </td>
         </tr>
         }
-      </tbody>
-    </table>
+      </ng-template>
+    </app-table>
+    <app-paginator [totalItems]="paged.totalItems" [totalPages]="paged.totalPages" [currentPage]="paged.currentPage"
+      [pageSize]="paged.pageSize" (pageChange)="page.set($event)" (pageSizeChange)="onPageSize($event)">
+    </app-paginator>
   </div>
   }
 </div>

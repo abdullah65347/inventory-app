@@ -1,6 +1,6 @@
 import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
+import { RouterLink, RouterOutlet } from '@angular/router';
 import { SidebarComponent, NavSection } from '../../shared/components/sidebar/sidebar.component';
 import { AuthService } from '../../core/services/auth.service';
 import { initials } from '../../core/utils/role.util';
@@ -10,13 +10,23 @@ import { ThemeToggleComponent } from '../../shared/components/theme-toggle/theme
 @Component({
   selector: 'app-supplier-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, SidebarComponent, ChatbotComponent, ThemeToggleComponent],
+  imports: [CommonModule, RouterOutlet, RouterLink, SidebarComponent, ChatbotComponent, ThemeToggleComponent],
   templateUrl: './supplier-layout.component.html',
   styleUrls: ['./supplier-layout.component.css']
 })
 export class SupplierLayoutComponent {
   auth = inject(AuthService);
   sidebarOpen = signal(false);
+  collapsed = signal(false);
+  toggleSidebar() { this.collapsed.update(v => !v); }
+
+  onMenuClick(): void {
+    if (window.innerWidth <= 1024) {
+      this.sidebarOpen.update(v => !v);
+    } else {
+      this.collapsed.update(v => !v);
+    }
+  }
 
   navSections: NavSection[] = [
     {

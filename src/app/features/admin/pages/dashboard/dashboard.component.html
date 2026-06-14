@@ -23,34 +23,7 @@
   <app-loader></app-loader>
   } @else {
 
-  <!-- Stat Cards -->
-  <div class="cards mb-24" [@fadeInList]="stats()">
-    <div class="stat-card c-primary">
-      <div class="stat-icon c-primary"><i class="bi bi-people-fill"></i></div>
-      <div class="stat-value">{{ stats().users }}</div>
-      <div class="stat-label">Total Users</div>
-    </div>
-    <div class="stat-card c-success">
-      <div class="stat-icon c-success"><i class="bi bi-box-seam-fill"></i></div>
-      <div class="stat-value">{{ stats().products }}</div>
-      <div class="stat-label">Products</div>
-    </div>
-    <div class="stat-card c-accent">
-      <div class="stat-icon c-accent"><i class="bi bi-receipt-cutoff"></i></div>
-      <div class="stat-value">{{ stats().sales }}</div>
-      <div class="stat-label">Total Sales</div>
-    </div>
-    <div class="stat-card c-danger">
-      <div class="stat-icon c-danger"><i class="bi bi-exclamation-triangle-fill"></i></div>
-      <div class="stat-value">{{ stats().lowStock }}</div>
-      <div class="stat-label">Low Stock Items</div>
-    </div>
-    <div class="stat-card c-warning">
-      <div class="stat-icon c-warning"><i class="bi bi-graph-up-arrow"></i></div>
-      <div class="stat-value">{{ stats().revenue | number:'1.0-0' }}</div>
-      <div class="stat-label">Total Revenue</div>
-    </div>
-  </div>
+  <app-stat-strip [items]="dashboardStats()"></app-stat-strip>
 
   <!-- Time Range Selector -->
   <div class="range-selector mb-24">
@@ -93,7 +66,7 @@
         <span class="badge badge-secondary">
           @if (selectedRange() === '15days') { Last 15 Days }
           @else if (selectedRange() === '6months') { Last 6 Months }
-          @else { Custom Range }
+          @else { {{ rangeLabel() }} }
         </span>
       </div>
       <div class="card-body">
@@ -105,7 +78,11 @@
         <h6 class="card-title">
           <i class="bi bi-pie-chart-fill me-2 text-primary"></i>Sales by Top 5 Products
         </h6>
-        <span class="badge badge-secondary">PRODUCTS</span>
+        <span class="badge badge-secondary">
+          @if (selectedRange() === '15days') { Last 15 Days }
+          @else if (selectedRange() === '6months') { Last 6 Months }
+          @else { {{ rangeLabel() }} }
+        </span>
       </div>
       <div class="card-body">
         <div class="chart-wrap"><canvas #productPieChart></canvas></div>
@@ -123,26 +100,72 @@
       <span class="badge badge-secondary">
         @if (selectedRange() === '15days') { Last 15 Days }
         @else if (selectedRange() === '6months') { Last 6 Months }
-        @else { Custom Range }
+        @else { {{ rangeLabel() }} }
       </span>
     </div>
     <div class="card-body">
       <div class="chart-wrap"><canvas #pieChart></canvas></div>
     </div>
   </div>
-  <div class="card mb-24">
-    <div class="card-header">
-      <h6 class="card-title">
-        <i class="bi bi-activity me-2 text-secondary"></i>Inventory Trends (Stock In vs Stock Out)
-      </h6>
-      <span class="badge badge-secondary">
-        @if (selectedRange() === '15days') { Last 15 Days }
-        @else if (selectedRange() === '6months') { Last 6 Months }
-        @else { Custom Range }
-      </span>
+  <!-- Inventory Trends + Sales by Category -->
+  <div class="grid-2 mb-24">
+    <div class="card">
+      <div class="card-header">
+        <h6 class="card-title">
+          <i class="bi bi-pie-chart-fill me-2 text-primary"></i>Sales by Category
+        </h6>
+        <span class="badge badge-secondary">
+          @if (selectedRange() === '15days') { Last 15 Days }
+          @else if (selectedRange() === '6months') { Last 6 Months }
+          @else { {{ rangeLabel() }} }
+        </span>
+      </div>
+      <div class="card-body">
+        <div class="chart-wrap"><canvas #categoryPieChart></canvas></div>
+      </div>
     </div>
-    <div class="card-body">
-      <div class="chart-wrap"><canvas #lineChart></canvas></div>
+    <div class="card">
+      <div class="card-header">
+        <h6 class="card-title">
+          <i class="bi bi-activity me-2 text-secondary"></i>Inventory Trends (Stock In vs Stock Out)
+        </h6>
+        <span class="badge badge-secondary">
+          @if (selectedRange() === '15days') { Last 15 Days }
+          @else if (selectedRange() === '6months') { Last 6 Months }
+          @else { {{ rangeLabel() }} }
+        </span>
+      </div>
+      <div class="card-body">
+        <div class="chart-wrap"><canvas #lineChart></canvas></div>
+      </div>
+    </div>
+
+  </div>
+  <!-- Stock Flow Banner -->
+  <div class="stock-flow-banner mb-24">
+    <div class="flow-side">
+      <div class="flow-icon-circle flow-icon-warehouse">
+        <i class="bi bi-building"></i>
+      </div>
+      <div>
+        <p class="flow-label">Currently in Stock</p>
+        <p class="flow-value">{{ quantityInHand() | number }} <span class="flow-unit">units</span></p>
+      </div>
+    </div>
+
+    <div class="flow-arrow">
+      <i class="bi bi-arrow-right"></i>
+      <span>on the way</span>
+    </div>
+
+    <div class="flow-side right">
+      <div>
+        <p class="flow-label">Incoming from pending orders</p>
+        <p class="flow-value">{{ quantityToReceive() | number }} <span class="flow-unit">units</span></p>
+      </div>
+      <div class="flow-icon-circle flow-icon-incoming">
+        <i class="bi bi-truck"></i>
+      </div>
     </div>
   </div>
 

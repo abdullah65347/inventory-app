@@ -14,11 +14,14 @@ import { initials } from 'src/app/core/utils/role.util';
 import { getAvatarGradient } from 'src/app/core/utils/avatar.util';
 import { SupplierFormComponent } from '../../components/supplier-form/supplier-form.component';
 import { forkJoin } from 'rxjs';
+import { AppTableComponent } from 'src/app/shared/components/app-table/app-table.component';
+import { PaginatorComponent } from '../../../../shared/components/paginator/paginator.component';
+import { paginate, PageResult } from '../../../../core/utils/paginate.util';
 
 @Component({
   selector: 'app-admin-suppliers',
   standalone: true,
-  imports: [CommonModule, FormsModule, LoaderComponent, SupplierFormComponent],
+  imports: [CommonModule, FormsModule, LoaderComponent, SupplierFormComponent, AppTableComponent, PaginatorComponent],
   templateUrl: './suppliers.component.html',
   styleUrls: ['./suppliers.component.css'],
   animations: [fadeIn]
@@ -30,7 +33,9 @@ export class SuppliersComponent implements OnInit {
   private toast = inject(ToastService);
 
   suppliers = signal<SupplierResponse[]>([]);
+  filtered = signal<SupplierResponse[]>([]);
   categories = signal<CategoryResponse[]>([]);
+  categoryFilterOptions: { value: any, label: string }[] = [];
   supplierUsers = signal<User[]>([]);
   loading = signal(true);
   showModal = signal(false);
@@ -41,13 +46,70 @@ export class SuppliersComponent implements OnInit {
   availableUsers = signal<User[]>([]);
   isEdit = signal(false);
 
+  page = signal(1);
+  pageSize = signal(10);
+  search = '';
+  selectedCategory = '';
+  selectedSort = '';
+
+  sortOptions = [
+    { value: 'name_asc', label: 'Company Name (A-Z)' },
+    { value: 'name_desc', label: 'Company Name (Z-A)' },
+    { value: 'address_asc', label: 'Address (A-Z)' },
+    { value: 'address_desc', label: 'Address (Z-A)' },
+  ];
+
   ngOnInit(): void { this.load(); }
 
   load(): void {
     this.loading.set(true);
-    this.svc.getAll().subscribe({ next: s => { this.suppliers.set(s); this.loading.set(false); }, error: () => this.loading.set(false) });
-    this.catSvc.getAll().subscribe({ next: c => this.categories.set(c) });
+    this.svc.getAll().subscribe({
+      next: s => { this.suppliers.set(s); this.applyFilter(); this.loading.set(false); },
+      error: () => this.loading.set(false)
+    });
+    this.catSvc.getAll().subscribe({
+      next: c => {
+        this.categories.set(c);
+        this.categoryFilterOptions = c.map(cat => ({ value: cat.id, label: cat.name }));
+      }
+    });
     this.userSvc.getAll().subscribe({ next: u => this.supplierUsers.set(u.filter(x => x.role === 'ROLE_SUPPLIER')) });
+  }
+
+  applyFilter(): void {
+    const s = this.search.toLowerCase();
+    let list = this.suppliers().filter(sup =>
+      sup.companyName.toLowerCase().includes(s) || (sup.address || '').toLowerCase().includes(s) || (sup.userName || '').toLowerCase().includes(s)
+    );
+
+    if (this.selectedCategory) {
+      const catId = Number(this.selectedCategory);
+      list = list.filter(sup => sup.categoryId === catId);
+    }
+
+    if (this.selectedSort) {
+      list = [...list].sort((a, b) => {
+        switch (this.selectedSort) {
+          case 'name_asc': return a.companyName.localeCompare(b.companyName);
+          case 'name_desc': return b.companyName.localeCompare(a.companyName);
+          case 'address_asc': return (a.address || '').localeCompare(b.address || '');
+          case 'address_desc': return (b.address || '').localeCompare(a.address || '');
+          default: return 0;
+        }
+      });
+    }
+
+    this.filtered.set(list);
+    this.page.set(1);
+  }
+
+  get paged(): PageResult<SupplierResponse> {
+    return paginate(this.filtered(), this.page(), this.pageSize());
+  }
+
+  onPageSize(size: number): void {
+    this.pageSize.set(size);
+    this.page.set(1);
   }
 
   openCreate(): void {
